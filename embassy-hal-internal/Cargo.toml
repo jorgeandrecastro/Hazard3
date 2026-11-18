@@ -1,22 +1,27 @@
 [package]
-name = "embassy-hal-internal"
-version = "0.5.0"
+name = "embassy-hal-internal-riscv"
+version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Internal implementation details for Embassy HALs. DO NOT USE DIRECTLY."
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-hal-internal"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-hal-internal-riscv"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
     "asynchronous",
 ]
 
+[lib]
+name = "embassy_hal_internal"
+
 [features]
 defmt = ["dep:defmt"]
 log = ["dep:log"]
 
-# Define the number of NVIC priority bits.
+# Define the number of NVIC priority bits (Cortex-M only).
 prio-bits-0 = []
 prio-bits-1 = []
 prio-bits-2 = []
@@ -27,7 +32,11 @@ prio-bits-6 = []
 prio-bits-7 = []
 prio-bits-8 = []
 
+# Interrupt support for Cortex-M (NVIC).
 cortex-m = ["dep:cortex-m", "dep:critical-section"]
+
+# Interrupt support for RISC-V (Hazard3 Xh3irq, RP2350). Mutually exclusive with `cortex-m`.
+riscv = ["dep:critical-section"]
 
 [dependencies]
 defmt = { version = "1.0.1", optional = true }

@@ -12,5 +12,12 @@ mod macros;
 mod peripheral;
 pub use peripheral::{Peri, PeripheralType};
 
+#[cfg(all(feature = "cortex-m", feature = "riscv"))]
+compile_error!("features `cortex-m` and `riscv` of embassy-hal-internal are mutually exclusive");
+
 #[cfg(feature = "cortex-m")]
+pub mod interrupt;
+
+#[cfg(feature = "riscv")]
+#[path = "interrupt_riscv.rs"]
 pub mod interrupt;
