@@ -1,14 +1,16 @@
 
 [package]
-name = "embassy-rp"
-version = "0.10.0"
+name = "embassy-rp-riscv"
+version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Embassy Hardware Abstraction Layer (HAL) for the Raspberry Pi RP2040 or RP235x microcontroller"
 keywords = ["embedded", "async", "rp235x", "rp2040", "embedded-hal"]
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
 categories = ["embedded", "hardware-support", "no-std", "asynchronous"]
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-rp"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-rp-riscv"
 
 [package.metadata.embassy]
 build = [
@@ -19,12 +21,12 @@ build = [
     { target = "thumbv8m.main-none-eabihf", features = ["defmt", "rp235xa", "cortex-m", "time-driver"] },
     { target = "thumbv8m.main-none-eabihf", features = ["log", "rp235xa", "cortex-m", "time-driver"] },
     { target = "thumbv8m.main-none-eabihf", features = ["binary-info", "rp235xa", "cortex-m", "time-driver"] },
-    { target = "thumbv8m.main-none-eabihf", features = ["defmt", "rp235xa", "cortex-m", "time-driver", "embassy-crypto-rng"] },
+    { target = "thumbv8m.main-none-eabihf", features = ["defmt", "rp235xa", "cortex-m", "time-driver"] },
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-rp-v$VERSION/embassy-rp/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-rp/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-rp/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-rp/src/"
 features = ["defmt", "unstable-pac", "time-driver", "cortex-m"]
 flavors = [
     { name = "rp2040", target = "thumbv6m-none-eabi", features = ["rp2040", "cortex-m"] },
@@ -34,6 +36,9 @@ flavors = [
 
 [package.metadata.docs.rs]
 features = ["defmt", "unstable-pac", "time-driver", "rp2040", "cortex-m"]
+
+[lib]
+name = "embassy_rp"
 
 [features]
 # Preserve the normal Cortex-M behavior for existing users.
@@ -61,7 +66,6 @@ defmt = [
     "dep:defmt",
     "embassy-usb-driver/defmt",
     "embassy-hal-internal/defmt",
-    "embassy-crypto?/defmt",
     "embassy-time/defmt",
 ]
 
@@ -94,9 +98,6 @@ rom-func-cache = []
 intrinsics = []
 rom-v2-intrinsics = []
 qspi-as-gpio = []
-
-# Hardware cryptographic random number generator.
-embassy-crypto-rng = ["dep:embassy-crypto"]
 
 # Execute from RAM.
 run-from-ram = []
@@ -160,7 +161,8 @@ embassy-futures = {
 
 # No unconditional Cortex-M activation.
 embassy-hal-internal = {
-    version = "0.5.0",
+    package = "embassy-hal-internal-riscv",
+    version = "0.1.0",
     path = "../embassy-hal-internal",
     features = ["prio-bits-2"],
 }
@@ -173,12 +175,6 @@ embassy-embedded-hal = {
 embassy-usb-driver = {
     version = "0.2.2",
     path = "../embassy-usb-driver",
-}
-
-embassy-crypto = {
-    version = "0.1.0",
-    path = "../embassy-crypto",
-    optional = true,
 }
 
 embassy-executor = {

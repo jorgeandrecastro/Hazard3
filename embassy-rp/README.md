@@ -1,15 +1,20 @@
 # Embassy RP HAL
 
+> **RISC-V fork of Embassy.** This is an independent fork of [Embassy](https://github.com/embassy-rs/embassy) maintained by
+> [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/embassy-riscv>.
+> It adds RISC-V support (e.g. RP2350 Hazard3 cores) which is not provided upstream. All credit for Embassy goes to the
+> Embassy team and contributors. Licensed under the same terms as upstream (MIT OR Apache-2.0). Not affiliated with or endorsed by the Embassy project.
+
 HALs implement safe, idiomatic Rust APIs to use the hardware capabilities, so raw register manipulation is not needed.
 
 The embassy-rp HAL targets the Raspberry Pi RP2040 as well as RP235x microcontroller. The HAL implements both blocking and async APIs
 for many peripherals. The benefit of using the async APIs is that the HAL takes care of waiting for peripherals to
 complete operations in low power mode and handling interrupts, so that applications can focus on more important matters.
 
-* [embassy-rp on crates.io](https://crates.io/crates/embassy-rp)
-* [Documentation](https://docs.embassy.dev/embassy-rp/)
-* [Source](https://github.com/embassy-rs/embassy/tree/main/embassy-rp)
-* [Examples](https://github.com/embassy-rs/embassy/tree/main/examples/rp/src/bin)
+* [embassy-rp-riscv on crates.io](https://crates.io/crates/embassy-rp-riscv)
+* [Documentation](https://docs.rs/embassy-rp-riscv)
+* [Source](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/embassy-rp)
+* [Examples](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/examples/rp/src/bin)
 
 ## `embassy-time` time driver
 

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 
 ## Unreleased - ReleaseDate
+- Fork `embassy-rp-riscv`: RISC-V (RP2350 Hazard3) support via the `riscv` feature, based on upstream embassy-rp 0.10.0. The `embassy-crypto-rng` feature was removed.
 - PAC types no longer implement `Debug` by default.
 - Add `pac-defmt` and `pac-debug` Cargo features, which implement `defmt::Format` and `Debug` for PAC types.
 - USB device: a control transfer stage now ends when the bus is suspended, so the suspend is not missed.
