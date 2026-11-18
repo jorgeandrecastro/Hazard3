@@ -9,7 +9,7 @@
 This is a [Peripheral Access Crate](https://rust-embedded.github.io/book/start/registers.html) for Raspberry Pi Silicon microcontrollers.
 
 
-This crate has been automatically generated from the SVD files in [pico-sdk](https://github.com/raspberrypi/pico-sdk), using [chiptool](https://github.com/embassy-rs/chiptool/). Fixes are added to the SVD file to make the
+This crate has been automatically generated from the SVD files in [pico-sdk](https://github.com/raspberrypi/pico-sdk), using [chiptool](https://github.com/embassy-rs/rp-pac-riscvchiptool/). Fixes are added to the SVD file to make the
 crate more amenable to writing HALs with, such as converting sets of identical registers/fields to arrays, merging identical registers and enums, etc.
 
 This crate is used for the [`embassy-rp`](github.com/embassy-rs/embassy/) Rust Hardware Abstraction Layer (HAL) for the RPxxx microcontrollers.
@@ -18,6 +18,23 @@ This crate is used for the [`embassy-rp`](github.com/embassy-rs/embassy/) Rust H
 
 - **RP2040**: [Datasheet](https://datasheets.raspberrypi.org/rp2040/rp2040_datasheet.pdf)
 - **RP2350A, RP2350B, RP2354A, RP2354B**: [Datasheet](https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf)
+
+## Usage
+
+This crate has **no default chip**: you must enable exactly one of the `rp2040` or `rp235x` features, otherwise the build fails with
+`You must enable either the rp2040 or the rp235x Cargo features` (and `file not found for module inner`).
+
+```toml
+rp-pac = { package = "rp-pac-riscv", version = "0.1", features = ["rp235x"] }
+```
+
+This also applies when working on the crate itself:
+
+```sh
+cargo doc --features rp235x
+cargo publish --dry-run --features rp235x
+cargo publish --features rp235x
+```
 
 ## License
 
