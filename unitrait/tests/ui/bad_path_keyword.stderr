@@ -1,0 +1,5 @@
+error: expected `path = ...`
+ --> tests/ui/bad_path_keyword.rs:9:20
+  |
+9 |     macro foo_impl(paths = $crate);
+  |                    ^^^^^

@@ -1,0 +1,5 @@
+error: only doc comments are allowed here
+ --> tests/ui/attr_on_macro.rs:9:5
+  |
+9 |     #[macro_export]
+  |     ^

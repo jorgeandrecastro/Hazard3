@@ -1,0 +1,107 @@
+#[cfg(not(miri))]
+#[test]
+fn ui() {
+    let t = trybuild::TestCases::new();
+
+    // Errors when defining a unitrait.
+    t.compile_fail("tests/ui/attr_on_trait.rs");
+    t.compile_fail("tests/ui/attr_on_macro.rs");
+    t.compile_fail("tests/ui/attr_on_method.rs");
+    t.compile_fail("tests/ui/method_with_visibility.rs");
+    t.compile_fail("tests/ui/missing_struct.rs");
+    t.compile_fail("tests/ui/struct_named_like_trait.rs");
+    t.compile_fail("tests/ui/method_missing_symbol.rs");
+    t.compile_fail("tests/ui/duplicate_symbol_prefix.rs");
+    t.compile_fail("tests/ui/symbol_prefix_not_string.rs");
+    t.compile_fail("tests/ui/symbol_prefix_on_method.rs");
+    t.compile_fail("tests/ui/duplicate_symbol_attr.rs");
+    t.compile_fail("tests/ui/symbol_not_namevalue.rs");
+    t.compile_fail("tests/ui/symbol_not_string.rs");
+    t.compile_fail("tests/ui/method_with_drop_symbol.rs");
+    t.compile_fail("tests/ui/method_with_clone_symbol.rs");
+    t.compile_fail("tests/ui/self_value.rs");
+    t.compile_fail("tests/ui/self_ref.rs");
+    t.compile_fail("tests/ui/self_ref_mut.rs");
+    t.compile_fail("tests/ui/type_with_equals.rs");
+    t.compile_fail("tests/ui/opaque_with_symbol.rs");
+    t.compile_fail("tests/ui/duplicate_drop_symbol_attr.rs");
+    t.compile_fail("tests/ui/drop_symbol_not_string.rs");
+    t.compile_fail("tests/ui/drop_bound_without_symbol.rs");
+    t.compile_fail("tests/ui/drop_symbol_without_bound.rs");
+    t.compile_fail("tests/ui/duplicate_clone_symbol_attr.rs");
+    t.compile_fail("tests/ui/clone_bound_without_symbol.rs");
+    t.compile_fail("tests/ui/clone_symbol_without_bound.rs");
+    t.compile_fail("tests/ui/opaque_missing_attr.rs");
+    t.compile_fail("tests/ui/opaque_missing_align.rs");
+    t.compile_fail("tests/ui/opaque_unknown_key.rs");
+    t.compile_fail("tests/ui/duplicate_opaque_attr.rs");
+    t.compile_fail("tests/ui/duplicate_assoc_type.rs");
+    t.compile_fail("tests/ui/opaque_on_method.rs");
+    t.compile_fail("tests/ui/unknown_assoc_type.rs");
+    t.compile_fail("tests/ui/opaque_ref_return.rs");
+    t.compile_fail("tests/ui/opaque_ref_lifetime.rs");
+    t.compile_fail("tests/ui/bad_path_keyword.rs");
+    t.compile_fail("tests/ui/empty_path.rs");
+    t.compile_fail("tests/ui/align_not_power_of_two.rs");
+
+    // Errors in `cfg_attr`s on opaque associated types.
+    t.compile_fail("tests/ui/cfg_attr_no_match.rs");
+    t.compile_fail("tests/ui/cfg_attr_not_opaque.rs");
+    t.compile_fail("tests/ui/cfg_attr_after_opaque.rs");
+    t.compile_fail("tests/ui/cfg_attr_duplicate_opaque.rs");
+    t.compile_fail("tests/ui/cfg_attr_missing_attr.rs");
+    t.compile_fail("tests/ui/cfg_attr_on_method.rs");
+
+    // Errors in the bounds of an opaque associated type.
+    t.compile_fail("tests/ui/bound_unsupported.rs");
+    t.compile_fail("tests/ui/bound_path.rs");
+    t.compile_fail("tests/ui/bound_lifetime.rs");
+    t.compile_fail("tests/ui/bound_maybe_sized.rs");
+    t.compile_fail("tests/ui/bound_duplicate.rs");
+    t.compile_fail("tests/ui/bound_duplicate_drop.rs");
+    t.compile_fail("tests/ui/copy_with_drop_bound.rs");
+    t.compile_fail("tests/ui/copy_with_clone_bound.rs");
+
+    // Errors in opaque associated types nested inside other types.
+    t.compile_fail("tests/ui/nested_unsupported.rs");
+    t.compile_fail("tests/ui/nested_in_user_generic.rs");
+    t.compile_fail("tests/ui/nested_dyn.rs");
+    t.compile_fail("tests/ui/nested_ref_option.rs");
+    t.compile_fail("tests/ui/nested_ref_mut_tuple.rs");
+    t.compile_fail("tests/ui/nested_slice.rs");
+    t.compile_fail("tests/ui/nested_ref_array.rs");
+    t.compile_fail("tests/ui/nested_ref_return.rs");
+    t.compile_fail("tests/ui/nested_pin_return.rs");
+    t.compile_fail("tests/ui/nested_option_arity.rs");
+    t.compile_fail("tests/ui/nested_result_arity.rs");
+    t.compile_fail("tests/ui/nested_qualified_option.rs");
+    t.compile_fail("tests/ui/nested_qualified_pin.rs");
+    t.compile_fail("tests/ui/nested_lifetime.rs");
+    t.compile_fail("tests/ui/nested_unknown_assoc.rs");
+    t.compile_fail("tests/ui/nested_pin_by_value.rs");
+
+    // Errors in `Pin` parameters.
+    t.compile_fail("tests/ui/pin_by_value.rs");
+    t.compile_fail("tests/ui/pin_lifetime.rs");
+    t.compile_fail("tests/ui/pin_return.rs");
+
+    // Errors when supplying an implementation.
+    t.compile_fail("tests/ui/impl_not_implemented.rs");
+    t.compile_fail("tests/ui/impl_too_big.rs");
+    t.compile_fail("tests/ui/impl_overaligned.rs");
+    t.compile_fail("tests/ui/cfg_attr_impl_too_big.rs");
+    t.compile_fail("tests/ui/impl_wrong_signature.rs");
+    t.compile_fail("tests/ui/impl_opaque_wrong_signature.rs");
+    t.compile_fail("tests/ui/impl_nested_wrong_signature.rs");
+    t.compile_fail("tests/ui/impl_not_a_type.rs");
+    t.compile_fail("tests/ui/impl_not_send.rs");
+    t.compile_fail("tests/ui/impl_not_copy.rs");
+    t.compile_fail("tests/ui/impl_not_clone.rs");
+    t.compile_fail("tests/ui/impl_needs_drop.rs");
+    t.compile_fail("tests/ui/impl_contains_needs_drop.rs");
+
+    // Errors when using an opaque type beyond its declared bounds.
+    t.compile_fail("tests/ui/opaque_not_auto.rs");
+    t.compile_fail("tests/ui/opaque_not_copy.rs");
+    t.compile_fail("tests/ui/opaque_not_clone.rs");
+}
