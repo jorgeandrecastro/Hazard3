@@ -1,12 +1,13 @@
 [package]
-name = "embassy-time"
-version = "0.5.1"
+name = "embassy-time-riscv"
+version = "0.1.0"
 edition = "2024"
 description = "Instant and Duration for embedded no-std systems, with async timer support"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-time"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-time-riscv"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -22,8 +23,8 @@ build = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-time-v$VERSION/embassy-time/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-time/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-time/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-time/src/"
 features = ["defmt", "std", "mock-driver"]
 target = "x86_64-unknown-linux-gnu"
 
@@ -448,8 +449,11 @@ tick-hz-5_242_880_000 = ["embassy-time-driver/tick-hz-5_242_880_000"]
 
 #! </details>
 
+[lib]
+name = "embassy_time"
+
 [dependencies]
-embassy-time-driver = { version = "0.2.2", path = "../embassy-time-driver" }
+embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.0", path = "../embassy-time-driver" }
 embassy-time-queue-utils = { version = "0.3.2", path = "../embassy-time-queue-utils", optional = true}
 
 defmt = { version = "1.0.1", optional = true }
@@ -476,4 +480,4 @@ cortex-m = { version = "0.7", optional = true }
 
 [dev-dependencies]
 critical-section = { version = "1.1", features = ["std"] }
-embassy-executor = { version = "0.10.0", path = "../embassy-executor" }
+embassy-executor = { package = "embassy-executor-riscv", path = "../embassy-executor" }

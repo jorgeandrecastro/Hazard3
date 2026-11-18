@@ -1,5 +1,16 @@
 # embassy-time
 
+[![Crates.io](https://img.shields.io/crates/v/embassy-time-riscv.svg)](https://crates.io/crates/embassy-time-riscv)
+[![docs.rs](https://docs.rs/embassy-time-riscv/badge.svg)](https://docs.rs/embassy-time-riscv)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
+
+> **Fork of Embassy for RISC-V.** `embassy-time-riscv` is an independent, **unmodified copy** of [`embassy-time`](https://github.com/embassy-rs/embassy/tree/main/embassy-time)
+> taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
+> <https://github.com/jorgeandrecastro/embassy-riscv>. It is republished under another name only because [`embassy-rp-riscv`](https://crates.io/crates/embassy-rp-riscv)
+> needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
+> The library name is still `embassy_time`; use it with `package = "embassy-time-riscv"` in your `Cargo.toml`.
+> **Use the `-riscv` versions of all Embassy crates together** (`embassy-time-riscv`, `embassy-executor-riscv`, `embassy-sync-riscv`, ...) to avoid duplicate/incompatible copies in your build.
+
 Timekeeping, delays and timeouts.
 
 Timekeeping is done with elapsed time since system boot. Time is represented in
@@ -45,3 +56,10 @@ like `2021-08-24 13:33:21`).
 If persistence across reboots is not needed, support can be built on top of
 `embassy_time` by storing the offset between "seconds elapsed since boot"
 and "seconds since unix epoch".
+
+## Acknowledgements
+
+This crate is a derivative work of the [Embassy](https://embassy.dev) project ([embassy-rs/embassy](https://github.com/embassy-rs/embassy)),
+Copyright (c) Embassy project contributors, used under the MIT OR Apache-2.0 licenses. The original copyright and license notices are
+kept (see `LICENSE-MIT` and `LICENSE-APACHE`). Embassy and its authors are not affiliated with, and do not endorse, this fork.
+Thank you to the Embassy team and contributors for their work.
