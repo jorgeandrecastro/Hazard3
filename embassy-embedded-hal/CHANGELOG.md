@@ -1,4 +1,4 @@
-# Changelog for embassy-embedded-hal
+# Changelog for embassy-embedded-hal-riscv
 
 All notable changes to this project will be documented in this file.
 
@@ -8,48 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## Unreleased - ReleaseDate
 
-- Implement `core::error::Error` for `I2cDeviceError` and `SpiDeviceError`
-- Fix `Partition` and `BlockingPartition` read/write bounds check overflowing on large offsets, which let accesses reach flash outside the partition
-- Fix `Partition` and `BlockingPartition` erase not checking `from`, which let an erase start before the partition
+## 0.1.0 - ReleaseDate
 
-## 0.6.0 - 2026-03-10
-
-- Shared I2c busses now impl `Clone`
-- Upgrade embassy-sync to 0.8.0
-
-## 0.5.0 - 2025-08-27
-
-## 0.4.0 - 2025-08-03
-
-- `SpiDevice` cancel safety: always set CS pin to high on drop
-- Update `embassy-sync` to v0.7.0
-
-## 0.3.2 - 2025-08-03
-
-- Reverted changes in 0.3.1
-- Reexport `SetConfig`, `GetConfig` traits from v0.4.0.
-
-## 0.3.1 - 2025-07-16
-
-YANKED due to embassy-sync upgrade being a breaking change.
-
-- `SpiDevice` cancel safety: always set CS pin to high on drop
-- Update `embassy-sync` to v0.7.0
-
-## 0.3.0 - 2025-01-05
-
-- The `std` feature has been removed
-- Updated `embassy-time` to v0.4
-
-## 0.2.0 - 2024-08-05
-
-- Add Clone derive to flash Partition in embassy-embedded-hal
-- Add support for all word sizes to async shared spi
-- Add Copy and 'static constraint to Word type in SPI structs
-- Improve flexibility by introducing SPI word size as a generic parameter
-- Allow changing Spi/I2cDeviceWithConfig's config at runtime
-- Impl `MultiwriteNorFlash` for `BlockingAsync`
-
-## 0.1.0 - 2024-01-10
-
-- First release
+- First release of the `embassy-embedded-hal-riscv` fork: unmodified copy of upstream `embassy-embedded-hal` from the Embassy `main` branch (changelog of upstream versions omitted), republished so that `embassy-rp-riscv` can be published on crates.io.
