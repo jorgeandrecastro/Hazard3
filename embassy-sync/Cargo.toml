@@ -1,12 +1,13 @@
 [package]
-name = "embassy-sync"
-version = "0.8.0"
+name = "embassy-sync-riscv"
+version = "0.1.0"
 edition = "2024"
 description = "no-std, no-alloc synchronization primitives with async support"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-sync"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-sync-riscv"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -22,8 +23,8 @@ build = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-sync-v$VERSION/embassy-sync/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-sync/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-sync/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-sync/src/"
 target = "thumbv7em-none-eabi"
 
 [features]
@@ -32,6 +33,9 @@ log = ["dep:log"]
 std = []
 turbowakers = []
 portable-atomic = ["dep:portable-atomic"]
+
+[lib]
+name = "embassy_sync"
 
 [dependencies]
 defmt = { version = "1.0.1", optional = true }
