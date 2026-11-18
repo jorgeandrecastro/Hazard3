@@ -218,8 +218,9 @@ embedded-storage = "0.3"
 embedded-storage-async = "0.4.1"
 
 rp-pac = {
-    git = "https://github.com/embassy-rs/rp-pac",
-    rev = "9e59c6d5274f6fe910353a9791bc2940d390a0e5",
+    package = "rp-pac-riscv",
+    version = "0.1.0",
+    path = "../rp-pac-riscv",
 }
 
 embedded-hal-02 = {

@@ -67,6 +67,12 @@ For Arm builds, keep the default features: nothing changes compared to upstream 
 On RISC-V, `bind_interrupts!`-style handlers are resolved through a weak-symbol dispatch table: an interrupt with no handler
 bound calls a default handler that hangs, so it is noticed.
 
+### Why the extra `rp-pac-riscv` crate
+
+Upstream `embassy-rp` uses a git revision of `rp-pac` that is newer than the one on crates.io, and crates.io does not accept git dependencies.
+To make `embassy-rp-riscv` publishable, that exact revision is republished unchanged as [`rp-pac-riscv`](https://crates.io/crates/rp-pac-riscv)
+(same `rp_pac` library name). It is a dependency of this crate; you do not need to add it yourself.
+
 ### Status and limitations
 
 * Tested on a real RP2350 running the RISC-V cores. Other peripherals are expected to work as on Arm, but are not all tested.
