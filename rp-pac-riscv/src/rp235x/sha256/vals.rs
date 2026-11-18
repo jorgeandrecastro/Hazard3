@@ -1,0 +1,32 @@
+#[repr(u8)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+pub enum DmaSize {
+    _8bit = 0x0,
+    _16bit = 0x01,
+    _32bit = 0x02,
+    _RESERVED_3 = 0x03,
+}
+impl DmaSize {
+    #[inline(always)]
+    pub const fn from_bits(val: u8) -> DmaSize {
+        unsafe { core::mem::transmute(val & 0x03) }
+    }
+    #[inline(always)]
+    pub const fn to_bits(self) -> u8 {
+        unsafe { core::mem::transmute(self) }
+    }
+}
+impl From<u8> for DmaSize {
+    #[inline(always)]
+    fn from(val: u8) -> DmaSize {
+        DmaSize::from_bits(val)
+    }
+}
+impl From<DmaSize> for u8 {
+    #[inline(always)]
+    fn from(val: DmaSize) -> u8 {
+        DmaSize::to_bits(val)
+    }
+}

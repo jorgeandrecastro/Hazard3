@@ -1,0 +1,35 @@
+#[repr(u8)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+pub enum Speed {
+    _RESERVED_0 = 0x0,
+    #[doc = "Standard Speed mode of operation."]
+    Standard = 0x01,
+    #[doc = "Fast or Fast Plus mode of operation."]
+    Fast = 0x02,
+    #[doc = "High Speed mode of operation."]
+    High = 0x03,
+}
+impl Speed {
+    #[inline(always)]
+    pub const fn from_bits(val: u8) -> Speed {
+        unsafe { core::mem::transmute(val & 0x03) }
+    }
+    #[inline(always)]
+    pub const fn to_bits(self) -> u8 {
+        unsafe { core::mem::transmute(self) }
+    }
+}
+impl From<u8> for Speed {
+    #[inline(always)]
+    fn from(val: u8) -> Speed {
+        Speed::from_bits(val)
+    }
+}
+impl From<Speed> for u8 {
+    #[inline(always)]
+    fn from(val: Speed) -> u8 {
+        Speed::to_bits(val)
+    }
+}
