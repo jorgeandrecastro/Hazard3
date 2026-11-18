@@ -1,11 +1,13 @@
 [package]
-name = "embassy-executor-macros"
-version = "0.8.0"
+name = "embassy-executor-macros-riscv"
+version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "macros for creating the entry point and tasks for embassy-executor"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-executor-macros"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-executor-macros-riscv"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -18,6 +20,7 @@ quote = "1.0.9"
 proc-macro2 = "1.0.29"
 
 [lib]
+name = "embassy_executor_macros"
 proc-macro = true
 
 [features]

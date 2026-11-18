@@ -1,4 +1,4 @@
-# Changelog
+# Changelog for embassy-executor-macros-riscv
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## Unreleased - ReleaseDate
 
-- `task`: with the `metadata-name` feature, name the task after its function, or after the new `name = "..."` argument. `main` uses it to name the main task, which no longer has a trailing NUL.
-- `main`: abort instead of unwinding out of the generated `main`, which would leave dangling `'static` references to the executor on its stack frame ([#5277](https://github.com/embassy-rs/embassy/issues/5277)).
+## 0.1.0 - ReleaseDate
 
-## 0.8.0 - 2026-03-12
-
-- Update rust release id
-- Add task name capability
-- Follow executor api change
+- First release of the `embassy-executor-macros-riscv` fork: unmodified copy of upstream `embassy-executor-macros` from the Embassy `main` branch (changelog of upstream versions omitted), republished so that `embassy-rp-riscv` can be published on crates.io.
