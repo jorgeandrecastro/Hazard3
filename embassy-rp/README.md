@@ -47,6 +47,7 @@ Build for the Hazard3 target (`riscv32imac-unknown-none-elf`):
 
 ```sh
 rustup target add riscv32imac-unknown-none-elf
+cargo doc --no-default-features --target riscv32imac-unknown-none-elf --features riscv,rt,rp235xa,defmt,unstable-pac,time-driver
 cargo build --release --target riscv32imac-unknown-none-elf
 ```
 

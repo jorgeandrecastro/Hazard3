@@ -35,7 +35,10 @@ flavors = [
 ]
 
 [package.metadata.docs.rs]
-features = ["defmt", "unstable-pac", "time-driver", "rp2040", "cortex-m"]
+default-target = "riscv32imac-unknown-none-elf"
+targets = ["riscv32imac-unknown-none-elf"]
+no-default-features = true
+features = ["riscv", "rt", "rp235xa", "defmt", "unstable-pac", "time-driver"]
 
 [lib]
 name = "embassy_rp"
