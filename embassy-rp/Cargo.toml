@@ -135,10 +135,10 @@ binary-info = [
 ]
 
 [dependencies]
-embassy-sync = { version = "0.8.0", path = "../embassy-sync" }
+embassy-sync = { package = "embassy-sync-riscv", version = "0.1.0", path = "../embassy-sync" }
 
 embassy-time-driver = {
-    version = "0.2.2",
+    package = "embassy-time-driver-riscv", version = "0.1.0",
     path = "../embassy-time-driver",
     optional = true,
 }
@@ -150,7 +150,7 @@ embassy-time-queue-utils = {
 }
 
 embassy-time = {
-    version = "0.5.1",
+    package = "embassy-time-riscv", version = "0.1.0",
     path = "../embassy-time",
 }
 
@@ -168,17 +168,17 @@ embassy-hal-internal = {
 }
 
 embassy-embedded-hal = {
-    version = "0.6.0",
+    package = "embassy-embedded-hal-riscv", version = "0.1.0",
     path = "../embassy-embedded-hal",
 }
 
 embassy-usb-driver = {
-    version = "0.2.2",
+    package = "embassy-usb-driver-riscv", version = "0.1.0",
     path = "../embassy-usb-driver",
 }
 
 embassy-executor = {
-    version = "0.10.0",
+    package = "embassy-executor-riscv", version = "0.1.0",
     path = "../embassy-executor",
     optional = true,
 }
@@ -254,7 +254,7 @@ smart-leds-trait = "0.3.2"
 
 [dev-dependencies]
 embassy-executor = {
-    version = "0.10.0",
+    package = "embassy-executor-riscv",
     path = "../embassy-executor",
     features = ["platform-std", "executor-thread"],
 }

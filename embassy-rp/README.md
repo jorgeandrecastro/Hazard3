@@ -73,6 +73,21 @@ Upstream `embassy-rp` uses a git revision of `rp-pac` that is newer than the one
 To make `embassy-rp-riscv` publishable, that exact revision is republished unchanged as [`rp-pac-riscv`](https://crates.io/crates/rp-pac-riscv)
 (same `rp_pac` library name). It is a dependency of this crate; you do not need to add it yourself.
 
+### Companion `-riscv` crates
+
+Upstream `embassy-rp` at this commit needs unreleased changes of several Embassy crates (the versions on crates.io are older), so unmodified copies
+of them are republished with a `-riscv` suffix. Their library names are unchanged (`embassy_time`, `embassy_executor`, ...). Use **all** of them
+together in your application, with `package = "..."`, to avoid duplicate or incompatible copies of the same crate:
+
+`embassy-sync-riscv`, `embassy-time-riscv`, `embassy-time-driver-riscv`, `embassy-executor-riscv`, `embassy-executor-macros-riscv`,
+`embassy-embedded-hal-riscv`, `embassy-usb-driver-riscv`, `embassy-hal-internal-riscv`, `rp-pac-riscv`.
+
+```toml
+embassy-time = { package = "embassy-time-riscv", version = "0.1" }
+embassy-executor = { package = "embassy-executor-riscv", version = "0.1", features = ["platform-riscv32", "executor-thread"] }
+embassy-sync = { package = "embassy-sync-riscv", version = "0.1" }
+```
+
 ### Status and limitations
 
 * Tested on a real RP2350 running the RISC-V cores. Other peripherals are expected to work as on Arm, but are not all tested.
