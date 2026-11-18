@@ -143,9 +143,7 @@ embassy-time-driver = {
     optional = true,
 }
 
-embassy-time-queue-utils = {
-    version = "0.3.2",
-    path = "../embassy-time-queue-utils",
+embassy-time-queue-utils = { package = "embassy-time-queue-utils-riscv", version = "0.1.0", path = "../embassy-time-queue-utils",
     optional = true,
 }
 
