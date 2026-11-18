@@ -1,12 +1,13 @@
 [package]
-name = "embassy-time-driver"
-version = "0.2.2"
+name = "embassy-time-driver-riscv"
+version = "0.1.0"
 edition = "2024"
 description = "Driver trait for embassy-time"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-time-driver"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-time-driver-riscv"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -21,8 +22,8 @@ categories = [
 links = "embassy-time"
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-time-driver-v$VERSION/embassy-time-driver/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-time-driver/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-time-driver/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-time-driver/src/"
 target = "x86_64-unknown-linux-gnu"
 
 [features]
@@ -379,6 +380,9 @@ tick-hz-5_242_880_000 = []
 # END TICKS
 
 #! </details>
+
+[lib]
+name = "embassy_time_driver"
 
 [dependencies]
 document-features = "0.2.7"

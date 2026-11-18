@@ -1,4 +1,4 @@
-# Changelog for embassy-time-driver
+# Changelog for embassy-time-driver-riscv
 
 All notable changes to this project will be documented in this file.
 
@@ -8,23 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## Unreleased - ReleaseDate
 
-- Add 27MHz tick rate support
-- Add 24.576MHz, 25.6MHz and 38.4MHz tick rate support
+## 0.1.0 - ReleaseDate
 
-## 0.2.2 - 2026-03-20
-
-- Add 375KHz tick rate support
-
-## 0.2.1 - 2025-08-26
-
-- Allow inlining on time driver boundary
-- Add 133MHz tick rate to support PR2040 @ 133MHz when `TIMERx`'s `SOURCE` is set to `SYSCLK`
-
-## 0.2.0 - 2025-01-02
-
-- The `allocate_alarm`, `set_alarm_callback`, `set_alarm` functions have been removed.
-- `schedule_wake` has been added to the `Driver` trait.
-
-## 0.1.0 - 2024-01-11
-
-Initial release
+- First release of the `embassy-time-driver-riscv` fork: unmodified copy of upstream `embassy-time-driver` from the Embassy `main` branch (changelog of upstream versions omitted), republished so that `embassy-rp-riscv` can be published on crates.io.
