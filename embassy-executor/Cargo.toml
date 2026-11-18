@@ -111,8 +111,8 @@ log = { version = "0.4.14", optional = true }
 
 embassy-executor-macros = { package = "embassy-executor-macros-riscv", version = "0.1.0", path = "../embassy-executor-macros" }
 embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.0", path = "../embassy-time-driver", optional = true }
-embassy-executor-timer-queue = { version = "0.1.1", path = "../embassy-executor-timer-queue" }
-unitrait = { git = "https://github.com/embassy-rs/unitrait", rev = "bb96601b3d293fa27d1ca2891f6ea148e534e433" }
+embassy-executor-timer-queue = { package = "embassy-executor-timer-queue-riscv", version = "0.1.0", path = "../embassy-executor-timer-queue" }
+unitrait = { package = "unitrait-riscv", version = "0.1.0", path = "../unitrait" }
 critical-section = "1.1"
 
 document-features = "0.2.7"
