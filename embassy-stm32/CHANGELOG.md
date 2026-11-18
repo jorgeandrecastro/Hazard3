@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 PAC:
 - change: stm32: the `defmt` feature no longer enables `defmt` in `stm32-metapac`. PAC types, including the ones re-exported by the HAL (e.g. `rcc::AHBPrescaler`), no longer implement `defmt::Format` by default.

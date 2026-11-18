@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - Fix deterministic single-bit corruption on RP2350 backplane reads by using two DMA channels (TX + RX). The single single-channel pattern raced with the PIO state machine in debug builds, causing the LSB of the last sampled word in `cmd_read` to be cleared.
 - Breaking: `PioSpi::new` now takes two `dma::Channel` arguments (TX and RX) instead of one.

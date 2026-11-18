@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - Fixed: a control request without a data stage, such as `SET_ADDRESS`, no longer calls the driver's `control_data_out()`. Drivers wait there for a packet the host never sends, so enumeration did not complete.
 - Device: `UsbDevice` handles a control request when the driver's `Bus::poll()` returns `Event::Setup`, instead of selecting between `Bus::poll()` and `ControlPipe::setup()`.

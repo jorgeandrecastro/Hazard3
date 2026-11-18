@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - Fixed: control transfers longer than 127 bytes. The size registers of EP0 are only 7 bits wide, so a 128 byte IN data stage was sent as 0 bytes, and a longer OUT data stage did not complete. EP0 now does one packet per transfer.
 - **Breaking:** `ControlPipe` is no longer public, the control pipe is part of `Bus`, and `Driver::start()` returns just the `Bus`. A control transfer stage now also ends when the bus is suspended, or VBUS is removed with VBUS detection enabled.

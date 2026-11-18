@@ -8,7 +8,7 @@ and this project adheres to
 
 <!-- next-header -->
 
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 ## 0.1.1 - 2026-05-13
 

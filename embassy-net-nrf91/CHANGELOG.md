@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - changed: update to nrf-pac 0.4.0.
 - changed: add `keep_open` config option to keep sockets open across PDN loss/reattach.

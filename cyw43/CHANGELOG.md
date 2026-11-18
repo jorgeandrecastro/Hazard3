@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - Breaking: `Control::init` takes a `Config`, whose `country` sets the radio's rules (channels and transmit power) instead of the worldwide ones; `countries` is public. Pass `Config::default()` to keep the worldwide rules.
 - Add support for the CYW43455 over SDIO (`Cyw43455`, `new_43455_sdio`).

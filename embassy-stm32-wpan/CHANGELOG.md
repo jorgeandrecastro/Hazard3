@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - ReleaseDate
+## Unreleased - 2026-11-18
 
 - WBA BLE: apply the full `AdvData` payload when starting connectable advertising
   (manufacturer data, 128-bit UUIDs, service data and explicit flags/TX power were
