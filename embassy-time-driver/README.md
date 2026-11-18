@@ -20,6 +20,8 @@ If you are writing a driver, you  should depend only on this crate, not on the m
 This will allow your driver to continue working for newer `embassy-time` major versions, without needing an update,
 if the driver trait has not had breaking changes.
 
+> **Note (0.1.1):** the `links = "embassy-time"` key was removed from the manifest. Make sure only one copy of this crate (and a single `tick-*` configuration) ends up in your binary.
+
 ## How it works
 
 `embassy-time` is backed by a global "time driver" specified at build time.

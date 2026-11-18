@@ -1,6 +1,6 @@
 [package]
 name = "embassy-time-driver-riscv"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Driver trait for embassy-time"
 repository = "https://github.com/jorgeandrecastro/embassy-riscv"
@@ -14,12 +14,6 @@ categories = [
     "concurrency",
     "asynchronous",
 ]
-
-# Prevent multiple copies of this crate in the same binary.
-# Needed because different copies might get different tick rates, causing
-# wrong delays if the time driver is using one copy and user code is using another.
-# This is especially common when mixing crates from crates.io and git.
-links = "embassy-time"
 
 [package.metadata.embassy_docs]
 src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-time-driver/src/"
