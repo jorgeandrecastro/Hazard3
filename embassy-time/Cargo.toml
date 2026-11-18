@@ -454,7 +454,7 @@ name = "embassy_time"
 
 [dependencies]
 embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.0", path = "../embassy-time-driver" }
-embassy-time-queue-utils = { version = "0.3.2", path = "../embassy-time-queue-utils", optional = true}
+embassy-time-queue-utils = { package = "embassy-time-queue-utils-riscv", version = "0.1.0", path = "../embassy-time-queue-utils", optional = true}
 
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
