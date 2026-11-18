@@ -1,11 +1,13 @@
 [package]
-name = "embassy-executor"
-version = "0.10.0"
+name = "embassy-executor-riscv"
+version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "async/await executor designed for embedded usage"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-executor"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-executor-riscv"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -84,8 +86,8 @@ build = [
 
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-executor-v$VERSION/embassy-executor/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-executor/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-executor/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-executor/src/"
 features = ["defmt", "scheduler-deadline", "scheduler-priority", "trace"]
 flavors = [
     { name = "std",             target = "x86_64-unknown-linux-gnu",     features = ["platform-std", "executor-thread"] },
@@ -100,12 +102,15 @@ default-target = "thumbv7em-none-eabi"
 targets = ["thumbv7em-none-eabi"]
 features = ["defmt", "platform-cortex-m", "executor-thread", "executor-interrupt", "scheduler-deadline", "scheduler-priority", "embassy-time-driver", "trace"]
 
+[lib]
+name = "embassy_executor"
+
 [dependencies]
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-embassy-executor-macros = { version = "0.8.0", path = "../embassy-executor-macros" }
-embassy-time-driver = { version = "0.2.2", path = "../embassy-time-driver", optional = true }
+embassy-executor-macros = { package = "embassy-executor-macros-riscv", version = "0.1.0", path = "../embassy-executor-macros" }
+embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.0", path = "../embassy-time-driver", optional = true }
 embassy-executor-timer-queue = { version = "0.1.1", path = "../embassy-executor-timer-queue" }
 unitrait = { git = "https://github.com/embassy-rs/unitrait", rev = "bb96601b3d293fa27d1ca2891f6ea148e534e433" }
 critical-section = "1.1"
@@ -136,7 +141,7 @@ harness = false
 [dev-dependencies]
 critical-section = { version = "1.1", features = ["std"] }
 trybuild = "1.0"
-embassy-sync = { path = "../embassy-sync" }
+embassy-sync = { package = "embassy-sync-riscv", path = "../embassy-sync" }
 rustversion = "1.0.21"
 
 [features]
