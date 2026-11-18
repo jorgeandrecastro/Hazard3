@@ -1,6 +1,6 @@
 [package]
 name = "embassy-executor-riscv"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "async/await executor designed for embedded usage"
@@ -110,7 +110,7 @@ defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
 embassy-executor-macros = { package = "embassy-executor-macros-riscv", version = "0.1.0", path = "../embassy-executor-macros" }
-embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.0", path = "../embassy-time-driver", optional = true }
+embassy-time-driver = { package = "embassy-time-driver-riscv", version = "0.1.1", path = "../embassy-time-driver", optional = true }
 embassy-executor-timer-queue = { package = "embassy-executor-timer-queue-riscv", version = "0.1.0", path = "../embassy-executor-timer-queue" }
 unitrait = { package = "unitrait-riscv", version = "0.1.0", path = "../unitrait" }
 critical-section = "1.1"
