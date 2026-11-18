@@ -5,7 +5,7 @@ use core::pin::Pin;
 use core::sync::atomic::{Ordering, compiler_fence};
 use core::task::{Context, Poll};
 
-use embassy_hal_internal::interrupt::InterruptExt;
+use crate::interrupt::InterruptExt;
 use embassy_hal_internal::{Peri, PeripheralType};
 use embassy_sync::waitqueue::AtomicWaker;
 use pac::dma::vals::DataSize;

@@ -170,7 +170,7 @@ fn arm_ep_out_buffer<T: Instance>(index: usize, pid: bool, len: u16) {
         w.set_length(0, len);
         w.set_pid(0, pid);
     });
-    cortex_m::asm::delay(12);
+    crate::cpu::delay(12);
     bufcontrol.write(|w| {
         w.set_length(0, len);
         w.set_pid(0, pid);
@@ -185,7 +185,7 @@ fn arm_ep_in_buffer<T: Instance>(index: usize, pid: bool, len: u16) {
         w.set_pid(0, pid);
         w.set_full(0, true);
     });
-    cortex_m::asm::delay(12);
+    crate::cpu::delay(12);
     bufcontrol.write(|w| {
         w.set_length(0, len);
         w.set_pid(0, pid);

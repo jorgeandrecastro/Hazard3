@@ -37,7 +37,7 @@ unsafe impl critical_section::Impl for RpSpinlockCs {
 impl RpSpinlockCs {
     unsafe fn acquire() -> u8 {
         // Store the initial interrupt state and current core id in stack variables
-        let interrupts_active = cortex_m::register::primask::read().is_active();
+        let interrupts_active = crate::cpu::interrupts_enabled();
         // We reserved 0 as our `LOCK_UNOWNED` value, so add 1 to core_id so we get 1 for core0, 2 for core1.
         let core = pac::SIO.cpuid().read() as u8 + 1;
         // Do we already own the spinlock?
@@ -50,7 +50,7 @@ impl RpSpinlockCs {
             loop {
                 // Need to disable interrupts to ensure that we will not deadlock
                 // if an interrupt enters critical_section::Impl after we acquire the lock
-                cortex_m::interrupt::disable();
+                crate::cpu::interrupt_disable();
                 // Ensure the compiler doesn't re-order accesses and violate safety here
                 core::sync::atomic::compiler_fence(Ordering::SeqCst);
                 // Read the spinlock reserved for `critical_section`
@@ -64,7 +64,7 @@ impl RpSpinlockCs {
                 }
                 // We didn't get the lock, enable interrupts if they were enabled before we started
                 if interrupts_active {
-                    cortex_m::interrupt::enable();
+                    crate::cpu::interrupt_enable();
                 }
             }
             // If we broke out of the loop we have just acquired the lock
@@ -87,7 +87,7 @@ impl RpSpinlockCs {
             // We only do this on the outermost `critical_section` to ensure interrupts stay disabled
             // for the whole time that we have the lock
             if token != 0 {
-                cortex_m::interrupt::enable();
+                crate::cpu::interrupt_enable();
             }
         }
     }

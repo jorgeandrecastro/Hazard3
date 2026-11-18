@@ -39,13 +39,13 @@ where
 
     fn lock<R>(&self, f: impl FnOnce() -> R) -> R {
         // Store the initial interrupt state in stack variable
-        let interrupts_active = cortex_m::register::primask::read().is_active();
+        let interrupts_active = crate::cpu::interrupts_enabled();
 
         // Spin until we get the lock
         loop {
             // Need to disable interrupts to ensure that we will not deadlock
             // if an interrupt or higher prio locks the spinlock after we acquire the lock
-            cortex_m::interrupt::disable();
+            crate::cpu::interrupt_disable();
             // Ensure the compiler doesn't re-order accesses and violate safety here
             core::sync::atomic::compiler_fence(Ordering::SeqCst);
             if let Some(lock) = Spinlock::<N>::try_claim() {
@@ -58,7 +58,7 @@ where
             if interrupts_active {
                 // safety: interrupts are only enabled, if they had been enabled before
                 unsafe {
-                    cortex_m::interrupt::enable();
+                    crate::cpu::interrupt_enable();
                 }
             }
         }
@@ -77,7 +77,7 @@ where
         if interrupts_active {
             // safety: interrupts are only enabled, if they had been enabled before
             unsafe {
-                cortex_m::interrupt::enable();
+                crate::cpu::interrupt_enable();
             }
         }
 

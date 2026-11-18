@@ -1082,7 +1082,7 @@ pub(crate) unsafe fn init(config: ClockConfig) {
                 // Delay in microseconds, using the ROSC frequency to calculate cycles
                 let cycles_per_us = rosc_freq / 1_000_000;
                 let delay_cycles = settling_time_us * cycles_per_us;
-                cortex_m::asm::delay(delay_cycles);
+                crate::cpu::delay(delay_cycles);
             }
 
             // Only now set the BOD level. At this point the voltage is considered stable.
@@ -1536,7 +1536,7 @@ fn configure_pll(p: pac::pll::Pll, input_freq: u32, config: PllConfig) -> Result
     });
 
     // Short delay after powering down
-    cortex_m::asm::delay(10);
+    crate::cpu::delay(10);
 
     // 2. Configure reference divider first
     p.cs().write(|w| w.set_refdiv(config.refdiv as _));
@@ -1574,7 +1574,7 @@ fn configure_pll(p: pac::pll::Pll, input_freq: u32, config: PllConfig) -> Result
     });
 
     // Final delay to ensure everything is stable
-    cortex_m::asm::delay(100);
+    crate::cpu::delay(100);
 
     // Calculate and return actual output frequency
     Ok(vco_freq / ((config.post_div1 * config.post_div2) as u32))

@@ -22,6 +22,7 @@ mod intrinsics;
 
 // Architecture-specific code (ARM / RISC-V): stack guard, __pre_init, ACTLR.
 mod arch;
+mod cpu;
 pub use arch::install_core0_stack_guard;
 pub(crate) use arch::install_stack_guard;
 #[cfg(feature = "_rp235x")]
@@ -561,6 +562,9 @@ pub fn init(config: config::Config) -> Peripherals {
         time_driver::init();
         dma::init();
     }
+
+    // RISC-V: interrupts are off at boot (no-op on ARM).
+    unsafe { cpu::enable_external_irq() };
 
     peripherals
 }

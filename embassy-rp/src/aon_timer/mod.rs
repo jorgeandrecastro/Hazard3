@@ -129,7 +129,7 @@ use core::sync::atomic::{AtomicBool, Ordering, compiler_fence};
 use core::task::Poll;
 
 use embassy_hal_internal::Peri;
-use embassy_hal_internal::interrupt::InterruptExt;
+use crate::interrupt::InterruptExt;
 use embassy_sync::waitqueue::AtomicWaker;
 use embassy_time::Duration;
 

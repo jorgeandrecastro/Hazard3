@@ -875,7 +875,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
         reg.write_value(value);
 
         if available {
-            cortex_m::asm::delay(USB_CLOCK_DELAY_CYCLES);
+            crate::cpu::delay(USB_CLOCK_DELAY_CYCLES);
             value.set_available(0, true);
             reg.write_value(value);
         }
@@ -1005,7 +1005,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
         });
 
         // START_TRANS is synchronized separately (RP2040 §4.1.2.9, RP2350 §12.7.3.9).
-        cortex_m::asm::delay(SIE_START_DELAY_CYCLES);
+        crate::cpu::delay(SIE_START_DELAY_CYCLES);
         T::regs().sie_ctrl().modify(|w| {
             w.set_start_trans(true);
         });
@@ -1185,7 +1185,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
             w.set_available(0, true);
         });
 
-        cortex_m::asm::delay(USB_CLOCK_DELAY_CYCLES);
+        crate::cpu::delay(USB_CLOCK_DELAY_CYCLES);
         T::regs().int_ep_ctrl().modify(|w| {
             w.set_int_ep_active(w.int_ep_active() | 1 << (self.index - 1));
         });
@@ -1206,7 +1206,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
             w.set_available(0, true);
         });
 
-        cortex_m::asm::delay(USB_CLOCK_DELAY_CYCLES);
+        crate::cpu::delay(USB_CLOCK_DELAY_CYCLES);
         T::regs().int_ep_ctrl().modify(|w| {
             w.set_int_ep_active(w.int_ep_active() | 1 << (self.index - 1));
         });
