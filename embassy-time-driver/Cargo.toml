@@ -389,4 +389,4 @@ document-features = "0.2.7"
 
 [dev-dependencies]
 critical-section = "1"
-embassy-time-queue-utils = { path = "../embassy-time-queue-utils" }
+embassy-time-queue-utils = { package = "embassy-time-queue-utils-riscv", path = "../embassy-time-queue-utils" }
