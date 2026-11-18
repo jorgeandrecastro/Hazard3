@@ -1,6 +1,6 @@
 [package]
 name = "embassy-time-riscv"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Instant and Duration for embedded no-std systems, with async timer support"
 repository = "https://github.com/jorgeandrecastro/embassy-riscv"
