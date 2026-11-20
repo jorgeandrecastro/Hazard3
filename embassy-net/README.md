@@ -13,8 +13,11 @@
 
 `embassy-net-riscv` is a no-std, no-alloc async network stack designed for embedded systems.
 
-It uses the [`xarxa`](https://github.com/embassy-rs/xarxa) network stack, adds convenient async wrappers,
-and implements the main loop.
+It uses the [`xarxa-riscv`](../xarxa-riscv/) network stack, adds convenient async wrappers,
+and implements the main loop. `xarxa-riscv` and [`xarxa-driver-riscv`](../xarxa-riscv/xarxa-driver/)
+are copies of upstream Xarxa pinned to revision `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`,
+published under new package names so that the crates.io release of `embassy-net-riscv` has no
+Git dependencies. The Rust library names remain `xarxa` and `xarxa_driver`.
 
 ## Vision of this fork
 
@@ -109,11 +112,12 @@ Current coverage:
 
 ## Development tools
 
-This fork does not currently provide a CI workflow or a maintained build matrix for examples and
-hardware integrations. In particular, examples, target-specific configurations and upstream
-Embassy HAL integrations are not compiled or tested by this fork; they may require additional
-dependencies or fixes. Documentation warning fixes are part of this fork, rather than a promise to
-validate every example or platform.
+This fork currently compiles and tests nothing as part of an automated CI workflow. No maintained
+build matrix runs the examples, target-specific configurations, upstream Embassy HAL integrations
+or hardware integrations. The source is not currently compiled or tested by a CI pipeline in this
+repository. Additional dependencies or fixes may therefore be required outside the host-oriented
+checks documented below. Documentation warning fixes are maintained here, but this is not a
+promise to compile or validate every example or platform.
 
 ### Compilation
 

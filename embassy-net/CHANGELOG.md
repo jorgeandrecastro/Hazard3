@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Forked and integrated the pinned upstream Xarxa sources under new package names:
+  `xarxa-riscv` and `xarxa-driver-riscv`. The Rust library names remain `xarxa` and
+  `xarxa_driver`. The `embassy-net-riscv` manifest now uses local path dependencies on this
+  repository's forks instead of Git dependencies, allowing publication on crates.io.
 - Modularity: split the monolithic `src/tcp.rs` into focused modules. The public API and the
   `tcp::` paths are unchanged (`tcp::TcpSocket`, `tcp::TcpReader`, `tcp::TcpWriter`,
   `tcp::TcpListener`, `tcp::client::TcpClient`, ...), so this is not a breaking change.
@@ -31,6 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     signatures and of the `embedded-io` trait impls.
 - `SPDX-License-Identifier: MIT OR Apache-2.0` header on the new TCP source files.
 - README: project vision, source layout and testing sections.
+
+### Removed / not provided
+
+- No CI compilation or test suite is provided for this release.
+- No examples or hardware integrations are compiled or tested.
+- No automated build matrix or target-platform validation is provided.
 
 ## 2026-11-20
 

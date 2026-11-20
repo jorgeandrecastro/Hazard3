@@ -11,7 +11,7 @@ documentation = "https://docs.embassy.dev/embassy-net-enc28j60"
 
 [dependencies]
 embedded-hal = { version = "1.0" }
-xarxa-driver = { git = "https://github.com/embassy-rs/xarxa", rev = "8f6f33b131deb9ff3290e0e01079537e1ed7b2ad", features = ["async"] }
+xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1.0", path = "../xarxa-riscv/xarxa-driver", features = ["async"] }
 embassy-time = { version = "0.5.1", path = "../embassy-time" }
 
 defmt = { version = "1.0.1", optional = true }
