@@ -149,7 +149,7 @@ log = { version = "0.4.14", optional = true }
 
 xarxa = {
     package = "xarxa-riscv",
-    version = "0.1.0",
+    version = "0.1",
     path = "../xarxa-riscv",
     default-features = false,
     features = ["async"]
