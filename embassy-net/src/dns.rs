@@ -122,3 +122,94 @@ impl core::fmt::Display for Error {
     }
 }
 impl core::error::Error for Error {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::fmt::Write;
+    use xarxa::dns::{GetQueryResultError, StartQueryError};
+
+    struct BufWriter<'a> {
+        buf: &'a mut [u8],
+        len: usize,
+    }
+
+    impl<'a> BufWriter<'a> {
+        fn new(buf: &'a mut [u8]) -> Self {
+            Self { buf, len: 0 }
+        }
+    }
+
+    impl Write for BufWriter<'_> {
+        fn write_str(&mut self, s: &str) -> core::fmt::Result {
+            let bytes = s.as_bytes();
+            let rem = self.buf.len().saturating_sub(self.len);
+            let n = bytes.len().min(rem);
+            self.buf[self.len..self.len + n].copy_from_slice(&bytes[..n]);
+            self.len += n;
+            if n < bytes.len() { Err(core::fmt::Error) } else { Ok(()) }
+        }
+    }
+
+    fn display_to_buf<'a>(err: Error, buf: &'a mut [u8]) -> &'a str {
+        let len = {
+            let mut w = BufWriter::new(buf);
+            let _ = write!(w, "{}", err);
+            w.len
+        };
+
+        core::str::from_utf8(&buf[..len]).unwrap_or("")
+    }
+
+    // ---------- Error conversions ----------
+
+    #[test]
+    fn from_get_query_result_error_failed() {
+        let err: Error = GetQueryResultError::Failed.into();
+        assert_eq!(err, Error::Failed);
+    }
+
+    #[test]
+    fn from_get_query_result_error_pending() {
+        // Pending est normalement géré en interne, mais on vérifie le From
+        let err: Error = GetQueryResultError::Pending.into();
+        assert_eq!(err, Error::Failed);
+    }
+
+    #[test]
+    fn from_start_query_error_no_free_slot() {
+        let err: Error = StartQueryError::NoFreeSlot.into();
+        assert_eq!(err, Error::Failed);
+    }
+
+    #[test]
+    fn from_start_query_error_invalid_name() {
+        let err: Error = StartQueryError::InvalidName.into();
+        assert_eq!(err, Error::InvalidName);
+    }
+
+    #[test]
+    fn from_start_query_error_name_too_long() {
+        let err: Error = StartQueryError::NameTooLong.into();
+        assert_eq!(err, Error::NameTooLong);
+    }
+
+    // ---------- Display ----------
+
+    #[test]
+    fn error_display() {
+        let mut buf = [0u8; 32];
+        assert_eq!(display_to_buf(Error::InvalidName, &mut buf), "InvalidName");
+
+        let mut buf = [0u8; 32];
+        assert_eq!(display_to_buf(Error::NameTooLong, &mut buf), "NameTooLong");
+
+        let mut buf = [0u8; 32];
+        assert_eq!(display_to_buf(Error::Failed, &mut buf), "Failed");
+    }
+
+    #[test]
+    fn error_is_core_error() {
+        let _: &dyn core::error::Error = &Error::Failed;
+    }
+}

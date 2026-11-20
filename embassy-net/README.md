@@ -1,9 +1,41 @@
-# embassy-net
+# embassy-net-riscv
 
-`embassy-net` is a no-std no-alloc async network stack, designed for embedded systems.
+[![Crates.io](https://img.shields.io/crates/v/embassy-net-riscv.svg)](https://crates.io/crates/embassy-net-riscv)
+[![docs.rs](https://docs.rs/embassy-net-riscv/badge.svg)](https://docs.rs/embassy-net-riscv)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
-It uses the [`xarxa`](https://github.com/embassy-rs/xarxa) network stack, and adds convenient
-async wrappers on top of it and implements the main loop for you.
+> **Fork of Embassy for RISC-V.** `embassy-net-riscv` is an independent copy of [`embassy-net`](https://github.com/embassy-rs/embassy/tree/main/embassy-net)
+> taken from the Embassy `main` branch and maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
+> <https://github.com/jorgeandrecastro/embassy-riscv>.
+> The library name is still `embassy_net`; use it with `package = "embassy-net-riscv"` in your `Cargo.toml`.
+> **Use the `-riscv` versions of Embassy crates together** (`embassy-time-riscv`, `embassy-sync-riscv`, `embassy-executor-riscv`, ...)
+> to avoid duplicate or incompatible copies in your build.
+
+`embassy-net-riscv` is a no-std, no-alloc async network stack designed for embedded systems.
+
+It uses the [`xarxa`](https://github.com/embassy-rs/xarxa) network stack, adds convenient async wrappers,
+and implements the main loop.
+
+## Vision of this fork
+
+This fork offers an alternative `embassy-net` that is harmonized with the RISC-V support provided
+by [`embassy-riscv`](https://github.com/jorgeandrecastro/embassy-riscv). It is maintained alongside
+the other essential `-riscv` crates so that RISC-V projects can use a coherent set of packages, but
+it is not limited to a single upstream or downstream use case. Its goals are deliberately limited to:
+
+- **More tests.** Upstream has very few unit tests. This fork adds them module by module: error
+  mapping, data structures, and compile-time checks of the public API. Runtime tests of the sockets
+  against a mock driver are the next step. The test command below is the maintained host-side
+  baseline; examples and hardware integrations are not considered tested by this fork unless that
+  is explicitly stated.
+- **More modularity.** Large source files are split into small, focused modules (for example the old
+  `tcp.rs` is now a root module plus `socket`, `socket/io`, `listener` and `client`), which makes the
+  code easier to read, review and test.
+- **Useful examples.** This fork may add or improve focused examples, but example coverage is not
+  intended to replace upstream functionality or to imply that every upstream example builds.
+
+The public API stays compatible with upstream `embassy-net`: refactors move code around, they do not
+rename or remove public items. Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Features
 
@@ -22,6 +54,89 @@ Embassy-net focuses on the network/transport layer protocols up to TCP. Higher-l
 - [`edge-net`](https://crates.io/crates/edge-net)
 - [`sntpc`](https://crates.io/crates/sntpc)
 - PTP implementation coming soon
+
+## Source layout
+
+```text
+embassy-net-riscv/
+├── Cargo.toml
+├── CHANGELOG.md
+├── README.md
+└── src/
+    ├── lib.rs              # Stack, shared helpers (TryError, wake helpers), main loop
+    ├── fmt.rs              # logging / unwrap! macros (log or defmt)
+    ├── time.rs             # embassy-time <-> xarxa time conversions
+    ├── route.rs            # routing
+    ├── neighbor.rs         # neighbor cache
+    ├── raw.rs              # raw sockets
+    ├── udp.rs              # UDP sockets
+    ├── dns.rs              # DNS client
+    ├── iface/
+    │   ├── mod.rs          # interfaces
+    │   ├── dhcpv4.rs       # DHCPv4 client
+    │   └── dhcpv4_server.rs# DHCPv4 server
+    ├── tcp.rs              # TCP root: error types, shared TcpIo helper, re-exports
+    └── tcp/
+        ├── socket.rs       # TcpSocket: new, connect/accept, options, state
+        ├── socket/
+        │   └── io.rs       # read/write/peek/flush, TcpReader, TcpWriter, embedded-io impls
+        ├── listener.rs     # TcpListener            (feature `tcp-listener`)
+        └── client.rs       # embedded-nal-async client (feature `embedded-nal`)
+```
+
+Unit tests live next to the code they test, in a `#[cfg(test)] mod tests` at the end of each file.
+
+## Testing
+
+No examples or hardware integrations are compiled or tested by this fork. The examples in this
+repository are not necessarily part of a maintained CI path, and their build status must not be
+assumed. The host-side unit tests run on the host, not on the embedded target:
+
+```sh
+cargo test --lib --features "tcp,tcp-listener,embedded-nal,iface-bind,ipv4,medium-ethernet"
+
+cargo test --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
+```
+
+Depending on your setup, linking may need a host `embassy-time` driver (for example a mock driver).
+Current coverage:
+
+| Module | Kind of test |
+| --- | --- |
+| `tcp.rs` | `Display`, `ErrorKind` mapping, `Copy`/`Eq`/`Error` traits of the error types |
+| `tcp/client.rs` | runtime tests of the buffer pool used by `TcpClient` |
+| `tcp/socket.rs`, `tcp/socket/io.rs`, `tcp/listener.rs` | compile-time checks of the public API and `embedded-io` impls |
+
+## Development tools
+
+This fork does not currently provide a CI workflow or a maintained build matrix for examples and
+hardware integrations. In particular, examples, target-specific configurations and upstream
+Embassy HAL integrations are not compiled or tested by this fork; they may require additional
+dependencies or fixes. Documentation warning fixes are part of this fork, rather than a promise to
+validate every example or platform.
+
+### Compilation
+
+Compile the host-oriented feature set locally:
+
+```sh
+cargo check --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
+```
+
+Run with warnings promoted to errors:
+
+```sh
+RUSTFLAGS="-D warnings" cargo check --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
+```
+
+### Documentation
+
+The upstream `embassy-net` documentation produced warnings. This fork fixes documentation warnings
+in the maintained source and verifies the generated API documentation with:
+
+```sh
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
+```
 
 ## Hardware support
 
@@ -62,3 +177,10 @@ This crate can run on any executor.
 
 [`embassy-time`](https://crates.io/crates/embassy-time) is used for timekeeping and timeouts. You must
 link an `embassy-time` driver in your project to use this crate.
+
+## Acknowledgements
+
+This crate is a derivative work of the [Embassy](https://embassy.dev) project ([embassy-rs/embassy](https://github.com/embassy-rs/embassy)),
+Copyright (c) Embassy project contributors, used under the MIT OR Apache-2.0 licenses. The original copyright and license notices are
+kept (see `LICENSE-MIT` and `LICENSE-APACHE`). Embassy and its authors are not affiliated with, and do not endorse, this fork.
+Thank you to the Embassy team and contributors for their work.
