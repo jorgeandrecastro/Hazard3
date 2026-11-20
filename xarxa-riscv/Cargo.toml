@@ -182,7 +182,6 @@ iface-count-3 = []
 iface-count-4 = []
 iface-count-5 = []
 iface-count-6 = []
-iface-count-7 = []
 iface-count-8 = []
 
 iface-addr-count-1 = []
@@ -191,7 +190,6 @@ iface-addr-count-3 = []
 iface-addr-count-4 = [] # Default
 iface-addr-count-5 = []
 iface-addr-count-6 = []
-iface-addr-count-7 = []
 iface-addr-count-8 = []
 iface-addr-count-16 = []
 
@@ -202,7 +200,6 @@ route-count-3 = []
 route-count-4 = [] # Default
 route-count-5 = []
 route-count-6 = []
-route-count-7 = []
 route-count-8 = []
 route-count-16 = []
 route-count-32 = []
