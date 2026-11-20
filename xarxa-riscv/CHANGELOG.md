@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-11-20
+
+- Removed `tcp-cubic` from the default features to avoid enabling two mutually exclusive TCP
+  congestion-control implementations.
+- Removed `log` from the default features to avoid enabling `log` and `defmt` simultaneously.
+
 ## 0.1.0
 
 - Initial `xarxa-riscv` release.

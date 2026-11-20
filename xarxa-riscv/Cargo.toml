@@ -4,7 +4,7 @@ exclude = ["bench", "xarxa_old"]
 
 [package]
 name = "xarxa-riscv"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Network stack designed for embedded, real-time systems without a heap."
 documentation = "https://docs.rs/xarxa-riscv/"
@@ -29,7 +29,6 @@ target = "x86_64-unknown-linux-gnu"
 default = [
     "alloc",
     "std",
-    "log",
     "async",
     "icmp-ping-reply",
     "icmp-errors",
@@ -55,7 +54,6 @@ default = [
     "dns",
     "mdns",
     "multicast",
-    "tcp-cubic",
     "tcp-timestamps",
     "tcp-sack",
     "iface-bind",
