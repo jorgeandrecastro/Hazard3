@@ -1,0 +1,539 @@
+[workspace]
+members = [".", "xarxa-driver"]
+exclude = ["bench", "xarxa_old"]
+
+[package]
+name = "xarxa-riscv"
+version = "0.1.0"
+edition = "2024"
+description = "Network stack designed for embedded, real-time systems without a heap."
+documentation = "https://docs.rs/xarxa-riscv/"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+readme = "README.md"
+keywords = ["ip", "tcp", "udp", "ethernet", "network"]
+categories = ["embedded", "network-programming"]
+license = "0BSD"
+exclude = ["target/", "Cargo.lock"]
+
+[lib]
+name = "xarxa"
+
+[package.metadata.embassy_docs]
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/xarxa-riscv/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/xarxa-riscv/src/"
+features = ["async"]  # default features
+target = "x86_64-unknown-linux-gnu"
+
+[features]
+# All features are enabled by default, except serde and embedded-specific ones (like `defmt`)
+default = [
+    "alloc",
+    "std",
+    "log",
+    "async",
+    "icmp-ping-reply",
+    "icmp-errors",
+    "medium-ethernet",
+    "medium-ip",
+    "medium-ieee802154",
+    "sixlowpan-fragmentation",
+    "sixlowpan-reassembly",
+    "ipv4",
+    "ipv4-fragmentation",
+    "ipv4-reassembly",
+    "ipv6",
+    "raw-ethernet",
+    "raw-ip",
+    "udp",
+    "tcp",
+    "tcp-listener",
+    "dhcpv4",
+    "dhcpv4-options",
+    "dhcpv4-server",
+    "hostname",
+    "slaac",
+    "dns",
+    "mdns",
+    "multicast",
+    "tcp-cubic",
+    "tcp-timestamps",
+    "tcp-sack",
+    "iface-bind",
+    "packetmeta-timestamp",
+]
+
+## Use the heap. Used for:
+## - Address, route tables.
+## - Socket slabs
+## - Owned interfaces
+## - Owned TCP socket buffers
+alloc = ["serde?/alloc"]
+## Enable functionality that requires the Rust standard library: the
+## `driver_impls` module (`TunTapDriver`, `RawSocketDriver`, `wait`) and
+## `Instant::now()`.
+std = ["dep:libc", "serde?/std"]
+## Waker registration on sockets and on the driver, for building `Future`s on top
+## of the stack.
+async = ["xarxa-driver/async"]
+
+#! ### Protocol support
+## Support interfaces that send and receive Ethernet frames, with the link-layer
+## machinery that goes with them (ARP, NDISC, the neighbor cache).
+medium-ethernet = []
+## Support interfaces that send and receive bare IP packets, without a link-layer
+## header.
+medium-ip = []
+## Support IEEE 802.15.4 interfaces carrying 6LoWPAN (RFC 4944, RFC 6282). Needs `ipv6`.
+medium-ieee802154 = ["ipv6"]
+## Fragment outgoing 6LoWPAN packets larger than one 802.15.4 frame. Needs `medium-ieee802154`.
+sixlowpan-fragmentation = ["medium-ieee802154"]
+## Reassemble incoming 6LoWPAN fragments. Needs `medium-ieee802154`.
+sixlowpan-reassembly = ["medium-ieee802154"]
+## Support IPv4 (and, with `medium-ethernet`, ARP).
+ipv4 = []
+## Fragment outgoing IPv4 packets larger than the interface MTU. Needs `ipv4`.
+ipv4-fragmentation = ["ipv4"]
+## Reassemble incoming IPv4 fragments. Needs `ipv4`.
+ipv4-reassembly = ["ipv4"]
+## Support IPv6 (and, with `medium-ethernet`, NDISC).
+ipv6 = []
+# Raw socket machinery shared by both modes. Private, do not enable directly.
+_raw = []
+## Ethernet-mode raw sockets: send and receive whole Ethernet frames. Needs `medium-ethernet`.
+raw-ethernet = ["_raw", "medium-ethernet"]
+## IP-mode raw sockets: send and receive whole IP packets.
+raw-ip = ["_raw"]
+## UDP sockets.
+udp = []
+## TCP sockets.
+tcp = []
+## TCP listeners, for accepting incoming connections.
+tcp-listener = ["tcp"]
+## DHCPv4 client, built into the interface. Needs `ipv4` and `medium-ethernet`.
+dhcpv4 = ["ipv4", "medium-ethernet"]
+## Allow reading received DHCP options.
+## Requires a small buffer. Size is set by the `dhcp-options-buf-size-N` features.
+dhcpv4-options = ["dhcpv4"]
+## DHCPv4 server, built into the interface. Needs `ipv4` and `medium-ethernet`.
+dhcpv4-server = ["ipv4", "medium-ethernet"]
+## Give the stack a hostname, with `Stack::set_hostname`. If set, it is sent
+## to the DHCP server in outgoing DHCP messages.
+hostname = []
+## IPv6 stateless address autoconfiguration (SLAAC). Needs `ipv6`, and
+## `medium-ethernet` or `medium-ieee802154`.
+slaac = ["ipv6"]
+## DNS client.
+dns = ["udp"]
+## Resolve `.local` names with multicast DNS in the DNS client.
+mdns = ["dns"]
+## Join IP multicast groups, with IGMP (IPv4) and MLD (IPv6) membership reports.
+multicast = []
+## Send and receive the TCP timestamp option (RFC 7323).
+tcp-timestamps = ["tcp"]
+## Send selective acknowledgement ranges (RFC 2018).
+tcp-sack = ["tcp"]
+## Automatically reply to pings (ICMP echo requests).
+icmp-ping-reply = []
+## Bind sockets to an interface with `bind_to_iface`. A bound socket only
+## receives packets that arrive on that interface, and only sends out of it.
+iface-bind = []
+## Deliver incoming ICMP error messages (destination unreachable, packet too big, ...) to
+## the sockets that provoked them.
+icmp-errors = []
+
+#! ### TCP congestion control
+#! Enable one of these features to enable congestion control. No feature enabled means
+#! no congestion control. You may enable at most one.
+## Use the Reno congestion control algorithm on TCP sockets.
+tcp-reno = ["tcp"]
+## Use the CUBIC congestion control algorithm on TCP sockets. Warning: it uses `f64` arithmetic which can be slow and pull in soft-float code depending on the target.
+tcp-cubic = ["tcp"]
+
+#! ### Packet metadata
+## Enable the `PacketMeta::id` field: an opaque number that travels with a packet
+## through the whole stack.
+packetmeta-id = ["xarxa-driver/packetmeta-id"]
+## Enable the `PacketMeta::timestamp` and `PacketMeta::request_timestamp` fields, and
+## `Driver::poll_tx_timestamp`.
+##
+## Transmit timestamps are correlated back to the packet that produced them by
+## `PacketMeta::id`, so this implies `packetmeta-id`.
+packetmeta-timestamp = ["packetmeta-id", "xarxa-driver/packetmeta-timestamp"]
+
+#! ### Logging
+## Log with the `log` crate.
+log = ["dep:log"]
+## Log with the `defmt` crate.
+defmt = ["dep:defmt", "heapless/defmt", "xarxa-driver/defmt"]
+## Log every packet received and sent, decoded.
+## Needs `log` or `defmt` to print anything.
+packet-log = []
+
+#! ### Serialization
+## Support (de)serializing some types using `serde`.
+serde = ["dep:serde"]
+
+
+# BEGIN AUTOGENERATED CONFIG FEATURES
+# Generated by gen_config.py. DO NOT EDIT.
+iface-count-1 = []
+iface-count-2 = [] # Default
+iface-count-3 = []
+iface-count-4 = []
+iface-count-5 = []
+iface-count-6 = []
+iface-count-7 = []
+iface-count-8 = []
+
+iface-addr-count-1 = []
+iface-addr-count-2 = []
+iface-addr-count-3 = []
+iface-addr-count-4 = [] # Default
+iface-addr-count-5 = []
+iface-addr-count-6 = []
+iface-addr-count-7 = []
+iface-addr-count-8 = []
+iface-addr-count-16 = []
+
+route-count-0 = []
+route-count-1 = []
+route-count-2 = []
+route-count-3 = []
+route-count-4 = [] # Default
+route-count-5 = []
+route-count-6 = []
+route-count-7 = []
+route-count-8 = []
+route-count-16 = []
+route-count-32 = []
+route-count-64 = []
+
+multicast-group-count-1 = []
+multicast-group-count-2 = []
+multicast-group-count-3 = []
+multicast-group-count-4 = []
+multicast-group-count-5 = []
+multicast-group-count-6 = []
+multicast-group-count-7 = []
+multicast-group-count-8 = [] # Default
+multicast-group-count-16 = []
+multicast-group-count-32 = []
+multicast-group-count-64 = []
+multicast-group-count-128 = []
+multicast-group-count-256 = []
+multicast-group-count-512 = []
+multicast-group-count-1024 = []
+
+slaac-prefix-count-1 = []
+slaac-prefix-count-2 = [] # Default
+slaac-prefix-count-3 = []
+slaac-prefix-count-4 = []
+slaac-prefix-count-5 = []
+slaac-prefix-count-6 = []
+slaac-prefix-count-7 = []
+slaac-prefix-count-8 = []
+slaac-prefix-count-16 = []
+
+slaac-router-count-1 = []
+slaac-router-count-2 = [] # Default
+slaac-router-count-3 = []
+slaac-router-count-4 = []
+slaac-router-count-5 = []
+slaac-router-count-6 = []
+slaac-router-count-7 = []
+slaac-router-count-8 = []
+slaac-router-count-16 = []
+
+neighbor-cache-count-1 = []
+neighbor-cache-count-2 = []
+neighbor-cache-count-3 = []
+neighbor-cache-count-4 = []
+neighbor-cache-count-5 = []
+neighbor-cache-count-6 = []
+neighbor-cache-count-7 = []
+neighbor-cache-count-8 = [] # Default
+neighbor-cache-count-16 = []
+neighbor-cache-count-32 = []
+neighbor-cache-count-64 = []
+neighbor-cache-count-128 = []
+neighbor-cache-count-256 = []
+neighbor-cache-count-512 = []
+neighbor-cache-count-1024 = []
+
+pending-queue-count-1 = []
+pending-queue-count-2 = []
+pending-queue-count-3 = []
+pending-queue-count-4 = []
+pending-queue-count-5 = []
+pending-queue-count-6 = []
+pending-queue-count-7 = []
+pending-queue-count-8 = []
+pending-queue-count-16 = [] # Default
+pending-queue-count-32 = []
+pending-queue-count-64 = []
+pending-queue-count-128 = []
+pending-queue-count-256 = []
+
+tx-timestamp-queue-count-1 = []
+tx-timestamp-queue-count-2 = []
+tx-timestamp-queue-count-3 = []
+tx-timestamp-queue-count-4 = [] # Default
+tx-timestamp-queue-count-5 = []
+tx-timestamp-queue-count-6 = []
+tx-timestamp-queue-count-7 = []
+tx-timestamp-queue-count-8 = []
+tx-timestamp-queue-count-16 = []
+tx-timestamp-queue-count-32 = []
+tx-timestamp-queue-count-64 = []
+
+udp-socket-count-1 = []
+udp-socket-count-2 = []
+udp-socket-count-3 = []
+udp-socket-count-4 = [] # Default
+udp-socket-count-5 = []
+udp-socket-count-6 = []
+udp-socket-count-7 = []
+udp-socket-count-8 = []
+udp-socket-count-16 = []
+udp-socket-count-32 = []
+udp-socket-count-64 = []
+
+raw-socket-count-1 = []
+raw-socket-count-2 = [] # Default
+raw-socket-count-3 = []
+raw-socket-count-4 = []
+raw-socket-count-5 = []
+raw-socket-count-6 = []
+raw-socket-count-7 = []
+raw-socket-count-8 = []
+raw-socket-count-16 = []
+raw-socket-count-32 = []
+raw-socket-count-64 = []
+
+tcp-socket-count-1 = []
+tcp-socket-count-2 = []
+tcp-socket-count-3 = []
+tcp-socket-count-4 = [] # Default
+tcp-socket-count-5 = []
+tcp-socket-count-6 = []
+tcp-socket-count-7 = []
+tcp-socket-count-8 = []
+tcp-socket-count-16 = []
+tcp-socket-count-32 = []
+tcp-socket-count-64 = []
+
+tcp-listener-count-1 = []
+tcp-listener-count-2 = [] # Default
+tcp-listener-count-3 = []
+tcp-listener-count-4 = []
+tcp-listener-count-5 = []
+tcp-listener-count-6 = []
+tcp-listener-count-7 = []
+tcp-listener-count-8 = []
+tcp-listener-count-16 = []
+tcp-listener-count-32 = []
+tcp-listener-count-64 = []
+
+udp-rx-queue-count-1 = []
+udp-rx-queue-count-2 = []
+udp-rx-queue-count-3 = []
+udp-rx-queue-count-4 = [] # Default
+udp-rx-queue-count-5 = []
+udp-rx-queue-count-6 = []
+udp-rx-queue-count-7 = []
+udp-rx-queue-count-8 = []
+udp-rx-queue-count-16 = []
+udp-rx-queue-count-32 = []
+udp-rx-queue-count-64 = []
+
+raw-rx-queue-count-1 = []
+raw-rx-queue-count-2 = []
+raw-rx-queue-count-3 = []
+raw-rx-queue-count-4 = [] # Default
+raw-rx-queue-count-5 = []
+raw-rx-queue-count-6 = []
+raw-rx-queue-count-7 = []
+raw-rx-queue-count-8 = []
+raw-rx-queue-count-16 = []
+raw-rx-queue-count-32 = []
+raw-rx-queue-count-64 = []
+
+tcp-listener-backlog-1 = []
+tcp-listener-backlog-2 = []
+tcp-listener-backlog-3 = []
+tcp-listener-backlog-4 = [] # Default
+tcp-listener-backlog-5 = []
+tcp-listener-backlog-6 = []
+tcp-listener-backlog-7 = []
+tcp-listener-backlog-8 = []
+tcp-listener-backlog-16 = []
+tcp-listener-backlog-32 = []
+tcp-listener-backlog-64 = []
+
+assembler-max-segment-count-1 = []
+assembler-max-segment-count-2 = []
+assembler-max-segment-count-3 = []
+assembler-max-segment-count-4 = [] # Default
+assembler-max-segment-count-8 = []
+assembler-max-segment-count-16 = []
+assembler-max-segment-count-32 = []
+
+reassembly-buffer-count-1 = [] # Default
+reassembly-buffer-count-2 = []
+reassembly-buffer-count-3 = []
+reassembly-buffer-count-4 = []
+reassembly-buffer-count-8 = []
+reassembly-buffer-count-16 = []
+reassembly-buffer-count-32 = []
+
+sixlowpan-address-context-count-1 = []
+sixlowpan-address-context-count-2 = []
+sixlowpan-address-context-count-3 = []
+sixlowpan-address-context-count-4 = [] # Default
+sixlowpan-address-context-count-5 = []
+sixlowpan-address-context-count-6 = []
+sixlowpan-address-context-count-7 = []
+sixlowpan-address-context-count-8 = []
+sixlowpan-address-context-count-9 = []
+sixlowpan-address-context-count-10 = []
+sixlowpan-address-context-count-11 = []
+sixlowpan-address-context-count-12 = []
+sixlowpan-address-context-count-13 = []
+sixlowpan-address-context-count-14 = []
+sixlowpan-address-context-count-15 = []
+sixlowpan-address-context-count-16 = []
+
+dns-max-query-count-1 = []
+dns-max-query-count-2 = []
+dns-max-query-count-3 = []
+dns-max-query-count-4 = [] # Default
+dns-max-query-count-8 = []
+dns-max-query-count-16 = []
+dns-max-query-count-32 = []
+
+dns-max-result-count-1 = []
+dns-max-result-count-2 = []
+dns-max-result-count-3 = []
+dns-max-result-count-4 = [] # Default
+dns-max-result-count-8 = []
+dns-max-result-count-16 = []
+dns-max-result-count-32 = []
+
+dns-max-server-count-1 = []
+dns-max-server-count-2 = []
+dns-max-server-count-3 = []
+dns-max-server-count-4 = [] # Default
+dns-max-server-count-8 = []
+dns-max-server-count-16 = []
+dns-max-server-count-32 = []
+
+dns-max-name-size-64 = []
+dns-max-name-size-128 = []
+dns-max-name-size-255 = [] # Default
+
+dhcp-max-dns-server-count-1 = []
+dhcp-max-dns-server-count-2 = []
+dhcp-max-dns-server-count-3 = [] # Default
+dhcp-max-dns-server-count-4 = []
+dhcp-max-dns-server-count-5 = []
+dhcp-max-dns-server-count-6 = []
+dhcp-max-dns-server-count-7 = []
+dhcp-max-dns-server-count-8 = []
+
+dhcp-options-buf-size-16 = []
+dhcp-options-buf-size-32 = []
+dhcp-options-buf-size-64 = []
+dhcp-options-buf-size-128 = [] # Default
+dhcp-options-buf-size-256 = []
+dhcp-options-buf-size-512 = []
+dhcp-options-buf-size-1024 = []
+
+dhcp-server-lease-count-1 = []
+dhcp-server-lease-count-2 = []
+dhcp-server-lease-count-3 = []
+dhcp-server-lease-count-4 = []
+dhcp-server-lease-count-5 = []
+dhcp-server-lease-count-6 = []
+dhcp-server-lease-count-7 = []
+dhcp-server-lease-count-8 = [] # Default
+dhcp-server-lease-count-16 = []
+dhcp-server-lease-count-32 = []
+dhcp-server-lease-count-64 = []
+
+dhcp-server-client-id-size-8 = []
+dhcp-server-client-id-size-16 = []
+dhcp-server-client-id-size-24 = [] # Default
+dhcp-server-client-id-size-32 = []
+dhcp-server-client-id-size-64 = []
+
+# END AUTOGENERATED CONFIG FEATURES
+
+[dependencies]
+xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1", path = "xarxa-driver" }
+document-features = "0.2.11"
+bitflags = { version = "2", default-features = false }
+byteorder = { version = "1", default-features = false }
+heapless = { version = "0.9", default-features = false }
+libc = { version = "0.2", optional = true }
+defmt = { version = "1", optional = true, features = ["ip_in_core"] }
+log = { version = "0.4", optional = true }
+serde = { version = "1.0.222", optional = true, default-features = false }
+
+# Targets with atomic load/store but no atomic read-modify-write
+# (e.g. thumbv6m) take a critical section around pool allocation instead.
+[target.'cfg(not(all(target_has_atomic = "8", target_has_atomic = "ptr")))'.dependencies]
+critical-section = "1"
+
+[dev-dependencies]
+env_logger = "0.11"
+rand = "0.8"
+paste = "1.0"
+cbor4ii = { version = "1.2", features = ["use_std", "serde1"] }
+serde_json = "1.0.151"
+
+[[test]]
+name = "packet_pool"
+required-features = ["std", "udp", "medium-ip", "ipv4"]
+
+[[example]]
+name = "tuntap"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "udp"]
+
+[[example]]
+name = "tcp_server"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "tcp-listener"]
+
+[[example]]
+name = "tcp_client"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "tcp"]
+
+[[example]]
+name = "ping"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "raw-ip"]
+
+[[example]]
+name = "dns"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "dns"]
+
+[[example]]
+name = "sixlowpan"
+required-features = ["std", "log", "medium-ieee802154", "sixlowpan-fragmentation", "sixlowpan-reassembly", "udp", "tcp-listener"]
+
+[[example]]
+name = "dhcp"
+required-features = ["std", "log", "medium-ethernet", "ipv4", "dhcpv4", "dhcpv4-options"]
+
+[[example]]
+name = "dhcp_server"
+required-features = ["std", "log", "medium-ethernet", "ipv4", "dhcpv4-server"]
+
+[[example]]
+name = "multicast"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "multicast", "udp"]
+
+[[example]]
+name = "multicast6"
+required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6", "multicast", "udp"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(fuzzing)"] }
