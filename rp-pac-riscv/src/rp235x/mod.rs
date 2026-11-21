@@ -5,6 +5,7 @@
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[repr(u16)]
 pub enum Interrupt {
     #[doc = "0 - TIMER0_IRQ_0"]
     TIMER0_IRQ_0 = 0,
@@ -107,14 +108,25 @@ pub enum Interrupt {
     #[doc = "52 - SWI_IRQ_5"]
     SWI_IRQ_5 = 52,
 }
-unsafe impl cortex_m::interrupt::InterruptNumber for Interrupt {
+#[cfg(target_arch = "riscv32")]
+unsafe impl riscv::InterruptNumber for Interrupt {
+    const MAX_INTERRUPT_NUMBER: usize = 52;
+
     #[inline(always)]
-    fn number(self) -> u16 {
-        self as u16
+    fn number(self) -> usize {
+        self as usize
+    }
+
+    #[inline(always)]
+    fn from_number(number: usize) -> riscv::result::Result<Self> {
+        match number {
+            // 40, 41 et 46 n'existent pas dans la table d'IRQ du RP2350
+            0..=39 | 42..=45 | 47..=52 => Ok(unsafe { core::mem::transmute(number as u16) }),
+            _ => Err(riscv::result::Error::InvalidVariant(number)),
+        }
     }
 }
-#[cfg(feature = "rt")]
-mod _vectors;
+// RISC-V interrupt/trap handling is provided by the runtime.
 pub const SYSINFO: sysinfo::Sysinfo = unsafe { sysinfo::Sysinfo::from_ptr(0x4000_0000usize as _) };
 #[doc = "Register block for various chip control signals"]
 pub const SYSCFG: syscfg::Syscfg = unsafe { syscfg::Syscfg::from_ptr(0x4000_8000usize as _) };
@@ -197,19 +209,9 @@ pub const XIP_AUX: xip_aux::XipAux = unsafe { xip_aux::XipAux::from_ptr(0x5050_0
 #[doc = "FIFO status and write access for HSTX"]
 pub const HSTX_FIFO: hstx_fifo::HstxFifo =
     unsafe { hstx_fifo::HstxFifo::from_ptr(0x5060_0000usize as _) };
-#[doc = "Coresight block - RP specific registers"]
-pub const CORESIGHT_TRACE: coresight_trace::CoresightTrace =
-    unsafe { coresight_trace::CoresightTrace::from_ptr(0x5070_0000usize as _) };
 #[doc = "Single-cycle IO block Provides core-local and inter-core hardware for the two processors, with single-cycle access."]
 pub const SIO: sio::Sio = unsafe { sio::Sio::from_ptr(0xd000_0000usize as _) };
 pub const SIO_NS: sio::Sio = unsafe { sio::Sio::from_ptr(0xd002_0000usize as _) };
-#[doc = "Cortex-M33 EPPB vendor register block for RP2350"]
-pub const EPPB: eppb::Eppb = unsafe { eppb::Eppb::from_ptr(0xe008_0000usize as _) };
-#[doc = r" Number available in the NVIC for configuring priority"]
-#[cfg(feature = "rt")]
-pub const NVIC_PRIO_BITS: u8 = 4;
-#[cfg(feature = "rt")]
-pub use cortex_m_rt::interrupt;
 #[cfg(feature = "rt")]
 pub use Interrupt as interrupt;
 pub mod accessctrl;
@@ -218,9 +220,7 @@ pub mod bootram;
 pub mod busctrl;
 pub mod clocks;
 pub mod common;
-pub mod coresight_trace;
 pub mod dma;
-pub mod eppb;
 pub mod glitch_detector;
 pub mod hstx_ctrl;
 pub mod hstx_fifo;

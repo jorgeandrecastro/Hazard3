@@ -1,13 +1,14 @@
+
 [package]
 name = "rp-pac-riscv"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "BSD-3-Clause"
 repository = "https://github.com/jorgeandrecastro/embassy-riscv"
 documentation = "https://docs.rs/rp-pac-riscv"
 readme = "README.md"
-description = "Peripheral Access Crate (PAC) for Raspberry Pi Silicon chips (RP2040, RP235x). Fork of rp-pac pinned for embassy-rp-riscv."
-keywords = ["embedded", "pac", "rp2040", "rp2350", "no-std"]
+description = "RISC-V Peripheral Access Crate for Raspberry Pi RP235x microcontrollers."
+keywords = ["embedded", "pac", "riscv", "rp2350", "no-std"]
 categories = ["embedded", "hardware-support", "no-std"]
 exclude = ["target/", "Cargo.lock"]
 
@@ -15,15 +16,13 @@ exclude = ["target/", "Cargo.lock"]
 name = "rp_pac"
 
 [dependencies]
-cortex-m = "0.7.1"
-cortex-m-rt = { version = ">=0.6.15,<0.8", optional = true }
 defmt = { version = "0.3.10", optional = true }
+riscv = { version = "0.16", default-features = false, optional = true }
 
 [features]
 default = []
-rt = ["cortex-m-rt/device"]
-rp2040 = []
-rp235x = []
+rp235x = ["dep:riscv"]
+rt = []
 defmt = ["dep:defmt"]
 debug = []
 
@@ -31,11 +30,9 @@ debug = []
 src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/rp-pac-riscv/src/"
 src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/rp-pac-riscv/src/"
 flavors = [
-    { name = "rp2040", features = ["rp2040"], target = "thumbv6m-none-eabi" },
-    { name = "rp235x", features = ["rp235x"], target = "thumbv8m.main-none-eabihf" },
+    { name = "rp235x", features = ["rp235x"], target = "riscv32imac-unknown-none-elf" },
 ]
 
 [package.metadata.docs.rs]
-# TODO: it's not GREAT to set a specific target, but docs.rs builds will fail otherwise
-# for now, default to rp2040
-features = ["defmt", "rt", "rp2040"]
+targets = ["riscv32imac-unknown-none-elf"]
+features = ["defmt", "rp235x"]
