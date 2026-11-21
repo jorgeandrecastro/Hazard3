@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.3.0 - 2026-11-22
+
+### Changed
+
+- **Breaking:** `dns::Error` has a new variant `Unsupported`. Code that matches exhaustively on
+  `dns::Error` must handle it. `dns::Error` also derives `Hash` now.
+- `dns::DnsClient` (feature `embedded-nal`): `get_host_by_address` now returns
+  `Err(Error::Unsupported)` instead of calling `todo!()`, which panicked at runtime when a crate
+  attempted a reverse lookup. Reverse (PTR) lookups are still not implemented.
+- `dns::DnsClient` (feature `embedded-nal`): `get_host_by_name` with `AddrType::Either` now also
+  falls back to the secondary record type when the first query **fails**, not only when it returns
+  no address. The fallback is skipped for `InvalidName` and `NameTooLong`, since a second query
+  would fail the same way.
+- `src/dns.rs`: `get_host_by_name` calls `Stack::dns_query` directly and uses `.first()` instead of
+  `.get(0)`; the `DnsClient` documentation points to the module documentation instead of
+  duplicating it; the `From<GetQueryResultError>` conversion documents why every variant maps to
+  `Error::Failed`. `DnsClient::query` is unchanged.
+
+### Added
+
+- Unit tests in `src/dns.rs` (not present in upstream `embassy-net`): mapping of
+  `GetQueryResultError` and `StartQueryError` variants to `dns::Error`, `Display` output of
+  `dns::Error` (including `Unsupported`), and the `core::error::Error` guarantee. The tests format
+  errors with `heapless::String` and no longer need a custom buffer writer.
+- README: `dns.rs` in the test coverage table and in the project vision.
+
+### Removed / not provided
+
+- No CI compilation or test suite is provided for this release.
+- No examples or hardware integrations are compiled or tested.
+- No automated build matrix or target-platform validation is provided.
+
 ## 0.2.0 - 2026-11-21
 
 ### Changed

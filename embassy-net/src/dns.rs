@@ -8,7 +8,7 @@ pub(crate) use xarxa::dns::{GetQueryResultError, StartQueryError};
 pub use xarxa::wire::{DnsType as DnsQueryType, IpAddr};
 
 /// Errors returned by DnsClient.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum Error {
     /// The name is empty, or has an empty or too long label.
@@ -17,10 +17,14 @@ pub enum Error {
     NameTooLong,
     /// Name lookup failed
     Failed,
+    /// The requested operation is not supported (e.g. reverse lookup).
+    Unsupported,
 }
 
 impl From<GetQueryResultError> for Error {
     fn from(_: GetQueryResultError) -> Self {
+        // `Pending` is handled internally by `Stack::dns_query`, so every error
+        // that reaches this point is a failed lookup.
         Self::Failed
     }
 }
@@ -37,9 +41,7 @@ impl From<StartQueryError> for Error {
 
 /// DNS client compatible with the `embedded-nal-async` traits.
 ///
-/// This exists only for compatibility with crates that use `embedded-nal-async`.
-/// Prefer using [`Stack::dns_query`](crate::Stack::dns_query) directly if you're
-/// not using `embedded-nal-async`.
+/// See the [module documentation](self) for when to use it.
 #[cfg(feature = "embedded-nal")]
 pub struct DnsClient<'d> {
     stack: crate::Stack<'d>,
@@ -89,26 +91,32 @@ impl<'d> embedded_nal_async::Dns for DnsClient<'d> {
                 }
             }
         };
-        let mut addrs = self.query(host, qtype).await?;
-        if addrs.is_empty() {
+
+        let mut result = self.stack.dns_query(host, qtype).await;
+
+        // For `AddrType::Either`, fall back to the other record type if the first
+        // query returned nothing or failed. Retrying is pointless when the name
+        // itself is invalid, since the second query would fail identically.
+        if !matches!(&result, Ok(a) if !a.is_empty()) {
             if let Some(qtype) = secondary_qtype {
-                addrs = self.query(host, qtype).await?
+                if !matches!(result, Err(Error::InvalidName | Error::NameTooLong)) {
+                    result = self.stack.dns_query(host, qtype).await;
+                }
             }
         }
-        if let Some(first) = addrs.get(0) {
-            Ok(match first {
-                #[cfg(feature = "ipv4")]
-                IpAddr::V4(addr) => core::net::IpAddr::V4(*addr),
-                #[cfg(feature = "ipv6")]
-                IpAddr::V6(addr) => core::net::IpAddr::V6(*addr),
-            })
-        } else {
-            Err(Error::Failed)
+
+        match result?.first() {
+            #[cfg(feature = "ipv4")]
+            Some(IpAddr::V4(addr)) => Ok(core::net::IpAddr::V4(*addr)),
+            #[cfg(feature = "ipv6")]
+            Some(IpAddr::V6(addr)) => Ok(core::net::IpAddr::V6(*addr)),
+            None => Err(Error::Failed),
         }
     }
 
     async fn get_host_by_address(&self, _addr: core::net::IpAddr, _result: &mut [u8]) -> Result<usize, Self::Error> {
-        todo!()
+        // Reverse lookups (PTR) are not implemented.
+        Err(Error::Unsupported)
     }
 }
 
@@ -118,47 +126,23 @@ impl core::fmt::Display for Error {
             Self::InvalidName => f.write_str("InvalidName"),
             Self::NameTooLong => f.write_str("NameTooLong"),
             Self::Failed => f.write_str("Failed"),
+            Self::Unsupported => f.write_str("Unsupported"),
         }
     }
 }
+
 impl core::error::Error for Error {}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use core::fmt::Write;
-    use xarxa::dns::{GetQueryResultError, StartQueryError};
 
-    struct BufWriter<'a> {
-        buf: &'a mut [u8],
-        len: usize,
-    }
+    use super::*;
 
-    impl<'a> BufWriter<'a> {
-        fn new(buf: &'a mut [u8]) -> Self {
-            Self { buf, len: 0 }
-        }
-    }
-
-    impl Write for BufWriter<'_> {
-        fn write_str(&mut self, s: &str) -> core::fmt::Result {
-            let bytes = s.as_bytes();
-            let rem = self.buf.len().saturating_sub(self.len);
-            let n = bytes.len().min(rem);
-            self.buf[self.len..self.len + n].copy_from_slice(&bytes[..n]);
-            self.len += n;
-            if n < bytes.len() { Err(core::fmt::Error) } else { Ok(()) }
-        }
-    }
-
-    fn display_to_buf<'a>(err: Error, buf: &'a mut [u8]) -> &'a str {
-        let len = {
-            let mut w = BufWriter::new(buf);
-            let _ = write!(w, "{}", err);
-            w.len
-        };
-
-        core::str::from_utf8(&buf[..len]).unwrap_or("")
+    fn display(err: Error) -> heapless::String<32> {
+        let mut s = heapless::String::new();
+        write!(s, "{}", err).unwrap();
+        s
     }
 
     // ---------- Error conversions ----------
@@ -171,7 +155,7 @@ mod tests {
 
     #[test]
     fn from_get_query_result_error_pending() {
-        // Pending est normalement géré en interne, mais on vérifie le From
+        // `Pending` is normally handled internally, but the conversion must still be defined.
         let err: Error = GetQueryResultError::Pending.into();
         assert_eq!(err, Error::Failed);
     }
@@ -198,14 +182,10 @@ mod tests {
 
     #[test]
     fn error_display() {
-        let mut buf = [0u8; 32];
-        assert_eq!(display_to_buf(Error::InvalidName, &mut buf), "InvalidName");
-
-        let mut buf = [0u8; 32];
-        assert_eq!(display_to_buf(Error::NameTooLong, &mut buf), "NameTooLong");
-
-        let mut buf = [0u8; 32];
-        assert_eq!(display_to_buf(Error::Failed, &mut buf), "Failed");
+        assert_eq!(display(Error::InvalidName).as_str(), "InvalidName");
+        assert_eq!(display(Error::NameTooLong).as_str(), "NameTooLong");
+        assert_eq!(display(Error::Failed).as_str(), "Failed");
+        assert_eq!(display(Error::Unsupported).as_str(), "Unsupported");
     }
 
     #[test]

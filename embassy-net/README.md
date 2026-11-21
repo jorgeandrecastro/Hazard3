@@ -35,11 +35,16 @@ it is not limited to a single upstream or downstream use case. Its goals are del
   code easier to read, review and test. So far:
   - the old `tcp.rs` is now a root module plus `socket`, `socket/io`, `listener` and `client`;
   - the old `udp.rs` is now a root module plus `error`, `socket`, `recv` and `send`.
+- **Robustness.** Panicking placeholders are replaced by proper errors where the public API allows
+  it (for example, `DnsClient::get_host_by_address` returns `Error::Unsupported` instead of
+  calling `todo!()`).
 - **Useful examples.** This fork may add or improve focused examples, but example coverage is not
   intended to replace upstream functionality or to imply that every upstream example builds.
 
 The public API stays compatible with upstream `embassy-net`: refactors move code around, they do not
-rename or remove public items. Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
+rename or remove public items. The only deviations are small additions, such as the `Unsupported`
+variant of `dns::Error` in 0.3.0, which matters only to code that matches exhaustively on that enum.
+Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Features
 
@@ -73,7 +78,7 @@ embassy-net-riscv/
     ├── route.rs            # routing
     ├── neighbor.rs         # neighbor cache
     ├── raw.rs              # raw sockets
-    ├── dns.rs              # DNS client
+    ├── dns.rs              # DNS errors and embedded-nal-async DNS client (with unit tests)
     ├── iface/
     │   ├── mod.rs          # interfaces
     │   ├── dhcpv4.rs       # DHCPv4 client
@@ -112,6 +117,7 @@ Current coverage:
 
 | Module | Kind of test |
 | --- | --- |
+| `dns.rs` | `GetQueryResultError`/`StartQueryError` to `dns::Error` mapping, `Display`, `Error` trait |
 | `tcp.rs` | `Display`, `ErrorKind` mapping, `Copy`/`Eq`/`Error` traits of the error types |
 | `tcp/client.rs` | runtime tests of the buffer pool used by `TcpClient` |
 | `tcp/socket.rs`, `tcp/socket/io.rs`, `tcp/listener.rs` | compile-time checks of the public API and `embedded-io` impls |
@@ -138,6 +144,14 @@ Run with warnings promoted to errors:
 
 ```sh
 RUSTFLAGS="-D warnings" cargo check --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
+```
+
+The DNS client has feature-dependent code paths (`ipv4`, `ipv6`). When you change `dns.rs`, also check
+each of them on its own:
+
+```sh
+cargo check --no-default-features --features "dns,embedded-nal,ipv4,medium-ethernet"
+cargo check --no-default-features --features "dns,embedded-nal,ipv6,medium-ethernet"
 ```
 
 ### Documentation
