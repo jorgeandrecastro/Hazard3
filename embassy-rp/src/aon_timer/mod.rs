@@ -128,8 +128,8 @@ use core::marker::PhantomData;
 use core::sync::atomic::{AtomicBool, Ordering, compiler_fence};
 use core::task::Poll;
 
-use embassy_hal_internal::Peri;
 use crate::interrupt::InterruptExt;
+use embassy_hal_internal::Peri;
 use embassy_sync::waitqueue::AtomicWaker;
 use embassy_time::Duration;
 

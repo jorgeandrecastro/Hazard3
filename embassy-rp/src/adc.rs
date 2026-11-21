@@ -61,19 +61,19 @@ impl<'p> Channel<'p> {
     }
 
     fn channel(&self) -> u8 {
-        #[cfg(any(feature = "rp2040", feature = "rp235xa"))]
+        #[cfg(feature = "rp235xa")]
         const CH_OFFSET: u8 = 26;
         #[cfg(feature = "rp235xb")]
         const CH_OFFSET: u8 = 40;
 
-        #[cfg(any(feature = "rp2040", feature = "rp235xa"))]
+        #[cfg(feature = "rp235xa")]
         const TS_CHAN: u8 = 4;
         #[cfg(feature = "rp235xb")]
         const TS_CHAN: u8 = 8;
 
         match &self.0 {
             // this requires adc pins to be sequential and matching the adc channels,
-            // which is the case for rp2040/rp235xy
+            // which is the case for rp235xa
             Source::Pin(p) => p.pin_number().pin() - CH_OFFSET,
             Source::TempSensor(_) => TS_CHAN,
         }
@@ -226,8 +226,6 @@ impl<'d> Adc<'d, Async> {
         div: u16,
         dma_ch: &mut dma::Channel<'_, mode::Async>,
     ) -> Result<(), Error> {
-        #[cfg(feature = "rp2040")]
-        let mut rrobin = 0_u8;
         #[cfg(feature = "_rp235x")]
         let mut rrobin = 0_u16;
         for c in channels {
@@ -423,13 +421,13 @@ macro_rules! impl_pin {
     };
 }
 
-#[cfg(any(feature = "rp235xa", feature = "rp2040"))]
+#[cfg(feature = "rp235xa")]
 impl_pin!(PIN_26, 0);
-#[cfg(any(feature = "rp235xa", feature = "rp2040"))]
+#[cfg(feature = "rp235xa")]
 impl_pin!(PIN_27, 1);
-#[cfg(any(feature = "rp235xa", feature = "rp2040"))]
+#[cfg(feature = "rp235xa")]
 impl_pin!(PIN_28, 2);
-#[cfg(any(feature = "rp235xa", feature = "rp2040"))]
+#[cfg(feature = "rp235xa")]
 impl_pin!(PIN_29, 3);
 
 #[cfg(feature = "rp235xb")]

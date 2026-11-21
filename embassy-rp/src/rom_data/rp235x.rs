@@ -729,24 +729,7 @@ pub fn partition_table_pointer() -> *const u32 {
 
 /// Determine if we are in secure mode
 ///
-/// Returns `true` if we are in secure mode and `false` if we are in non-secure
-/// mode.
-#[cfg(all(target_arch = "arm", target_os = "none"))]
-pub fn is_secure_mode() -> bool {
-    // Look at the start of ROM, which is always readable
-    #[allow(clippy::zero_ptr)]
-    let rom_base: *mut u32 = 0x0000_0000 as *mut u32;
-    // Use the 'tt' instruction to check the permissions for that address
-    let tt = cortex_m::asm::tt(rom_base);
-    // Is the secure bit set? => secure mode
-    (tt & (1 << 22)) != 0
-}
-
-/// Determine if we are in secure mode
-///
-/// Always returns `false` on RISC-V as it is impossible to determine if
-/// you are in Machine Mode or User Mode by design.
-#[cfg(not(all(target_arch = "arm", target_os = "none")))]
+/// Always returns `false` on RISC-V.
 pub fn is_secure_mode() -> bool {
     false
 }

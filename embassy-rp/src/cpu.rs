@@ -1,66 +1,7 @@
-//! CPU primitives abstracted over ARM (Cortex-M) and RISC-V (Hazard3).
-//!
-//! The ARM implementations simply forward to `cortex_m`, so existing behaviour is unchanged.
-//! The RISC-V implementations use inline assembly and have no external dependency.
+//! CPU primitives for RISC-V (Hazard3).
 
 #![allow(dead_code)]
 
-#[cfg(target_arch = "arm")]
-mod imp {
-    #[inline(always)]
-    pub fn nop() {
-        cortex_m::asm::nop()
-    }
-
-    #[inline(always)]
-    pub fn delay(cycles: u32) {
-        cortex_m::asm::delay(cycles)
-    }
-
-    #[inline(always)]
-    pub fn sev() {
-        cortex_m::asm::sev()
-    }
-
-    #[inline(always)]
-    pub fn wfe() {
-        cortex_m::asm::wfe()
-    }
-
-    #[inline(always)]
-    pub fn udf() -> ! {
-        cortex_m::asm::udf()
-    }
-
-    /// True if interrupts are currently enabled (PRIMASK == 0).
-    #[inline(always)]
-    pub fn interrupts_enabled() -> bool {
-        cortex_m::register::primask::read().is_active()
-    }
-
-    #[inline(always)]
-    pub fn interrupt_disable() {
-        cortex_m::interrupt::disable()
-    }
-
-    #[inline(always)]
-    pub unsafe fn interrupt_enable() {
-        cortex_m::interrupt::enable()
-    }
-
-    /// Address of the vector table of the current core (VTOR).
-    #[inline(always)]
-    pub fn vector_table_base() -> u32 {
-        let p = unsafe { cortex_m::Peripherals::steal() };
-        p.SCB.vtor.read()
-    }
-
-    /// ARM: interrupts are enabled out of reset, nothing to do.
-    #[inline(always)]
-    pub unsafe fn enable_external_irq() {}
-}
-
-#[cfg(not(target_arch = "arm"))]
 mod imp {
     use core::arch::asm;
 

@@ -1,11 +1,11 @@
 
 [package]
 name = "embassy-rp-riscv"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-description = "Embassy Hardware Abstraction Layer (HAL) for the Raspberry Pi RP2040 or RP235x microcontroller"
-keywords = ["embedded", "async", "rp235x", "rp2040", "embedded-hal"]
+description = "Embassy Hardware Abstraction Layer (HAL) for RP235x Hazard3 RISC-V cores"
+keywords = ["embedded", "async", "rp235x", "riscv", "embedded-hal"]
 readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
 categories = ["embedded", "hardware-support", "no-std", "asynchronous"]
@@ -14,24 +14,19 @@ documentation = "https://docs.rs/embassy-rp-riscv"
 
 [package.metadata.embassy]
 build = [
-    { target = "thumbv6m-none-eabi", features = ["defmt", "rp2040", "cortex-m", "time-driver"] },
-    { target = "thumbv6m-none-eabi", features = ["log", "rp2040", "cortex-m", "time-driver"] },
-    { target = "thumbv6m-none-eabi", features = ["intrinsics", "rp2040", "cortex-m", "time-driver"] },
-    { target = "thumbv6m-none-eabi", features = ["qspi-as-gpio", "rp2040", "cortex-m", "time-driver"] },
-    { target = "thumbv8m.main-none-eabihf", features = ["defmt", "rp235xa", "cortex-m", "time-driver"] },
-    { target = "thumbv8m.main-none-eabihf", features = ["log", "rp235xa", "cortex-m", "time-driver"] },
-    { target = "thumbv8m.main-none-eabihf", features = ["binary-info", "rp235xa", "cortex-m", "time-driver"] },
-    { target = "thumbv8m.main-none-eabihf", features = ["defmt", "rp235xa", "cortex-m", "time-driver"] },
+    { target = "riscv32imac-unknown-none-elf", features = ["defmt", "rp235xa", "riscv", "rt", "time-driver"] },
+    { target = "riscv32imac-unknown-none-elf", features = ["log", "rp235xa", "riscv", "rt", "time-driver"] },
+    { target = "riscv32imac-unknown-none-elf", features = ["binary-info", "rp235xa", "riscv", "rt", "time-driver"] },
+    { target = "riscv32imac-unknown-none-elf", features = ["rp235xb", "riscv", "rt", "time-driver"] },
 ]
 
 [package.metadata.embassy_docs]
 src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-rp/src/"
 src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-rp/src/"
-features = ["defmt", "unstable-pac", "time-driver", "cortex-m"]
+features = ["defmt", "unstable-pac", "time-driver", "riscv", "rt"]
 flavors = [
-    { name = "rp2040", target = "thumbv6m-none-eabi", features = ["rp2040", "cortex-m"] },
-    { name = "rp235xa", target = "thumbv8m.main-none-eabihf", features = ["rp235xa", "cortex-m"] },
-    { name = "rp235xb", target = "thumbv8m.main-none-eabihf", features = ["rp235xb", "cortex-m"] },
+    { name = "rp235xa", target = "riscv32imac-unknown-none-elf", features = ["rp235xa"] },
+    { name = "rp235xb", target = "riscv32imac-unknown-none-elf", features = ["rp235xb"] },
 ]
 
 [package.metadata.docs.rs]
@@ -44,24 +39,13 @@ features = ["riscv", "rt", "rp235xa", "defmt", "unstable-pac", "time-driver"]
 name = "embassy_rp"
 
 [features]
-# Preserve the normal Cortex-M behavior for existing users.
-default = ["rt", "cortex-m"]
+# Use the Hazard3 interrupt implementation by default.
+default = ["rt", "riscv"]
 
-# PAC interrupt vectors.
-# This does not activate cortex-m-rt.
+# Interrupt dispatch.
 rt = ["rp-pac/rt"]
 
-# CPU architecture selection.
-cortex-m = [
-    "dep:cortex-m",
-    "embassy-hal-internal/cortex-m",
-]
-
-# Optional Cortex-M runtime, only when explicitly required.
-cortex-m-rt = ["dep:cortex-m-rt"]
-
-# RISC-V architecture selection.
-# Does not activate Cortex-M dependencies.
+# RISC-V interrupt implementation.
 riscv = ["embassy-hal-internal/riscv"]
 
 # Logging and formatting.
@@ -75,9 +59,6 @@ defmt = [
 pac-defmt = ["rp-pac/defmt"]
 pac-debug = ["rp-pac/debug"]
 log = ["dep:log"]
-
-# RTC API (RP2040 only).
-jiff = ["dep:jiff"]
 
 # Critical section implementation.
 critical-section-impl = ["critical-section/restore-state-u8"]
@@ -98,31 +79,17 @@ executor-interrupt = ["dep:embassy-executor"]
 
 # ROM and compiler optimizations.
 rom-func-cache = []
-intrinsics = []
-rom-v2-intrinsics = []
 qspi-as-gpio = []
 
 # Execute from RAM.
 run-from-ram = []
-
-# RP2040 boot2 support.
-boot2-at25sf128a = []
-boot2-gd25q64cs = []
-boot2-generic-03h = []
-boot2-is25lp080 = []
-boot2-ram-memcpy = []
-boot2-w25q080 = []
-boot2-w25x10cl = []
-boot2-none = []
 
 # RP2350 image definition.
 imagedef-secure-exe = []
 imagedef-nonsecure-exe = []
 imagedef-none = []
 
-# Chip selection: independent from CPU architecture.
-rp2040 = ["rp-pac/rp2040"]
-
+# Chip selection.
 _rp235x = ["rp-pac/rp235x"]
 rp235xa = ["_rp235x"]
 rp235xb = ["_rp235x"]
@@ -151,7 +118,7 @@ embassy-time-queue-utils = { package = "embassy-time-queue-utils-riscv", version
 }
 
 embassy-time = {
-    package = "embassy-time-riscv", version = "0.1.0",
+    package = "embassy-time-riscv", version = "0.1",
     path = "../embassy-time",
 }
 
@@ -160,12 +127,10 @@ embassy-futures = {
     path = "../embassy-futures",
 }
 
-# No unconditional Cortex-M activation.
 embassy-hal-internal = {
     package = "embassy-hal-internal-riscv",
     version = "0.1.0",
     path = "../embassy-hal-internal",
-    features = ["prio-bits-2"],
 }
 
 embassy-embedded-hal = {
@@ -194,24 +159,7 @@ log = {
     optional = true,
 }
 
-# Cortex-M dependencies: activated only by their features.
-cortex-m = {
-    version = "0.7.6",
-    optional = true,
-}
-
-cortex-m-rt = {
-    version = ">=0.6.15,<0.8",
-    optional = true,
-}
-
 critical-section = "1.2.0"
-
-jiff = {
-    version = "1.0.0",
-    default-features = false,
-    optional = true,
-}
 
 embedded-io = "0.7.1"
 embedded-io-async = "0.7.0"
@@ -220,7 +168,7 @@ embedded-storage-async = "0.4.1"
 
 rp-pac = {
     package = "rp-pac-riscv",
-    version = "0.1.0",
+    version = "0.2.0",
     path = "../rp-pac-riscv",
 }
 
@@ -243,7 +191,6 @@ rand-core-10 = {
 }
 
 pio = "0.4"
-rp2040-boot2 = "0.3"
 document-features = "0.2.10"
 
 rp-binary-info = {

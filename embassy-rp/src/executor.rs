@@ -8,7 +8,7 @@
 //! When using this executors, they must be explicitly passed to the `main`
 //! macro using
 //!
-//! `#[embassy_executor::main(executor = "embassy_rp::executor::Executor",  entry = "cortex_m_rt::entry")]`
+//! `#[embassy_executor::main(executor = "embassy_rp::executor::Executor", entry = "riscv_rt::entry")]`
 
 #[cfg(any(feature = "executor-thread", feature = "executor-interrupt"))]
 struct RpPender;
@@ -28,41 +28,20 @@ impl embassy_executor::pender::Pender for RpPender {
             #[cfg(feature = "executor-thread")]
             // Try to make Rust optimize the branching away if we only use thread mode.
             if !cfg!(feature = "executor-interrupt") || context == THREAD_PENDER {
-                core::arch::asm!("sev");
+                crate::cpu::sev();
                 return;
             }
 
             #[cfg(feature = "executor-interrupt")]
             {
-                use cortex_m::interrupt::InterruptNumber;
-                use cortex_m::peripheral::NVIC;
-
                 use crate::multicore::{PEND_IRQ_TOKEN, current_core, fifo_write};
-
-                #[derive(Clone, Copy)]
-                struct Irq(u16);
-                unsafe impl InterruptNumber for Irq {
-                    fn number(self) -> u16 {
-                        self.0
-                    }
-                }
 
                 // The context contains the core number in the upper 16 bits.
                 let core_no = (context >> 16) as u8;
                 let context = context & 0xFFFF;
 
                 if core_no == current_core() as u8 {
-                    let irq = Irq(context as u16);
-
-                    // STIR is faster, but is only available in v7 and higher.
-                    #[cfg(feature = "_rp235x")]
-                    {
-                        let mut nvic: NVIC = core::mem::transmute(());
-                        nvic.request(irq);
-                    }
-
-                    #[cfg(feature = "rp2040")]
-                    NVIC::pend(irq);
+                    unsafe { crate::multicore::pend_irq(context as u16) };
                 } else {
                     fifo_write(PEND_IRQ_TOKEN | context as u32);
                 }
@@ -77,12 +56,11 @@ pub use thread::*;
 mod thread {
     pub(super) const THREAD_PENDER: usize = usize::MAX;
 
-    use core::arch::asm;
     use core::marker::PhantomData;
 
     use embassy_executor::{Spawner, raw};
 
-    /// Thread mode executor, using WFE/SEV.
+    /// Thread mode executor, using the Hazard3 block/unblock instructions.
     ///
     /// This is the simplest and most common kind of executor. It runs on
     /// thread mode (at the lowest priority level), and uses the `WFE` ARM instruction
@@ -131,7 +109,7 @@ mod thread {
                 unsafe {
                     self.inner.poll();
                     embassy_executor::trace_idle();
-                    asm!("wfe");
+                    crate::cpu::wfe();
                 };
             }
         }
@@ -145,11 +123,10 @@ mod interrupt {
     use core::cell::{Cell, UnsafeCell};
     use core::mem::MaybeUninit;
 
-    use cortex_m::interrupt::InterruptNumber;
-    use cortex_m::peripheral::NVIC;
     use critical_section::Mutex;
     use embassy_executor::raw;
 
+    use crate::interrupt::InterruptExt;
     use crate::multicore::current_core;
 
     /// Interrupt mode executor.
@@ -225,7 +202,7 @@ mod interrupt {
         /// do it after.
         ///
         /// [`SendSpawner`]: embassy_executor::SendSpawner
-        pub fn start(&'static self, irq: impl InterruptNumber) -> embassy_executor::SendSpawner {
+        pub fn start(&'static self, irq: impl InterruptExt) -> embassy_executor::SendSpawner {
             if critical_section::with(|cs| self.started.borrow(cs).replace(true)) {
                 panic!("InterruptExecutor::start() called multiple times on the same executor.");
             }
@@ -239,7 +216,7 @@ mod interrupt {
 
             let executor = unsafe { (&*self.executor.get()).assume_init_ref() };
 
-            unsafe { NVIC::unmask(irq) }
+            unsafe { irq.enable() }
 
             executor.spawner().make_send()
         }

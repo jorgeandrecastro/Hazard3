@@ -8,6 +8,9 @@
 //! ## Feature flags
 #![doc = document_features::document_features!(feature_label = r#"<span class="stab portability"><code>{feature}</code></span>"#)]
 
+#[cfg(all(not(target_arch = "riscv32"), not(feature = "_test")))]
+compile_error!("embassy-rp-riscv supports only the RP235x Hazard3 RISC-V cores");
+
 // This mod MUST go first, so that the others see its macros.
 pub(crate) mod fmt;
 
@@ -17,17 +20,11 @@ pub use rp_binary_info as binary_info;
 #[cfg(feature = "critical-section-impl")]
 mod critical_section_impl;
 
-#[cfg(feature = "rp2040")]
-mod intrinsics;
-
-// Architecture-specific code (ARM / RISC-V): stack guard, __pre_init, ACTLR.
+// Hazard3 startup and CPU primitives.
 mod arch;
 mod cpu;
 pub use arch::install_core0_stack_guard;
 pub(crate) use arch::install_stack_guard;
-#[cfg(feature = "_rp235x")]
-#[allow(unused_imports)]
-pub(crate) use arch::enable_actlr_extexclall;
 
 pub mod adc;
 #[cfg(feature = "_rp235x")]
@@ -40,8 +37,6 @@ pub mod dma;
 #[cfg(any(feature = "executor-thread", feature = "executor-interrupt"))]
 pub mod executor;
 pub mod flash;
-#[cfg(feature = "rp2040")]
-mod float;
 pub mod gpio;
 pub mod i2c;
 pub mod i2c_slave;
@@ -58,8 +53,6 @@ pub mod pwm;
 pub mod qmi_cs1;
 mod reset;
 pub mod rom_data;
-#[cfg(feature = "rp2040")]
-pub mod rtc;
 pub mod spi;
 mod spinlock;
 pub mod spinlock_mutex;
@@ -83,46 +76,6 @@ pub use embassy_hal_internal::{Peri, PeripheralType};
 pub use rp_pac as pac;
 #[cfg(not(feature = "unstable-pac"))]
 pub(crate) use rp_pac as pac;
-
-// NVIC only exists on the ARM (Cortex-M) cores.
-#[cfg(all(feature = "rt", target_arch = "arm"))]
-pub use crate::pac::NVIC_PRIO_BITS;
-
-#[cfg(feature = "rp2040")]
-embassy_hal_internal::interrupt_mod!(
-    TIMER_IRQ_0,
-    TIMER_IRQ_1,
-    TIMER_IRQ_2,
-    TIMER_IRQ_3,
-    PWM_IRQ_WRAP,
-    USBCTRL_IRQ,
-    XIP_IRQ,
-    PIO0_IRQ_0,
-    PIO0_IRQ_1,
-    PIO1_IRQ_0,
-    PIO1_IRQ_1,
-    DMA_IRQ_0,
-    DMA_IRQ_1,
-    IO_IRQ_BANK0,
-    IO_IRQ_QSPI,
-    SIO_IRQ_PROC0,
-    SIO_IRQ_PROC1,
-    CLOCKS_IRQ,
-    SPI0_IRQ,
-    SPI1_IRQ,
-    UART0_IRQ,
-    UART1_IRQ,
-    ADC_IRQ_FIFO,
-    I2C0_IRQ,
-    I2C1_IRQ,
-    RTC_IRQ,
-    SWI_IRQ_0,
-    SWI_IRQ_1,
-    SWI_IRQ_2,
-    SWI_IRQ_3,
-    SWI_IRQ_4,
-    SWI_IRQ_5,
-);
 
 #[cfg(feature = "_rp235x")]
 embassy_hal_internal::interrupt_mod!(
@@ -235,94 +188,6 @@ macro_rules! bind_interrupts {
     (@inner $($t:tt)*) => {
         $($t)*
     }
-}
-
-#[cfg(feature = "rp2040")]
-embassy_hal_internal::peripherals! {
-    PIN_0,
-    PIN_1,
-    PIN_2,
-    PIN_3,
-    PIN_4,
-    PIN_5,
-    PIN_6,
-    PIN_7,
-    PIN_8,
-    PIN_9,
-    PIN_10,
-    PIN_11,
-    PIN_12,
-    PIN_13,
-    PIN_14,
-    PIN_15,
-    PIN_16,
-    PIN_17,
-    PIN_18,
-    PIN_19,
-    PIN_20,
-    PIN_21,
-    PIN_22,
-    PIN_23,
-    PIN_24,
-    PIN_25,
-    PIN_26,
-    PIN_27,
-    PIN_28,
-    PIN_29,
-    PIN_QSPI_SCLK,
-    PIN_QSPI_SS,
-    PIN_QSPI_SD0,
-    PIN_QSPI_SD1,
-    PIN_QSPI_SD2,
-    PIN_QSPI_SD3,
-
-    UART0,
-    UART1,
-
-    SPI0,
-    SPI1,
-
-    I2C0,
-    I2C1,
-
-    DMA_CH0,
-    DMA_CH1,
-    DMA_CH2,
-    DMA_CH3,
-    DMA_CH4,
-    DMA_CH5,
-    DMA_CH6,
-    DMA_CH7,
-    DMA_CH8,
-    DMA_CH9,
-    DMA_CH10,
-    DMA_CH11,
-
-    PWM_SLICE0,
-    PWM_SLICE1,
-    PWM_SLICE2,
-    PWM_SLICE3,
-    PWM_SLICE4,
-    PWM_SLICE5,
-    PWM_SLICE6,
-    PWM_SLICE7,
-
-    USB,
-
-    RTC,
-
-    FLASH,
-
-    ADC,
-    ADC_TEMP_SENSOR,
-
-    CORE1,
-
-    PIO0,
-    PIO1,
-
-    WATCHDOG,
-    BOOTSEL,
 }
 
 #[cfg(feature = "_rp235x")]
@@ -461,35 +326,6 @@ embassy_hal_internal::peripherals! {
 
     POWMAN,
     TRNG,
-}
-
-#[cfg(all(not(feature = "boot2-none"), feature = "rp2040"))]
-macro_rules! select_bootloader {
-    ( $( $feature:literal => $loader:ident, )+ default => $default:ident ) => {
-        $(
-            #[cfg(feature = $feature)]
-            #[unsafe(link_section = ".boot2")]
-            #[used]
-            static BOOT2: [u8; 256] = rp2040_boot2::$loader;
-        )*
-
-        #[cfg(not(any( $( feature = $feature),* )))]
-        #[unsafe(link_section = ".boot2")]
-        #[used]
-        static BOOT2: [u8; 256] = rp2040_boot2::$default;
-    }
-}
-
-#[cfg(all(not(feature = "boot2-none"), feature = "rp2040"))]
-select_bootloader! {
-    "boot2-at25sf128a" => BOOT_LOADER_AT25SF128A,
-    "boot2-gd25q64cs" => BOOT_LOADER_GD25Q64CS,
-    "boot2-generic-03h" => BOOT_LOADER_GENERIC_03H,
-    "boot2-is25lp080" => BOOT_LOADER_IS25LP080,
-    "boot2-ram-memcpy" => BOOT_LOADER_RAM_MEMCPY,
-    "boot2-w25q080" => BOOT_LOADER_W25Q080,
-    "boot2-w25x10cl" => BOOT_LOADER_W25X10CL,
-    default => BOOT_LOADER_W25Q080
 }
 
 #[cfg(all(not(feature = "imagedef-none"), feature = "_rp235x"))]

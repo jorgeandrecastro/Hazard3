@@ -1,4 +1,4 @@
-//! Interpolator driver for RP2040/RP235x
+//! Interpolator driver for RP235x
 //! The interpolator is a hardware peripheral that can perform linear interpolation and accumulation of values. It has two lanes, each with its own accumulator and base register.
 //! The interpolator can be used for various applications, such as generating sequences of values or performing mathematical operations on data streams.
 

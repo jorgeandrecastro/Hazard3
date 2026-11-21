@@ -15,14 +15,11 @@ use crate::pac::SIO;
 use crate::pac::common::{RW, Reg};
 use crate::{RegExt, pac, peripherals};
 
-#[cfg(any(feature = "rp2040", feature = "rp235xa"))]
+#[cfg(feature = "rp235xa")]
 pub(crate) const BANK0_PIN_COUNT: usize = 30;
 #[cfg(feature = "rp235xb")]
 pub(crate) const BANK0_PIN_COUNT: usize = 48;
 
-/// `FUNCSEL` value that connects a pin to SIO.
-#[cfg(feature = "rp2040")]
-pub(crate) const SIO_FUNCSEL: u8 = pac::io::vals::Gpio0CtrlFuncsel::Sio0 as _;
 /// `FUNCSEL` value that connects a pin to SIO.
 #[cfg(feature = "_rp235x")]
 pub(crate) const SIO_FUNCSEL: u8 = pac::io::vals::Gpio0CtrlFuncsel::SiobProc0 as _;
@@ -266,7 +263,7 @@ pub enum InterruptTrigger {
 /// The handler only services its own pin, so the same interrupt can also be bound to your own
 /// [`Handler`] for pins used in blocking mode.
 ///
-/// The async constructors enable the interrupt in the NVIC of the core they run on. The HAL doesn't
+/// The async constructors enable the interrupt on the core they run on. The HAL doesn't
 /// enable it otherwise, so if you only use your own handler, enable it yourself.
 pub struct InterruptHandler<T: Pin> {
     _phantom: PhantomData<T>,
@@ -724,7 +721,7 @@ impl<'d> Flex<'d, Async> {
     /// before the pin is put into output mode.
     ///
     /// The pin's interrupt must be bound to [`InterruptHandler`] for this pin. It is enabled in the
-    /// NVIC of the core this runs on, so wait on the pin from that core.
+    /// interrupt controller of the core this runs on, so wait on the pin from that core.
     #[inline]
     pub fn new_async<T: Pin>(pin: Peri<'d, T>, _irq: impl Binding<T::Interrupt, InterruptHandler<T>> + 'd) -> Self {
         let this = Self::new_inner(pin.pin_number(), T::waker());
@@ -1177,29 +1174,17 @@ impl PinNumber {
 
     #[inline]
     pub(crate) fn sio_out(self) -> pac::sio::Gpio {
-        if cfg!(feature = "rp2040") {
-            SIO.gpio_out(self.bank() as _)
-        } else {
-            SIO.gpio_out((self.pin() / 32) as _)
-        }
+        SIO.gpio_out((self.pin() / 32) as _)
     }
 
     #[inline]
     pub(crate) fn sio_oe(self) -> pac::sio::Gpio {
-        if cfg!(feature = "rp2040") {
-            SIO.gpio_oe(self.bank() as _)
-        } else {
-            SIO.gpio_oe((self.pin() / 32) as _)
-        }
+        SIO.gpio_oe((self.pin() / 32) as _)
     }
 
     #[inline]
     pub(crate) fn sio_in(self) -> Reg<u32, RW> {
-        if cfg!(feature = "rp2040") {
-            SIO.gpio_in(self.bank() as _)
-        } else {
-            SIO.gpio_in((self.pin() / 32) as _)
-        }
+        SIO.gpio_in((self.pin() / 32) as _)
     }
 
     #[inline]

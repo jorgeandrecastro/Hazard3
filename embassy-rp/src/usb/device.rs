@@ -244,7 +244,7 @@ impl EndpointData {
     }
 }
 
-/// RP2040 USB driver handle.
+/// RP235x USB driver handle.
 pub struct Driver<'d, T: Instance> {
     phantom: PhantomData<&'d mut T>,
     ep_in: [EndpointData; EP_COUNT],
@@ -789,7 +789,7 @@ impl<'d, T: Instance> driver::Bus for Bus<'d, T> {
 
     async fn remote_wakeup(&mut self) -> Result<(), Unsupported> {
         // SIE_CTRL.RESUME ("Device: Remote wakeup. Device can initiate its own
-        // resume after suspend") is self-clearing per the RP2040 datasheet
+        // resume after suspend") is self-clearing per the RP2350 datasheet
         // (pico-sdk: USB_SIE_CTRL_RESUME access type "SC"): the controller
         // drives the resume signaling on the bus by itself, so a single write
         // is sufficient.

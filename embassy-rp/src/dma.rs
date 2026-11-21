@@ -141,10 +141,6 @@ impl<'d> Channel<'d, Async> {
 
         p.read_addr().write_value(from as u32);
         p.write_addr().write_value(to as u32);
-        #[cfg(feature = "rp2040")]
-        p.trans_count().write(|w| {
-            *w = len as u32;
-        });
         #[cfg(feature = "_rp235x")]
         p.trans_count().write(|w| {
             w.set_mode(0.into());
@@ -326,8 +322,6 @@ impl<'a> Future for Transfer<'a> {
     }
 }
 
-#[cfg(feature = "rp2040")]
-pub(crate) const CHANNEL_COUNT: usize = 12;
 #[cfg(feature = "_rp235x")]
 pub(crate) const CHANNEL_COUNT: usize = 16;
 static CHANNEL_WAKERS: [AtomicWaker; CHANNEL_COUNT] = [const { AtomicWaker::new() }; CHANNEL_COUNT];

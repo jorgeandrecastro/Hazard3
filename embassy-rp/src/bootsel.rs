@@ -1,6 +1,6 @@
 //! Boot Select button
 //!
-//! The RP2040 and RP2350 ROMs supports a BOOTSEL button that is used to enter the USB bootloader
+//! The RP2350 ROM supports a BOOTSEL button that is used to enter the USB bootloader
 //! if held during reset. To avoid wasting GPIO pins, the button is multiplexed onto
 //! the CS pin of the QSPI flash, but that makes it somewhat expensive and complicated
 //! to utilize outside of the rom's bootloader.
@@ -23,14 +23,7 @@ use crate::flash::in_ram;
 pub fn is_bootsel_pressed(_p: Peri<'_, crate::peripherals::BOOTSEL>) -> bool {
     unsafe {
         // Compute the base address for the GPIO_QSPI_SS_STATUS/GPIO_QSPI_SS_CTRL registers.
-        let cs_gpio: *mut ();
-        if cfg!(feature = "rp2040") {
-            cs_gpio = IO_QSPI.gpio(1).as_ptr();
-        } else if cfg!(feature = "_rp235x") {
-            cs_gpio = IO_QSPI.gpio(3).as_ptr();
-        } else {
-            unimplemented!()
-        };
+        let cs_gpio = IO_QSPI.gpio(3).as_ptr();
 
         let mut cs_ctrl = GpioCtrl::default();
         cs_ctrl.set_oeover(Oeover::Disable);

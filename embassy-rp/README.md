@@ -11,7 +11,7 @@
 
 HALs implement safe, idiomatic Rust APIs to use the hardware capabilities, so raw register manipulation is not needed.
 
-The embassy-rp HAL targets the Raspberry Pi RP2040 as well as RP235x microcontroller. The HAL implements both blocking and async APIs
+The embassy-rp-riscv HAL targets the RP235x microcontroller's Hazard3 RISC-V cores. The HAL implements both blocking and async APIs
 for many peripherals. The benefit of using the async APIs is that the HAL takes care of waiting for peripherals to
 complete operations in low power mode and handling interrupts, so that applications can focus on more important matters.
 
@@ -19,27 +19,46 @@ complete operations in low power mode and handling interrupts, so that applicati
 * [Documentation](https://docs.rs/embassy-rp-riscv)
 * [Source](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/embassy-rp)
 * [Examples](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/examples/rp/src/bin)
+* [Changelog](./CHANGELOG.md)
 
 ## RISC-V support (RP2350 Hazard3)
 
 The RP2350 has two Arm Cortex-M33 cores **and** two Hazard3 RISC-V cores (you pick one pair at boot). Upstream `embassy-rp` only
-supports the Arm cores. This fork adds support for running on the Hazard3 cores, with no change for existing Arm users.
+supports the Arm cores. This fork targets **only** the Hazard3 cores; use upstream `embassy-rp` for Arm and for the RP2040.
 
-### What was added
+### What this fork does
 
-* `riscv` Cargo feature, mutually exclusive with `cortex-m` (which stays in `default`).
-* `cpu.rs`: CPU primitives (`nop`, `delay`, `sev`, `wfe`, interrupt enable/disable...) that forward to `cortex_m` on Arm and use inline assembly on RISC-V.
-* `arch.rs`: architecture-specific code (stack guard, `__pre_init`, ...) split out of `lib.rs`. On RISC-V `install_core0_stack_guard()` is a no-op returning `Ok(())` (no MPU/MSPLIM).
-* Interrupts through the Hazard3 `Xh3irq` extension (custom CSRs `meiea`, `meipa`, `meifa`, `meipra`, `meinext`), provided by [`embassy-hal-internal-riscv`](https://crates.io/crates/embassy-hal-internal-riscv). `embassy_rp::init()` enables the machine external interrupt on RISC-V (no-op on Arm).
-* Time driver and multicore (core 1 startup) ported to RISC-V.
+* **RISC-V only (since 0.2.0).** All Cortex-M and RP2040 features, dependencies, CPU primitives and startup code have been removed. The crate rejects RP2040 and non-RISC-V targets at compile time.
+* `riscv` Cargo feature, enabled by default.
+* `cpu.rs`: Hazard3 CPU primitives (`nop`, `delay`, `sev`, `wfe`, interrupt enable/disable...).
+* `arch.rs`: Hazard3 startup code. `install_core0_stack_guard()` is a no-op returning `Ok(())` (no MPU/MSPLIM).
+* Interrupts through the Hazard3 `Xh3irq` extension (custom CSRs `meiea`, `meipa`, `meifa`, `meipra`, `meinext`), provided by [`embassy-hal-internal-riscv`](https://crates.io/crates/embassy-hal-internal-riscv). `embassy_rp::init()` enables machine external interrupts.
+* Time driver ported to RISC-V.
+* Multicore ported to RISC-V: `spawn_core1`, `pause_core1` and `resume_core1` rely on the inter-core FIFO, which uses the RISC-V `SIO_IRQ_FIFO` interrupt (the Arm-only `SIO_IRQ_PROC1` reference was removed in 0.2.0).
+
+### Supported chips and features
+
+| Feature | Description |
+|---|---|
+| `rp235xa` | RP2350A / RP2354A |
+| `rp235xb` | RP2350B / RP2354B |
+| `riscv` | Hazard3 support (default) |
+| `rt` | Runtime support |
+| `time-driver` | Use the TIMER peripheral as `embassy-time` driver (1 MHz) |
+| `critical-section-impl` | Provide a `critical-section` implementation |
+| `imagedef-none` | Do not embed an image definition (provided by `rp2350-riscv-linker`) |
+| `defmt` | `defmt` logging support |
+| `unstable-pac` | Expose the PAC |
+
+You must select exactly one chip feature (`rp235xa` or `rp235xb`).
 
 ### Usage
 
-Disable the default features and select the chip and architecture:
+Select the chip:
 
 ```toml
 [dependencies]
-embassy-rp = { package = "embassy-rp-riscv", version = "0.1", default-features = false, features = ["riscv", "rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+embassy-rp = { package = "embassy-rp-riscv", version = "0.2", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
 rp2350-riscv-linker = "0.2"
 ```
 
@@ -63,16 +82,52 @@ Its README contains a working `.cargo/config.toml`, a complete dependency setup 
 use rp2350_riscv_linker as _;
 ```
 
-For Arm builds, keep the default features: nothing changes compared to upstream `embassy-rp`.
+For Arm builds, use upstream `embassy-rp`.
 
 On RISC-V, `bind_interrupts!`-style handlers are resolved through a weak-symbol dispatch table: an interrupt with no handler
-bound calls a default handler that hangs, so it is noticed.
+bound calls a default handler that hangs, so it is noticed. There is no Cortex-M vector table: trap and interrupt dispatch is delegated to the RISC-V runtime.
+
+### Development
+
+Checks used to validate the crate on the Hazard3 target:
+
+```sh
+# RP2350A
+cargo check \
+    --target riscv32imac-unknown-none-elf \
+    --no-default-features \
+    --features "rp235xa riscv rt time-driver"
+
+# RP2350B
+cargo check \
+    --target riscv32imac-unknown-none-elf \
+    --no-default-features \
+    --features "rp235xb riscv rt time-driver"
+
+# RP2350A, release profile
+cargo check --release \
+    --target riscv32imac-unknown-none-elf \
+    --no-default-features \
+    --features "rp235xa riscv rt time-driver"
+```
+
+To make sure no stale `cfg` (for example a leftover Arm or RP2040 one) remains, treat unexpected `cfg` as errors:
+
+```sh
+RUSTFLAGS="-D unexpected-cfgs" cargo check \
+    --target riscv32imac-unknown-none-elf \
+    --no-default-features \
+    --features "rp235xb riscv rt time-driver"
+```
+
+Building for a non-RISC-V target (or for the RP2040) is rejected on purpose.
 
 ### Why the extra `rp-pac-riscv` crate
 
 Upstream `embassy-rp` uses a git revision of `rp-pac` that is newer than the one on crates.io, and crates.io does not accept git dependencies.
-To make `embassy-rp-riscv` publishable, that exact revision is republished unchanged as [`rp-pac-riscv`](https://crates.io/crates/rp-pac-riscv)
-(same `rp_pac` library name). It is a dependency of this crate; you do not need to add it yourself.
+To make `embassy-rp-riscv` publishable, that revision is republished as [`rp-pac-riscv`](https://crates.io/crates/rp-pac-riscv)
+(same `rp_pac` library name). Its register definitions are unchanged, but Cortex-M dependencies and the interrupt vector table have been removed
+(since `rp-pac-riscv` 0.2). It is a dependency of this crate; you do not need to add it yourself.
 
 ### Companion `-riscv` crates
 
@@ -92,9 +147,12 @@ embassy-sync = { package = "embassy-sync-riscv", version = "0.1" }
 ### Status and limitations
 
 * Tested on a real RP2350 running the RISC-V cores. Other peripherals are expected to work as on Arm, but are not all tested.
-* RP2040 has no RISC-V cores: use the `cortex-m` feature there.
+* RP2040 has no RISC-V cores and is not supported: use upstream `embassy-rp`.
+* Cortex-M33 (Arm) mode of the RP2350 is not supported: use upstream `embassy-rp`.
 * PSRAM support is not implemented yet.
 * The `embassy-crypto-rng` feature of upstream was removed.
+* 0.2.0 is validated with `cargo check` on `riscv32imac-unknown-none-elf` for both `rp235xa` and `rp235xb` (features `riscv`, `rt`, `time-driver`). See [Development](#development).
+* The build still emits 8 compiler warnings (checked with `rp235xb`) that do not prevent compilation: 7 come from the unfinished PSRAM code in `src/psram.rs` (unreachable code, unused variables and constants, unnecessary `mut`) and 1 is a missing doc comment on `div_int` in `src/clocks.rs`.
 * The Hazard3 interrupt code was written from the RP2350 datasheet; report odd behaviour in the [issue tracker](https://github.com/jorgeandrecastro/embassy-riscv/issues).
 
 ## Credits and license

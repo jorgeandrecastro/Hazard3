@@ -285,9 +285,6 @@ impl<'l, PIO: Instance> Pin<'l, PIO> {
     ///
     /// Panics if the pin is outside the PIO's current `GPIOBASE` window.
     pub fn set_input_sync_bypass(&mut self, bypass: bool) {
-        #[cfg(feature = "rp2040")]
-        let offset = 0u8;
-        #[cfg(feature = "_rp235x")]
         let offset = if PIO::PIO.gpiobase().read().gpiobase() { 16 } else { 0 };
 
         let rel = match self.pin().checked_sub(offset) {
@@ -632,11 +629,6 @@ pub struct Config<'d, PIO: Instance> {
     /// Which source to use for checking status.
     pub status_sel: StatusSource,
     /// Status comparison level.
-    #[cfg(feature = "rp2040")]
-    pub status_n: u8,
-    // This cfg probably shouldn't be required, but the SVD for the 2040 doesn't have the enum
-    #[cfg(feature = "_rp235x")]
-    /// Status comparison level.
     pub status_n: StatusN,
     exec: ExecConfig,
     origin: Option<u8>,
@@ -779,7 +771,6 @@ impl<'d, PIO: Instance + 'd, const SM: usize> StateMachine<'d, PIO, SM> {
             w.set_autopull(config.shift_out.auto_fill);
             w.set_autopush(config.shift_in.auto_fill);
 
-            #[cfg(feature = "_rp235x")]
             {
                 w.set_fjoin_rx_get(
                     config.fifo_join == FifoJoin::RxAsControl || config.fifo_join == FifoJoin::PioScratch,
@@ -791,24 +782,6 @@ impl<'d, PIO: Instance + 'd, const SM: usize> StateMachine<'d, PIO, SM> {
             }
         });
 
-        #[cfg(feature = "rp2040")]
-        sm.pinctrl().write(|w| {
-            w.set_sideset_count(config.pins.sideset_count);
-            w.set_set_count(config.pins.set_count);
-            w.set_out_count(config.pins.out_count);
-            w.set_in_base(config.pins.in_base);
-            w.set_sideset_base(config.pins.sideset_base);
-            w.set_set_base(config.pins.set_base);
-            w.set_out_base(config.pins.out_base);
-        });
-        #[cfg(feature = "rp2040")]
-        if config.input_sync_bypass_mask != 0 {
-            PIO::PIO
-                .input_sync_bypass()
-                .write_set(|w| *w = config.input_sync_bypass_mask as u32);
-        }
-
-        #[cfg(feature = "_rp235x")]
         {
             let gpio_base_latched = PIO::PIO.gpiobase().read().gpiobase();
 
@@ -896,9 +869,6 @@ impl<'d, PIO: Instance + 'd, const SM: usize> StateMachine<'d, PIO, SM> {
             w.set_side_en(config.exec.side_en);
             w.set_side_pindir(config.exec.side_pindir);
 
-            #[cfg(not(feature = "_rp235x"))]
-            w.set_jmp_pin(config.exec.jmp_pin.unwrap_or_default());
-            #[cfg(feature = "_rp235x")]
             w.set_jmp_pin(
                 config
                     .exec
@@ -916,11 +886,6 @@ impl<'d, PIO: Instance + 'd, const SM: usize> StateMachine<'d, PIO, SM> {
                 StatusSource::TxFifoLevel => pac::pio::vals::ExecctrlStatusSel::Txlevel,
                 StatusSource::RxFifoLevel => pac::pio::vals::ExecctrlStatusSel::Rxlevel,
                 StatusSource::Irq => pac::pio::vals::ExecctrlStatusSel::Irq,
-            });
-            #[cfg(feature = "rp2040")]
-            w.set_status_sel(match config.status_sel {
-                StatusSource::TxFifoLevel => pac::pio::vals::SmExecctrlStatusSel::Txlevel,
-                StatusSource::RxFifoLevel => pac::pio::vals::SmExecctrlStatusSel::Rxlevel,
             });
             #[allow(clippy::useless_conversion)]
             w.set_status_n(config.status_n.into());
@@ -1049,12 +1014,6 @@ impl<'d, PIO: Instance + 'd, const SM: usize> StateMachine<'d, PIO, SM> {
         self.set_enable(enabled);
     }
 
-    #[cfg(feature = "rp2040")]
-    fn pin_base() -> u8 {
-        0
-    }
-
-    #[cfg(feature = "_rp235x")]
     fn pin_base() -> u8 {
         if PIO::PIO.gpiobase().read().gpiobase() { 16 } else { 0 }
     }
@@ -1247,9 +1206,6 @@ impl<'d, PIO: Instance> Common<'d, PIO> {
         prog: &Program<SIZE>,
         origin: u8,
     ) -> Result<LoadedProgram<'d, PIO>, usize> {
-        #[cfg(not(feature = "_rp235x"))]
-        assert!(prog.version == pio::PioVersion::V0);
-
         let prog = RelocatedProgram::new_with_origin(prog, origin);
         let used_memory = self.try_write_instr(prog.origin() as _, prog.code())?;
         Ok(LoadedProgram {

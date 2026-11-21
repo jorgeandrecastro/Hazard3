@@ -34,21 +34,6 @@ impl<'d> Watchdog<'d> {
         Self { phantom: PhantomData }
     }
 
-    /// Start tick generation on clk_tick which is driven from clk_ref.
-    ///
-    /// # Arguments
-    ///
-    /// * `cycles` - Total number of tick cycles before the next tick is generated.
-    ///   It is expected to be the frequency in MHz of clk_ref.
-    #[cfg(feature = "rp2040")]
-    pub fn enable_tick_generation(&mut self, cycles: u8) {
-        let watchdog = pac::WATCHDOG;
-        watchdog.tick().write(|w| {
-            w.set_enable(true);
-            w.set_cycles(cycles.into())
-        });
-    }
-
     /// Defines whether or not the watchdog timer should be paused when processor(s) are in debug mode
     /// or when JTAG is accessing bus fabric
     pub fn pause_on_debug(&mut self, pause: bool) {
@@ -81,8 +66,6 @@ impl<'d> Watchdog<'d> {
 
     /// Feed the watchdog timer
     pub fn feed(&mut self, timeout: Duration) {
-        #[cfg(feature = "rp2040")]
-        const MAX_PERIOD: u32 = 0xFFFFFF / 2;
         #[cfg(feature = "_rp235x")]
         const MAX_PERIOD: u32 = 0xFFFFFF;
 
@@ -92,16 +75,7 @@ impl<'d> Watchdog<'d> {
         }
         let timeout_us = timeout_us as u32;
 
-        // Due to a logic error, the watchdog decrements by 2 and
-        // the load value must be compensated; see RP2040-E1
-        // This errata is fixed in the RP235x
-        let load_value = if cfg!(feature = "rp2040") {
-            timeout_us * 2
-        } else {
-            timeout_us
-        };
-
-        self.load_counter(load_value)
+        self.load_counter(timeout_us)
     }
 
     /// Start the watchdog timer

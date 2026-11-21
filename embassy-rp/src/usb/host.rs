@@ -56,13 +56,6 @@ const EPX_NUM_BLOCKS: usize = (EP_MEMORY_SIZE - EPX_BUFFER_OFFSET as usize) / EP
 /// Maximum number of concurrently allocated EPX pipes.
 const EPX_MAX_PIPES: usize = 16;
 
-/// NAK retry interval, stretched so a NAKing transfer cannot retry within the frame.
-#[cfg(feature = "rp2040")]
-const NAK_POLL_DELAY_YIELD: u16 = 300;
-/// NAK retry interval outside a yield.
-#[cfg(feature = "rp2040")]
-const NAK_POLL_DELAY_NORMAL: u16 = 16;
-
 /// Consecutive attempts of one EPX transaction that the device leaves without any
 /// answer before the transfer fails with [`PipeError::Timeout`]: the error count of
 /// three that OHCI and EHCI keep per transfer.
@@ -129,10 +122,6 @@ struct EpxArbiter {
     /// Slot that last held EPX. The queue is served starting after it, so a pipe
     /// that just released goes to the back.
     last: usize,
-    /// RP2040 only: set on the first SOF of a contended EPX transfer, so the
-    /// second SOF with no completion in between can stop it.
-    #[cfg(feature = "rp2040")]
-    switch_requested: bool,
 }
 
 impl EpxArbiter {
@@ -145,8 +134,6 @@ impl EpxArbiter {
             completed: 0,
             error: 0,
             last: 0,
-            #[cfg(feature = "rp2040")]
-            switch_requested: false,
         }
     }
 
@@ -437,7 +424,7 @@ impl SealedHostInstance for crate::peripherals::USB {
     }
 }
 
-/// RP2040 USB host driver handle.
+/// RP235x USB host driver handle.
 pub struct Driver<'d, T: Instance> {
     phantom: PhantomData<&'d mut T>,
     connected: bool,
@@ -610,47 +597,14 @@ type AddrControlReg = rp_pac::common::Reg<rp_pac::usb::regs::AddrEndpX, rp_pac::
 /// Stop the in-flight EPX transaction at its next safe boundary so a queued pipe can take
 /// the endpoint. Armed only while contended, or an idle bulk IN would trip it on every NAK.
 fn arm_epx_yield<T: SealedHostInstance>() {
-    #[cfg(feature = "_rp235x")]
-    {
-        // RP235x stops EPX at its next NAK and raises an interrupt.
-        T::regs().nak_poll().modify(|w| w.set_stop_epx_on_nak(true));
-        T::regs().inte().modify(|w| w.set_epx_stopped_on_nak(true));
-    }
-    #[cfg(feature = "rp2040")]
-    {
-        // RP2040 has no stop-on-NAK bit, so stretch the retry interval and watch frame
-        // boundaries instead, as TinyUSB's fallback does.
-        T::regs().nak_poll().write(|w| {
-            w.set_delay_fs(NAK_POLL_DELAY_YIELD);
-            w.set_delay_ls(NAK_POLL_DELAY_YIELD);
-        });
-        T::regs().inte().modify(|w| w.set_host_sof(true));
-    }
+    T::regs().nak_poll().modify(|w| w.set_stop_epx_on_nak(true));
+    T::regs().inte().modify(|w| w.set_epx_stopped_on_nak(true));
 }
 
 /// Stop asking for a yield: EPX is ours, or nobody is queued for it.
 fn disarm_epx_yield<T: SealedHostInstance>() {
-    #[cfg(feature = "_rp235x")]
-    {
-        T::regs().nak_poll().modify(|w| w.set_stop_epx_on_nak(false));
-        T::regs().inte().modify(|w| w.set_epx_stopped_on_nak(false));
-    }
-    #[cfg(feature = "rp2040")]
-    {
-        T::host_state().with_arbiter(|a| a.switch_requested = false);
-        T::regs().inte().modify(|w| w.set_host_sof(false));
-        T::regs().nak_poll().write(|w| {
-            w.set_delay_fs(NAK_POLL_DELAY_NORMAL);
-            w.set_delay_ls(NAK_POLL_DELAY_NORMAL);
-        });
-    }
-}
-
-/// Note that EPX made progress, so a pending yield request starts counting again.
-#[allow(unused_variables)]
-fn note_epx_progress<T: SealedHostInstance>() {
-    #[cfg(feature = "rp2040")]
-    T::host_state().with_arbiter(|a| a.switch_requested = false);
+    T::regs().nak_poll().modify(|w| w.set_stop_epx_on_nak(false));
+    T::regs().inte().modify(|w| w.set_epx_stopped_on_nak(false));
 }
 
 /// Record a terminal error against the EPX owner and wake it.
@@ -904,7 +858,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
     async fn wait_available(&self) -> Result<(), PipeError> {
         trace!("CHANNEL {} WAIT AVAILABLE", self.index);
         poll_fn(|cx| {
-            // Both IN and OUT endpoints use IN registers on rp2040 in host mode
+            // Both IN and OUT endpoints use IN registers in host mode
             self.waker().register(cx.waker());
 
             // Disconnected since allocation: this transfer can never complete.
@@ -988,8 +942,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
 
         // A device that does not answer raises RX_TIMEOUT, and the controller retries
         // the token for as long as it is left to: without it the transaction never
-        // ends. Low-speed devices behind a hub (PRE) raise none on their own, on
-        // RP2040 as on RP2350.
+        // ends. Low-speed devices behind a hub (PRE) raise none on their own.
         // Left over from an earlier transaction.
         regs.sie_status().write_clear(|w| w.set_rx_timeout(true));
 
@@ -1004,7 +957,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
             w.set_error_data_seq(true);
         });
 
-        // START_TRANS is synchronized separately (RP2040 §4.1.2.9, RP2350 §12.7.3.9).
+        // START_TRANS is synchronized separately.
         crate::cpu::delay(SIE_START_DELAY_CYCLES);
         T::regs().sie_ctrl().modify(|w| {
             w.set_start_trans(true);
@@ -1875,8 +1828,8 @@ impl<'d, T: SealedHostInstance> UsbHostController<'d> for Driver<'d, T> {
     }
 }
 
-/// Service the RP235x stop-on-NAK interrupt, handing EPX to whoever is queued.
-/// Returns `true` when it consumed the interrupt; RP2040 has no such interrupt.
+/// Service the stop-on-NAK interrupt, handing EPX to whoever is queued.
+/// Returns `true` when it consumed the interrupt.
 #[allow(clippy::extra_unused_type_parameters)]
 fn on_nak_stop<T: SealedHostInstance>() -> bool {
     #[cfg(feature = "_rp235x")]
@@ -1901,49 +1854,10 @@ fn on_nak_stop<T: SealedHostInstance>() -> bool {
     false
 }
 
-/// Service the SOF interrupt. RP235x only silences it; RP2040 uses frame boundaries
-/// to stop a NAKing holder so a queued pipe can take EPX.
+/// Acknowledge the SOF interrupt.
 fn on_host_sof<T: SealedHostInstance>() -> &'static str {
-    #[allow(unused)]
-    let regs = T::regs();
-    #[cfg(feature = "_rp235x")]
-    {
-        // Prevent nonstop SOF interrupt
-        T::regs().inte().write_clear(|w| w.set_host_sof(true));
-        "sof"
-    }
-    #[cfg(feature = "rp2040")]
-    {
-        // Reading SOF_RD acknowledges HOST_SOF on RP2040.
-        let _ = regs.sof_rd().read();
-        let state = T::host_state();
-        let index = state.current_channel.load(Ordering::Acquire);
-
-        if state.with_arbiter(|a| a.waiting) == 0 {
-            // Nobody is queued for EPX, so there is nothing to yield to.
-            disarm_epx_yield::<T>();
-            "sof idle"
-        } else if index == 0 {
-            // EPX is free; the queue will claim it without a yield.
-            state.with_arbiter(|a| a.switch_requested = false);
-            "sof free"
-        } else if state.with_arbiter(|a| a.switch_requested) {
-            // Two frame boundaries with no completion between them means the
-            // holder is retrying NAKs: safe to stop it here.
-            regs.sie_ctrl().modify(|w| w.set_stop_trans(true));
-            while regs.sie_ctrl().read().stop_trans() {}
-
-            state.with_arbiter(|a| a.switch_requested = false);
-            if yield_epx::<T>(index) {
-                "sof yielded EPx"
-            } else {
-                "sof stop raced a completion; packet kept"
-            }
-        } else {
-            state.with_arbiter(|a| a.switch_requested = true);
-            "sof armed EPx yield"
-        }
-    }
+    T::regs().inte().write_clear(|w| w.set_host_sof(true));
+    "sof"
 }
 
 /// USB interrupt handler.
@@ -1982,7 +1896,6 @@ impl<T: SealedHostInstance> interrupt::typelevel::Handler<T::Interrupt> for Inte
                 "rx overflow"
             } else if ints.trans_complete() {
                 regs.inte().write_clear(|w| w.set_trans_complete(true));
-                note_epx_progress::<T>();
                 T::host_state().wake_current_epx();
                 "transaction complete"
             } else if ints.error_rx_timeout() {

@@ -2,12 +2,7 @@
 //!
 //! The ID is read once, on first use, and cached.
 //!
-//! The source differs per chip:
-//!
-//! - **RP2350**: just reads the chip ID from OTP. Same as bootrom USB serial number.
-//!
-//! - **RP2040**: no chip ID, so use the flash chip's unique ID, as per `pico_get_unique_board_id`
-//!   in pico-sdk. Some flash chips don't even support this.
+//! The chip ID is read from OTP, the same source used by the bootrom USB serial number.
 //!
 //! Infallible, so if the ID cannot be read, return a fixed value (`0xEE`), also as per `pico-sdk`.
 
@@ -34,17 +29,6 @@ static UID: LazyLock<Uid> = LazyLock::new(|| {
 
     Uid { bytes, hex }
 });
-
-#[cfg(feature = "rp2040")]
-fn read_uid() -> [u8; 8] {
-    let mut bytes = [0u8; 8];
-    // `in_ram` pauses core 1 and runs the command in a critical section
-    // to avoid problems with XIP.
-    match unsafe { crate::flash::in_ram(|| crate::flash::ram_helpers::flash_unique_id(&mut bytes)) } {
-        Ok(()) => bytes,
-        Err(_) => [UNAVAILABLE; 8],
-    }
-}
 
 #[cfg(feature = "_rp235x")]
 fn read_uid() -> [u8; 8] {

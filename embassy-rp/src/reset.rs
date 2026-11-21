@@ -2,8 +2,6 @@ pub use pac::resets::regs::Peripherals;
 
 use crate::pac;
 
-#[cfg(feature = "rp2040")]
-pub const ALL_PERIPHERALS: Peripherals = Peripherals(0x01ff_ffff);
 #[cfg(feature = "_rp235x")]
 pub const ALL_PERIPHERALS: Peripherals = Peripherals(0x1fff_ffff);
 

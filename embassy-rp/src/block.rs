@@ -76,14 +76,8 @@ pub const IMAGE_TYPE_EXE_TYPE_SECURITY_NS: u16 = 0x0010;
 /// A [`ITEM_1BS_IMAGE_TYPE`] value bitmask to mark the CPU security mode as Non Secure
 pub const IMAGE_TYPE_EXE_TYPE_SECURITY_S: u16 = 0x0020;
 
-/// A [`ITEM_1BS_IMAGE_TYPE`] value bitmask to mark the CPU type as Arm
-pub const IMAGE_TYPE_EXE_CPU_ARM: u16 = 0x0000;
-
 /// A [`ITEM_1BS_IMAGE_TYPE`] value bitmask to mark the CPU type as RISC-V
 pub const IMAGE_TYPE_EXE_CPU_RISCV: u16 = 0x0100;
-
-/// A [`ITEM_1BS_IMAGE_TYPE`] value bitmask to mark the CPU as an RP2040
-pub const IMAGE_TYPE_EXE_CHIP_RP2040: u16 = 0x0000;
 
 /// A [`ITEM_1BS_IMAGE_TYPE`] value bitmask to mark the CPU as an RP2350
 pub const IMAGE_TYPE_EXE_CHIP_RP2350: u16 = 0x1000;
@@ -184,36 +178,23 @@ impl Block<2> {
 }
 
 impl ImageDef {
-    /// Construct a new IMAGE_DEF Block, for an EXE with the given security and
-    /// architecture.
-    pub const fn arch_exe(security: Security, architecture: Architecture) -> Self {
-        Self::new([item_image_type_exe(security, architecture)])
-    }
-
     /// Construct a new IMAGE_DEF Block, for an EXE with the given security.
     ///
-    /// The target architecture is taken from the current build target (i.e. Arm
-    /// or RISC-V).
+    /// The image is marked for the RISC-V architecture.
     pub const fn exe(security: Security) -> Self {
-        if cfg!(all(target_arch = "riscv32", target_os = "none")) {
-            Self::arch_exe(security, Architecture::Riscv)
-        } else {
-            Self::arch_exe(security, Architecture::Arm)
-        }
+        Self::new([item_image_type_exe(security)])
     }
 
     /// Construct a new IMAGE_DEF Block, for a Non-Secure EXE.
     ///
-    /// The target architecture is taken from the current build target (i.e. Arm
-    /// or RISC-V).
+    /// The image is marked for the RISC-V architecture.
     pub const fn non_secure_exe() -> Self {
         Self::exe(Security::NonSecure)
     }
 
     /// Construct a new IMAGE_DEF Block, for a Secure EXE.
     ///
-    /// The target architecture is taken from the current build target (i.e. Arm
-    /// or RISC-V).
+    /// The image is marked for the RISC-V architecture.
     pub const fn secure_exe() -> Self {
         Self::exe(Security::Secure)
     }
@@ -862,16 +843,6 @@ impl Permission {
     }
 }
 
-/// The supported RP2350 CPU architectures
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum Architecture {
-    /// Core is in Arm Cortex-M33 mode
-    Arm,
-    /// Core is in RISC-V / Hazard3 mode
-    Riscv,
-}
-
 /// The kinds of Secure Boot we support
 #[derive(Debug, Copy, Clone)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
@@ -916,17 +887,10 @@ pub const fn item_image_type_data() -> u32 {
 }
 
 /// Create Image Type item, of type EXE.
-pub const fn item_image_type_exe(security: Security, arch: Architecture) -> u32 {
+pub const fn item_image_type_exe(security: Security) -> u32 {
     let mut value = IMAGE_TYPE_EXE | IMAGE_TYPE_EXE_CHIP_RP2350;
 
-    match arch {
-        Architecture::Arm => {
-            value |= IMAGE_TYPE_EXE_CPU_ARM;
-        }
-        Architecture::Riscv => {
-            value |= IMAGE_TYPE_EXE_CPU_RISCV;
-        }
-    }
+    value |= IMAGE_TYPE_EXE_CPU_RISCV;
 
     match security {
         Security::Unspecified => value |= IMAGE_TYPE_EXE_TYPE_SECURITY_UNSPECIFIED,

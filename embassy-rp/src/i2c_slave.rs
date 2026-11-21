@@ -249,7 +249,7 @@ impl<'d, M: Mode> I2cSlave<'d, M> {
 
             let dat = p.ic_data_cmd().read();
             if *offset != 0 && dat.first_data_byte() {
-                // The RP2040 state machine will keep placing bytes into the
+                // The RP235x state machine will keep placing bytes into the
                 // FIFO, even if they are part of a subsequent write transaction.
                 //
                 // Unfortunately merely reading ic_data_cmd will consume that

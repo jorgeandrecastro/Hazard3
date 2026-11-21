@@ -23,7 +23,7 @@ impl<'d, PIO: Instance> PioSpiProgram<'d, PIO> {
     /// Load the spi program into the given pio
     pub fn new(common: &mut Common<'d, PIO>, phase: Phase) -> Self {
         // These PIO programs are taken straight from the datasheet (3.6.1 in
-        // RP2040 datasheet, 11.6.1 in RP2350 datasheet)
+        // RP2350 datasheet, section 11.6.1)
 
         // Pin assignments:
         // - SCK is side-set pin 0
@@ -34,7 +34,7 @@ impl<'d, PIO: Instance> PioSpiProgram<'d, PIO> {
         // configuring the push/pull threshold. Shift left/right is fine, but you must
         // justify the data yourself. This is done most conveniently for frame sizes of
         // 8 or 16 bits by using the narrow store replication and narrow load byte
-        // picking behavior of RP2040's IO fabric.
+        // picking behavior of the RP235x IO fabric.
 
         let prg = match phase {
             Phase::CaptureOnFirstTransition => {
