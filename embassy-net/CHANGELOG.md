@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.2.0 - 2026-11-21
+
+### Changed
+
+- Modularity: split the monolithic `src/udp.rs` into focused modules, following the same approach
+  as the earlier `tcp.rs` split. The public API and the `udp::` paths are unchanged
+  (`udp::UdpSocket`, `udp::BindError`, `udp::SendError`, `udp::RecvError`, `udp::UdpMetadata`,
+  `udp::RecvPacket`, `udp::PacketMeta`, `udp::IfaceHandle`, ...), so this is not a breaking change.
+  - `src/udp.rs`: module documentation, module wiring, re-exports, the `UdpSocket` struct and its
+    `Drop` impl.
+  - `src/udp/error.rs`: `BindError`, `SendError`, `RecvError`, their `Display` and
+    `core::error::Error` impls, and the `From<xarxa::udp::SendError>` conversion to
+    `TryError<SendError>`.
+  - `src/udp/socket.rs`: `UdpSocket` construction, `bind`, interface binding (feature
+    `iface-bind`), addresses, state (`is_open`, `can_recv`, `close`), hop limit and `try_alloc`.
+  - `src/udp/recv.rs`: receiving and peeking (`recv*`, `peek*`, `poll_recv_ready`,
+    `wait_recv_ready`).
+  - `src/udp/send.rs`: sending (`send_to*`, `send_packet_to`, `try_send_packet_to`, in-place
+    `send_to_with`) and the shared send helpers.
+- The internal helper `UdpSocket::with` is now `pub(super)` so that the sibling modules can use it.
+  It is not part of the public API.
+
+### Added
+
+- Unit tests in `src/udp/error.rs` (not present in upstream `embassy-net`): `Display` output of the
+  UDP error types and the mapping of every `xarxa::udp::SendError` variant to `TryError<SendError>`.
+- `SPDX-License-Identifier: MIT OR Apache-2.0` header on the new UDP source files.
+- README: UDP files in the source layout, the UDP split in the project vision, and `udp/error.rs`
+  in the test coverage table.
+
+### Removed / not provided
+
+- No CI compilation or test suite is provided for this release.
+- No examples or hardware integrations are compiled or tested.
+- No automated build matrix or target-platform validation is provided.
+
 ## 0.1.0 - 2026-11-20
 
 ### Changed

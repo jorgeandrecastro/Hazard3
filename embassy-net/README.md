@@ -31,9 +31,10 @@ it is not limited to a single upstream or downstream use case. Its goals are del
   against a mock driver are the next step. The test command below is the maintained host-side
   baseline; examples and hardware integrations are not considered tested by this fork unless that
   is explicitly stated.
-- **More modularity.** Large source files are split into small, focused modules (for example the old
-  `tcp.rs` is now a root module plus `socket`, `socket/io`, `listener` and `client`), which makes the
-  code easier to read, review and test.
+- **More modularity.** Large source files are split into small, focused modules, which makes the
+  code easier to read, review and test. So far:
+  - the old `tcp.rs` is now a root module plus `socket`, `socket/io`, `listener` and `client`;
+  - the old `udp.rs` is now a root module plus `error`, `socket`, `recv` and `send`.
 - **Useful examples.** This fork may add or improve focused examples, but example coverage is not
   intended to replace upstream functionality or to imply that every upstream example builds.
 
@@ -72,19 +73,24 @@ embassy-net-riscv/
     ├── route.rs            # routing
     ├── neighbor.rs         # neighbor cache
     ├── raw.rs              # raw sockets
-    ├── udp.rs              # UDP sockets
     ├── dns.rs              # DNS client
     ├── iface/
     │   ├── mod.rs          # interfaces
     │   ├── dhcpv4.rs       # DHCPv4 client
     │   └── dhcpv4_server.rs# DHCPv4 server
     ├── tcp.rs              # TCP root: error types, shared TcpIo helper, re-exports
-    └── tcp/
-        ├── socket.rs       # TcpSocket: new, connect/accept, options, state
-        ├── socket/
-        │   └── io.rs       # read/write/peek/flush, TcpReader, TcpWriter, embedded-io impls
-        ├── listener.rs     # TcpListener            (feature `tcp-listener`)
-        └── client.rs       # embedded-nal-async client (feature `embedded-nal`)
+    ├── tcp/
+    │   ├── socket.rs       # TcpSocket: new, connect/accept, options, state
+    │   ├── socket/
+    │   │   └── io.rs       # read/write/peek/flush, TcpReader, TcpWriter, embedded-io impls
+    │   ├── listener.rs     # TcpListener            (feature `tcp-listener`)
+    │   └── client.rs       # embedded-nal-async client (feature `embedded-nal`)
+    ├── udp.rs              # UDP root: module docs, re-exports, UdpSocket struct, Drop
+    └── udp/
+        ├── error.rs        # BindError, SendError, RecvError, Display/Error impls, TryError mapping
+        ├── socket.rs       # UdpSocket: new, bind, iface binding, addresses, state, options
+        ├── recv.rs         # recv / peek / readiness (async, try_, poll_, zero-copy)
+        └── send.rs         # send_to / send_packet_to (async, try_, poll_, in-place)
 ```
 
 Unit tests live next to the code they test, in a `#[cfg(test)] mod tests` at the end of each file.
@@ -109,6 +115,7 @@ Current coverage:
 | `tcp.rs` | `Display`, `ErrorKind` mapping, `Copy`/`Eq`/`Error` traits of the error types |
 | `tcp/client.rs` | runtime tests of the buffer pool used by `TcpClient` |
 | `tcp/socket.rs`, `tcp/socket/io.rs`, `tcp/listener.rs` | compile-time checks of the public API and `embedded-io` impls |
+| `udp/error.rs` | `Display` output and `udp::SendError` to `TryError<SendError>` mapping |
 
 ## Development tools
 
