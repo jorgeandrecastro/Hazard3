@@ -25,8 +25,14 @@ cargo test --manifest-path ./embassy-boot/Cargo.toml
 
 cargo test --manifest-path ./embassy-nrf/Cargo.toml --no-default-features --features nrf52840,time-driver-rtc1
 
-cargo test --manifest-path ./embassy-rp/Cargo.toml --no-default-features --features time-driver,rp2040,jiff,_test
-cargo test --manifest-path ./embassy-rp/Cargo.toml --no-default-features --features time-driver,rp235xa,_test
+for chip in rp235xa rp235xb; do
+    cargo build --manifest-path ./embassy-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver"
+    rp_deps=$(cargo tree --manifest-path ./embassy-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver" --edges normal --prefix none)
+    if grep -Eq '^(cortex-m|cortex-m-rt|rp2040-boot2) v' <<< "$rp_deps"; then
+        echo "Unexpected ARM or RP2040 dependency in $chip RISC-V build" >&2
+        exit 1
+    fi
+done
 
 cargo test --manifest-path ./embassy-stm32/Cargo.toml --no-default-features --features stm32f429vg,time-driver-any,exti,single-bank,low-power,jiff,test
 cargo test --manifest-path ./embassy-stm32/Cargo.toml --no-default-features --features stm32f429vg,time-driver-any,exti,dual-bank,test

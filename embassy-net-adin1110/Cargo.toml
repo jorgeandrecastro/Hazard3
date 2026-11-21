@@ -27,7 +27,7 @@ embedded-hal-bus = { version = "0.3", features = ["async"] }
 crc = "3.0.1"
 critical-section = { version = "1.1.2", features = ["std"] }
 futures-test = "0.3.28"
-xarxa = { package = "xarxa-riscv", version = "0.1.0", path = "../xarxa-riscv" }
+xarxa = { package = "xarxa-riscv", version = "0.1.0", path = "../xarxa-riscv", default-features = false }
 
 [features]
 default = ["generic-spi"]

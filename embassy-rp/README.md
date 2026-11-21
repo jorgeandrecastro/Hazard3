@@ -9,6 +9,8 @@
 > It adds RISC-V support (e.g. RP2350 Hazard3 cores) which is not provided upstream. All credit for Embassy goes to the
 > Embassy team and contributors. Licensed under the same terms as upstream (MIT OR Apache-2.0). Not affiliated with or endorsed by the Embassy project.
 
+![RP2350 running Embassy-RISCV](../embassy-rp-riscv-test.jpeg)
+
 HALs implement safe, idiomatic Rust APIs to use the hardware capabilities, so raw register manipulation is not needed.
 
 The embassy-rp-riscv HAL targets the RP235x microcontroller's Hazard3 RISC-V cores. The HAL implements both blocking and async APIs
