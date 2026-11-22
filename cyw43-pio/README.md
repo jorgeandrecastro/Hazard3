@@ -13,6 +13,11 @@ it does not support RP2040 or Arm.
 key hardware feature of the fork: a Raspberry Pi Pico 2 W exchanges PING/PONG
 ESP-NOW frames bidirectionally with an ESP32-C3 Mini.
 
+Standalone source examples and the benchmark report are available in
+[`cyw43-riscv/exemples/espnow-pico2w`](../cyw43/exemples/espnow-pico2w/README.md)
+and [`Benchmraks.md`](../cyw43/exemples/espnow-pico2w/Benchmraks.md). The PIO
+package itself is not expanded with those example binaries.
+
 The transport uses separate TX and RX DMA channels to communicate reliably
 with the CYW43439. The ESP-NOW validation exercises action-frame reception,
 response transmission, sequence-number matching, timeout handling and RTT
@@ -24,8 +29,8 @@ Use the matching forked packages together:
 
 ```toml
 [dependencies]
-cyw43 = { package = "cyw43-riscv", version = "0.2" }
-cyw43-pio = { package = "cyw43-pio-riscv", version = "0.2" }
+cyw43 = { package = "cyw43-riscv", version = "0.2.1" }
+cyw43-pio = { package = "cyw43-pio-riscv", version = "0.2.1" }
 embassy-rp = { package = "embassy-rp-riscv", version = "0.2", features = ["rp235xa"] }
 ```
 
