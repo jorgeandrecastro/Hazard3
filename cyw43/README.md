@@ -1,10 +1,14 @@
-# cyw43
+# cyw43-riscv
 
-Rust driver for the CYW43439 wifi+bluetooth chip. Implementation based on [Infineon/wifi-host-driver](https://github.com/Infineon/wifi-host-driver).
+RISC-V fork of the Embassy CYW43 WiFi and Bluetooth driver, based on
+[Infineon/wifi-host-driver](https://github.com/Infineon/wifi-host-driver). The
+package is named `cyw43-riscv`, while the Rust library name remains `cyw43`.
+It uses the forked time, synchronization and network channel crates and is
+licensed under MIT OR Apache-2.0.
 
-Works on the following boards:
+Upstream lists the following boards; this fork targets RISC-V and the RP2350
+PIO transport is provided by `cyw43-pio-riscv`:
 
-- Raspberry Pi Pico W (RP2040)
 - Raspberry Pi Pico 2 W (RP2350A)
 - Pimoroni Pico Plus 2 W (RP2350B)
 - Any board with Raspberry Pi RM2 radio module.
@@ -21,7 +25,7 @@ Working:
     - Sending and receiving Ethernet frames.
     - Using the default MAC address.
     - [`embassy-net`](https://embassy.dev) integration.
-    - RP2040 PIO driver for the nonstandard half-duplex SPI used in the Pico W.
+    - RP2350 PIO driver for the nonstandard half-duplex SPI used in the Pico 2 W.
     - Using IRQ for device events, no busy polling.
     - GPIO support (for LED on the Pico W).
 - Bluetooth support
@@ -30,26 +34,50 @@ Working:
     - Implements the [bt-hci](https://crates.io/crates/bt-hci) controller traits.
     - Works with the [TrouBLE](https://github.com/embassy-rs/trouble) bluetooth LE stack. Check its repo for examples using `cyw43`.
 
-## Running the WiFi examples
+The repository's upstream Arm examples are not maintained for this fork.
+See the [`cyw43-pio-riscv` README](../cyw43-pio/README.md) for dependency
+selection and the RISC-V compatibility check.
 
-- Install `probe-rs` following the instructions at <https://probe.rs>.
-- `cd examples/rp`
-### Example 1: Scan the wifi stations
-- `cargo run --release --bin wifi_scan`
-### Example 2: Create an access point (IP and credentials in the code)
-- `cargo run --release --bin wifi_ap_tcp_server`
-### Example 3: Connect to an existing network and create a server
-- `cargo run --release --bin wifi_tcp_server`
+## Development
 
-After a few seconds, you should see that DHCP picks up an IP address like this
+Run these commands from the `cyw43` directory. Install the RISC-V target if needed:
+
+```sh
+rustup target add riscv32imac-unknown-none-elf
 ```
-11.944489 DEBUG Acquired IP configuration:
-11.944517 DEBUG    IP address:      192.168.0.250/24
-11.944620 DEBUG    Default gateway: 192.168.0.33
-11.944722 DEBUG    DNS server 0:    192.168.0.33
+
+Check the driver for RISC-V, including Bluetooth and firmware logging:
+
+```sh
+cargo check --target riscv32imac-unknown-none-elf
+cargo check --target riscv32imac-unknown-none-elf --features bluetooth,defmt,firmware-logs
 ```
-This example implements a TCP echo server on port 1234. You can try connecting to it with:
+
+Run the host tests:
+
+```sh
+cargo test --features bluetooth
 ```
-nc 192.168.0.250 1234
+
+Generate the documentation:
+
+```sh
+cargo doc \
+    --target riscv32imac-unknown-none-elf \
+    --features bluetooth,defmt,firmware-logs \
+    --no-deps \
+    --document-private-items
 ```
-Send it some data, you should see it echoed back and printed in the firmware's logs.
+
+Package and publish for RISC-V:
+
+```sh
+cargo package --target riscv32imac-unknown-none-elf
+cargo publish --target riscv32imac-unknown-none-elf
+```
+
+## Credits
+
+This crate is derived from [Embassy's `cyw43`](https://github.com/embassy-rs/embassy/tree/main/cyw43).
+All credit for the original work goes to Embassy and its contributors. This
+independent fork focuses on RISC-V and is not affiliated with or endorsed by Embassy.

@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- next-header -->
-## Unreleased - 2026-11-18
+## 0.1.0 - 2026-11-22
 
+- Fork as `cyw43-riscv`, retaining the `cyw43` library name and using the RISC-V time, synchronization and network channel crates.
 - Breaking: `Control::init` takes a `Config`, whose `country` sets the radio's rules (channels and transmit power) instead of the worldwide ones; `countries` is public. Pass `Config::default()` to keep the worldwide rules.
 - Add support for the CYW43455 over SDIO (`Cyw43455`, `new_43455_sdio`).
 - Fix `reset_core` waiting for the backplane to be busy instead of idle, which timed out on SDIO chips with a Cortex-R4.
@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `bt-hci-transport` 0.1.0 support.
 - Preserve host-owned Bluetooth control bits under simultaneous WiFi and Bluetooth load.
 - Bluetooth uses interrupts instead of SPI polling
+
+The entries below describe the upstream `cyw43` releases.
 
 ## 0.7.0 - 2026-03-10
 
