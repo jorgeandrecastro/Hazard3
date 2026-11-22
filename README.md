@@ -7,6 +7,22 @@
 
 ![Raspberry Pi Pico 2 W running Embassy-RISCV](pico2w.jpeg)
 
+## ESP-NOW: flagship feature
+
+![CYW43-RISC-V ESP-NOW validation](cyw43/cyw43-riscv-espnow.png)
+
+[`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) provide the fork's
+main hardware feature: bidirectional ESP-NOW communication on the Raspberry Pi
+Pico 2 W. The Pico 2 W uses the RP2350 Hazard3 core and the CYW43439 radio
+through the RISC-V PIO transport, and communicates with an ESP32-C3 Mini using
+PING/PONG action frames.
+
+This ESP-NOW validation is available in `cyw43-riscv` 0.2.0 and
+`cyw43-pio-riscv` 0.2.0. It was tested on hardware with sequence-number
+validation, PONG matching, timeout detection and round-trip-time measurements.
+In the recorded 1,000-exchange benchmark, all exchanges completed successfully
+with zero transmission errors, invalid PONGs, unexpected PONGs and timeouts.
+
 ## Vision
 
 Embassy-RISCV is a **RISC-V-first** fork. The goal is to make async embedded Rust with Embassy a
@@ -65,6 +81,14 @@ See the [`embassy-rp-riscv` README](embassy-rp/README.md) for the full setup.
 
 ## What is new
 
+### CYW43 ESP-NOW support 0.2.0 (2026-11-22)
+
+- `cyw43-riscv` 0.2.0 adds experimental ESP-NOW action-frame reception and transmission for the CYW43439.
+- `cyw43-pio-riscv` 0.2.0 provides the RP2350 RISC-V PIO SPI transport used for the Pico 2 W.
+- Validated bidirectional PING/PONG communication with an ESP32-C3 Mini.
+- Recorded 1,000 successful exchanges, with no TX errors, invalid or unexpected PONGs, or timeouts.
+- Average measured RTT was 13.732 ms; see the [CYW43 benchmark](cyw43/README.md#esp-now-benchmark).
+
 ### embassy-rp-riscv 0.2.0 (2026-11-21)
 
 - RISC-V only: Cortex-M and RP2040 features, dependencies, CPU primitives and startup code are removed.
@@ -75,15 +99,14 @@ See the [`embassy-rp-riscv` README](embassy-rp/README.md) for the full setup.
 - Checked with `cargo check` for `rp235xa` and `rp235xb` on `riscv32imac-unknown-none-elf`, including
   with `RUSTFLAGS="-D unexpected-cfgs"`.
 
-### embassy-net-riscv 0.1.0 (2026-11-20)
+### embassy-net-riscv 0.3.0 (2026-11-22)
 
 - Now depends on the in-repository `xarxa-riscv` and `xarxa-driver-riscv` forks through local path
   dependencies instead of Git dependencies, which allows publication on crates.io.
 - The monolithic `src/tcp.rs` is split into focused modules (`socket`, `socket/io`, `listener`,
   `client`). The public API and `tcp::` paths are unchanged, so this is not a breaking change.
-- Adds unit tests in every TCP module, which upstream `embassy-net` does not have: error types
-  and `embedded-io` error mapping, the TCP client connection buffer pool, and compile-time checks of
-  the public API signatures and `embedded-io` trait impls.
+- The DNS client now handles unsupported reverse lookups with `dns::Error::Unsupported` instead of
+  panicking. DNS fallback behavior and host-name query handling are also updated.
 - New TCP source files carry an `SPDX-License-Identifier: MIT OR Apache-2.0` header.
 
 The detailed history is in each crate's `CHANGELOG.md`.
@@ -114,11 +137,12 @@ No maintained CI workflow, example build matrix, or hardware integration test su
   (`rp235xa`, `rp235xb`, and a release check on `rp235xa`) and has been tested on a real RP2350 running
   the Hazard3 cores. Not every peripheral is tested, and PSRAM support is not implemented yet. The
   commands are listed in its README.
-- [`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) are tested on hardware with a Raspberry Pi
-  Pico 2 W. The integration has been exercised for the CYW43 LED blink and for use with an OLED display.
-- The networking crates do not compile or test upstream examples and target-specific hardware
-  integrations in this repository. Their host-oriented checks and development commands, including the
-  new TCP unit tests, are documented in the individual crate READMEs.
+- [`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) are available for the Raspberry Pi Pico 2 W
+  and have been tested on hardware. The integration has been exercised for ESP-NOW bidirectional
+  PING/PONG communication with an ESP32-C3 Mini, CYW43 LED blinking and use with an OLED display.
+- The networking crates are not compiled or tested as part of this README or repository validation.
+- There is no maintained test suite or hardware integration check for the upstream network examples
+  or target-specific networking configurations in this repository.
 
 ## Contributing
 
