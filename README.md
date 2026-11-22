@@ -17,8 +17,8 @@ Pico 2 W. The Pico 2 W uses the RP2350 Hazard3 core and the CYW43439 radio
 through the RISC-V PIO transport, and communicates with an ESP32-C3 Mini using
 PING/PONG action frames.
 
-This ESP-NOW validation is available in `cyw43-riscv` 0.2.0 and
-`cyw43-pio-riscv` 0.2.0. It was tested on hardware with sequence-number
+This ESP-NOW validation is available in `cyw43-riscv` 0.2.1 and
+`cyw43-pio-riscv` 0.2.1. It was tested on hardware with sequence-number
 validation, PONG matching, timeout detection and round-trip-time measurements.
 In the recorded 1,000-exchange benchmark, all exchanges completed successfully
 with zero transmission errors, invalid PONGs, unexpected PONGs and timeouts.
@@ -81,10 +81,10 @@ See the [`embassy-rp-riscv` README](embassy-rp/README.md) for the full setup.
 
 ## What is new
 
-### CYW43 ESP-NOW support 0.2.0 (2026-11-22)
+### CYW43 ESP-NOW support 0.2.1 (2026-11-22)
 
-- `cyw43-riscv` 0.2.0 adds experimental ESP-NOW action-frame reception and transmission for the CYW43439.
-- `cyw43-pio-riscv` 0.2.0 provides the RP2350 RISC-V PIO SPI transport used for the Pico 2 W.
+- `cyw43-riscv` 0.2.1 adds the standalone Pico 2 W / ESP32-C3 example and benchmark references.
+- `cyw43-pio-riscv` 0.2.1 documents and aligns the PIO transport with the ESP-NOW example.
 - Validated bidirectional PING/PONG communication with an ESP32-C3 Mini.
 - Recorded 1,000 successful exchanges, with no TX errors, invalid or unexpected PONGs, or timeouts.
 - Average measured RTT was 13.732 ms; see the [CYW43 benchmark](cyw43/README.md#esp-now-benchmark).
