@@ -1,83 +1,165 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.0 - 2026-11-22
+## [0.2.0] - 2026-11-22
 
-- Fork as `cyw43-riscv`, retaining the `cyw43` library name and using the RISC-V time, synchronization and network channel crates.
-- Breaking: `Control::init` takes a `Config`, whose `country` sets the radio's rules (channels and transmit power) instead of the worldwide ones; `countries` is public. Pass `Config::default()` to keep the worldwide rules.
-- Add support for the CYW43455 over SDIO (`Cyw43455`, `new_43455_sdio`).
-- Fix `reset_core` waiting for the backplane to be busy instead of idle, which timed out on SDIO chips with a Cortex-R4.
-- `State` is now `Send`, so it can be stored in a `ConstStaticCell`.
-- Clear the scan event mask and subscription on cancellation.
-- Keep WiFi responsive when the Bluetooth RX queue is full; resume queued records when space frees.
-- Disassociate before retrying a failed or cancelled join.
-- Return `JoinError::InvalidPassphrase` instead of panicking when joining with an invalid passphrase.
-- Add WPA3 and WPA2/WPA3 transition-mode SoftAP support.
-- The multicast hardware address filter is now managed automatically by `embassy-net`/`xarxa` through the driver trait. `Control::(add|remove)_multicast_address` is removed.
-- Add `bt-hci-transport` 0.1.0 support.
-- Preserve host-owned Bluetooth control bits under simultaneous WiFi and Bluetooth load.
-- Bluetooth uses interrupts instead of SPI polling
+### Added
 
-The entries below describe the upstream `cyw43` releases.
+- ESP-NOW bidirectional hardware validation using the CYW43439 on Raspberry Pi Pico 2 W.
+- ESP32-C3 Mini interoperability test.
+- PING/PONG application protocol with 32-bit sequence numbers.
+- Action-frame reception and response transmission.
+- Sequence-number validation and response matching.
+- Round-trip time (RTT) measurement.
+- Packet statistics, invalid-payload detection, and timeout monitoring.
+- Hardware benchmark documentation.
 
-## 0.7.0 - 2026-03-10
+### Validated
 
-- Reset WPA security before creating secure AP
-- Add `get_rssi()` to `Controller`
-- Implement link state monitoring
-- Always unsubscribe to cyw43 events (fix event leak)
-- Add SDIO support for STM32
-- Allow specifying nvram, get LWB+ working
-- Improve join handling with better error reporting
-- Replace `num_enum` dependency with internal macro
-- Bump bt-hci to 0.8.0.
-- Update to embedded-io 0.7
-- Update embassy-sync to 0.8.0
-- Update embassy-net-driver-channel to 0.4.0
+ESP-NOW communication between:
 
-## 0.6.0 - 2025-11-27
+- Raspberry Pi Pico 2 W (RP2350 + CYW43439).
+- ESP32-C3 Mini.
 
-- Updated documentation for Control::join() #4678
-- Bump bt-hci to 0.6.0.
-- Add error handling to HCI transport implementation.
-- Reset WPA security on AP creation #4709
+Recorded benchmark results:
 
-## 0.5.0 - 2025-08-28
+| Metric | Result |
+|---|---:|
+| Exchanges completed | 1,000 |
+| TX attempts | 1,000 |
+| TX submissions | 1,000 |
+| TX errors | 0 |
+| Matched PONGs | 1,000 |
+| Invalid PONGs | 0 |
+| Unexpected PONGs | 0 |
+| Timeouts | 0 |
+| Success rate | 100.0% |
+| Timeout rate | 0.0% |
+| Elapsed time | 1,007 seconds |
 
-- bump bt-hci to 0.4.0
+### RTT benchmark
 
-## 0.4.1 - 2025-08-26 (yanked)
+| Metric | Result |
+|---|---:|
+| Minimum | 12.648 ms |
+| Maximum | 196.103 ms |
+| Average | 13.732 ms |
+| P50 | ~12.850 ms |
+| P95 | ~14.250 ms |
+| P99 | ~23.050 ms |
 
-- bump bt-hci to 0.4.0
+The configured benchmark target was 10,000 exchanges. The recorded results represent the first 1,000 exchanges, not a completed 10,000-packet test.
 
-## 0.4.0 - 2025-07-15
+### Documentation
 
-- bump embassy-sync to 0.7.0
-- bump bt-hci to 0.3.0
-- make State::new const fn
+- Added ESP-NOW experimental validation results to the README.
+- Documented the hardware configuration and communication protocol.
+- Documented RTT statistics and benchmark limitations.
+- Clarified the distinction between the RISC-V fork and the original Embassy project.
 
-## 0.3.0 - 2025-01-05
+## [0.1.0] - 2026-11-22
 
-- Update `embassy-time` to 0.4.0
-- Add Bluetooth support.
-- Add WPA3 support.
-- Expand wifi security configuration options.
+### Added
 
-## 0.2.0 - 2024-08-05
+- Initial RISC-V fork named `cyw43-riscv`.
+- Retained the Rust library name `cyw43`.
+- Adopted forked time, synchronization, and network channel crates.
+- Added CYW43455 support over SDIO (`Cyw43455`, `new_43455_sdio`).
+- Added RISC-V compatibility work for the CYW43 driver.
 
-- Update to new versions of embassy-{time,sync}
-- Add more fields to the BssInfo packet struct #2461
-- Extend the Scan API #2282
-- Reuse buf to reduce stack usage #2580
-- Add MAC address getter to cyw43 controller #2818
-- Add function to join WPA2 network with precomputed PSK. #2885
-- Add function to close soft AP. #3042
-- Fixing missing re-export #3211
+### Changed
 
-## 0.1.0 - 2024-01-11
+- Breaking: `Control::init` now takes a `Config`, whose `country` field configures radio regulatory rules, including channels and transmit power, instead of always using worldwide rules.
+- Exposed `countries` publicly.
+- Passing `Config::default()` retains worldwide rules.
+- `State` is now `Send`, allowing storage in a `ConstStaticCell`.
+- The multicast hardware address filter is managed automatically by `embassy-net`/`xarxa` through the driver trait.
+- Removed `Control::add_multicast_address` and `Control::remove_multicast_address`.
 
-- First release
+### Fixed
+
+- Fixed `reset_core` waiting for the backplane to become busy instead of idle, which caused timeouts on SDIO chips with a Cortex-R4.
+- Cleared the scan event mask and subscription on cancellation.
+- Improved WiFi responsiveness when the Bluetooth RX queue is full.
+- Resumed queued Bluetooth records when queue space becomes available.
+- Disassociated before retrying failed or cancelled joins.
+- Returned `JoinError::InvalidPassphrase` instead of panicking when joining with an invalid passphrase.
+- Preserved host-owned Bluetooth control bits during simultaneous WiFi and Bluetooth operation.
+
+### Bluetooth
+
+- Added `bt-hci-transport` 0.1.0 support.
+- Replaced Bluetooth SPI polling with interrupts.
+- Added Bluetooth Classic and LE HCI support.
+
+### WiFi
+
+- Added WPA3 SoftAP support.
+- Added WPA2/WPA3 transition-mode SoftAP support.
+
+---
+
+## Upstream Embassy CYW43 history
+
+The following entries describe upstream `cyw43` releases and are retained for historical reference. They are not releases of this RISC-V fork.
+
+### Upstream 0.7.0 - 2026-03-10
+
+- Reset WPA security before creating a secure AP.
+- Added `get_rssi()` to `Controller`.
+- Implemented link state monitoring.
+- Always unsubscribe from CYW43 events to fix event leaks.
+- Added SDIO support for STM32.
+- Allowed specifying NVRAM and improved LWB+ support.
+- Improved join handling and error reporting.
+- Replaced `num_enum` dependency with an internal macro.
+- Updated `bt-hci` to 0.8.0.
+- Updated `embedded-io` to 0.7.
+- Updated `embassy-sync` to 0.8.0.
+- Updated `embassy-net-driver-channel` to 0.4.0.
+
+### Upstream 0.6.0 - 2025-11-27
+
+- Updated documentation for `Control::join()`.
+- Updated `bt-hci` to 0.6.0.
+- Added error handling to HCI transport implementation.
+- Reset WPA security on AP creation.
+
+### Upstream 0.5.0 - 2025-08-28
+
+- Updated `bt-hci` to 0.4.0.
+
+### Upstream 0.4.1 - 2025-08-26 (yanked)
+
+- Updated `bt-hci` to 0.4.0.
+
+### Upstream 0.4.0 - 2025-07-15
+
+- Updated `embassy-sync` to 0.7.0.
+- Updated `bt-hci` to 0.3.0.
+- Made `State::new` a `const fn`.
+
+### Upstream 0.3.0 - 2025-01-05
+
+- Updated `embassy-time` to 0.4.0.
+- Added Bluetooth support.
+- Added WPA3 support.
+- Expanded WiFi security configuration options.
+
+### Upstream 0.2.0 - 2024-08-05
+
+- Updated to new versions of `embassy-time` and `embassy-sync`.
+- Added more fields to the `BssInfo` packet structure.
+- Extended the Scan API.
+- Reused buffers to reduce stack usage.
+- Added MAC address getter to the controller.
+- Added support for joining WPA2 networks with a precomputed PSK.
+- Added functionality to close a SoftAP.
+- Fixed a missing re-export.
+
+### Upstream 0.1.0 - 2024-01-11
+
+- First upstream release.
