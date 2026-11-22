@@ -1,23 +1,26 @@
 # embassy-net-driver-channel-riscv
 
 This fork uses `embassy-sync-riscv` and `xarxa-driver-riscv` to integrate
-drivers such as `cyw43-riscv` with `embassy-net-riscv`. The Rust library name
-remains `embassy_net_driver_channel`; the license remains MIT OR Apache-2.0.
+drivers such as [`cyw43-riscv`](../cyw43/) with
+[`embassy-net-riscv`](../embassy-net/). The package name is
+`embassy-net-driver-channel-riscv`, while the Rust library name remains
+`embassy_net_driver_channel`. The license remains MIT OR Apache-2.0.
 
 This crate is derived from [Embassy's `embassy-net-driver-channel`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-driver-channel).
 All credit for the original work goes to Embassy and its contributors. This
 independent fork focuses on RISC-V and is not affiliated with or endorsed by Embassy.
 
-This crate provides a toolkit for implementing [`embassy-net`](https://crates.io/crates/embassy-net) drivers in a
-higher level way than implementing the [`xarxa-driver`](https://crates.io/crates/xarxa-driver) `Driver` trait directly.
+This crate provides a higher-level toolkit for implementing network drivers
+used by `embassy-net-riscv`. It sits on top of the forked
+[`xarxa-driver-riscv`](../xarxa-riscv/xarxa-driver/) `Driver` trait.
 
-The `Driver` trait is polling-based. To implement it, you must write the packet receive/transmit state machines by
-hand, and hook up the `Waker`s provided by `embassy-net` to the right interrupt handlers so that `embassy-net`
-knows when to poll your driver again to make more progress.
+The `xarxa_driver::Driver` trait is polling-based. To implement it directly,
+you must write the packet receive/transmit state machines by hand and hook up
+the `Waker`s provided by the network stack to the right interrupt handlers.
 
-With `embassy-net-driver-channel` you get a "channel-like" interface instead, where you can send/receive packets
-to/from embassy-net. The intended usage is to spawn a "driver task" in the background that does this, passing
-packets between the hardware and the channel.
+With `embassy_net_driver_channel` you get a channel-like interface instead.
+The intended usage is to spawn a driver task in the background, passing
+packets between the hardware and the channels shared with `embassy-net-riscv`.
 
 ## A note about deadlocks
 
@@ -29,7 +32,7 @@ loop {
     match select(
         // ... the chip signaling an interrupt, indicating a packet is available to receive, or
         irq_pin.wait_for_low(),
-        // ... a packet to send appearing, i.e. embassy-net wants to send a packet
+        // ... a packet to send appearing, i.e. the network stack wants to send a packet
         tx_chan.tx(),
     ).await {
         Either::First(_) => {
@@ -50,7 +53,11 @@ loop {
 
 However, this code has a latent deadlock bug. The symptom is it can hang at `rx_chan.rx_buf().await` under load.
 
-The reason is that, under load, both the TX and RX queues can get full at the same time. When this happens, the `embassy-net` task stalls trying to send because the TX queue is full, therefore it stops processing packets in the RX queue and stops handing out empty buffers. Your driver task also stalls waiting for an empty buffer, therefore it stops processing packets in the TX queue.
+The reason is that, under load, both the TX and RX queues can get full at the
+same time. When this happens, the network stack task stalls trying to send
+because the TX queue is full, therefore it stops processing packets in the RX
+queue and stops handing out empty buffers. Your driver task also stalls waiting
+for an empty buffer, therefore it stops processing packets in the TX queue.
 
 The fix is to make sure to always service the TX queue while you're waiting for an empty buffer. For example, select on either "a packet to send is available" or "INT is low AND there is an empty buffer":
 
@@ -64,7 +71,7 @@ loop {
             // *AND* an empty buffer to receive it into...
             rx_chan.rx_buf().await
         },
-        // ... or a packet to send appearing, i.e. embassy-net wants to send a packet
+        // ... or a packet to send appearing, i.e. the network stack wants to send a packet
         tx_chan.tx(),
     ).await {
         Either::First(mut buf) => {
@@ -84,24 +91,57 @@ loop {
 
 ## Examples
 
-These `embassy-net` drivers are implemented using this crate. You can look at them for inspiration.
+The RISC-V driver in this repository that uses this crate is:
 
-- [`cyw43`](https://github.com/embassy-rs/embassy/tree/main/cyw43) for WiFi on CYW43xx chips, used in the Raspberry Pi Pico W
-- [`embassy-usb`](https://github.com/embassy-rs/embassy/tree/main/embassy-usb) for Ethernet-over-USB (CDC NCM) support.
-- [`embassy-net-wiznet`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-wiznet) for Wiznet SPI Ethernet MAC+PHY chips.
-- [`embassy-net-esp-hosted`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-esp-hosted) for using ESP32 chips with the [`esp-hosted`](https://github.com/espressif/esp-hosted) firmware as WiFi adapters for another non-ESP32 MCU.
+- [`cyw43-riscv`](../cyw43/) for WiFi and Bluetooth on CYW43xx chips, including
+  RP2350 support through [`cyw43-pio-riscv`](../cyw43-pio/).
+
+The upstream Embassy repository contains additional channel-based drivers for
+other hardware, but they are not maintained or necessarily compilable targets
+of this RISC-V fork.
+
+## Dependency selection
+
+Use the `-riscv` packages together. In `Cargo.toml`, select this crate and the
+forked network stack with package aliases:
+
+```toml
+[dependencies]
+embassy-net = { package = "embassy-net-riscv", version = "0.1" }
+embassy-net-driver-channel = { package = "embassy-net-driver-channel-riscv", version = "0.1" }
+embassy-sync = { package = "embassy-sync-riscv", version = "0.1" }
+xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1" }
+```
+
+The Rust crate names remain `embassy_net`, `embassy_net_driver_channel`,
+`embassy_sync`, and `xarxa_driver`. Do not mix these packages with incompatible
+copies of upstream `embassy-net`, `embassy-sync`, or `xarxa-driver`.
 
 ## Interoperability
 
-This crate can run on any executor.
+This crate can run with executors supported by the RISC-V fork and does not
+depend on a particular executor implementation.
 
 ## Development
 
-Run these commands from the `embassy-net-driver-channel` directory to check,
-package and publish for RISC-V:
+Install the RISC-V target if needed:
+
+```sh
+rustup target add riscv32imac-unknown-none-elf
+```
+
+Run these commands from the `embassy-net-driver-channel` directory to check
+and document the crate for RISC-V:
 
 ```sh
 cargo check --target riscv32imac-unknown-none-elf
-cargo package --target riscv32imac-unknown-none-elf
-cargo publish --target riscv32imac-unknown-none-elf
+```
+
+Generate the documentation:
+
+```sh
+cargo doc \
+    --target riscv32imac-unknown-none-elf \
+    --no-deps \
+    --document-private-items
 ```
