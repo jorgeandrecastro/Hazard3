@@ -71,6 +71,17 @@ The RP2350 receives ESP-NOW action frames through the CYW43 driver, validates th
 
 This is an experimental hardware validation, not a claim that ESP-NOW is a standard feature of the upstream Embassy driver API.
 
+## ESP-NOW examples and benchmarks
+
+The repository includes standalone source examples for both devices:
+
+- [Pico 2 W / ESP32-C3 ESP-NOW example](exemples/espnow-pico2w/README.md)
+- [ESP-NOW benchmark report](exemples/espnow-pico2w/Benchmraks.md)
+
+The examples are reference projects and are excluded from the published
+`cyw43-riscv` package archive, keeping the crate package and binaries free of
+the example toolchains and benchmark sources.
+
 ## ESP-NOW benchmark
 
 ### Hardware configuration
@@ -169,6 +180,8 @@ cyw43-riscv/
 ├── Cargo.lock
 ├── CHANGELOG.md
 ├── README.md
+├── exemples/
+│   └── espnow-pico2w/
 ├── src/
 │   ├── lib.rs
 │   ├── bluetooth.rs
