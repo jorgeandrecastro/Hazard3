@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased - 2026-11-18
+## 0.1.0 - 2026-11-22
 
+- Fork as `cyw43-pio-riscv`, retaining the `cyw43_pio` library name and using `embassy-rp-riscv` and `cyw43-riscv`.
 - Fix deterministic single-bit corruption on RP2350 backplane reads by using two DMA channels (TX + RX). The single single-channel pattern raced with the PIO state machine in debug builds, causing the LSB of the last sampled word in `cmd_read` to be cleared.
 - Breaking: `PioSpi::new` now takes two `dma::Channel` arguments (TX and RX) instead of one.
 - Breaking: removed the `fixed` dependency. `PioSpi::new` and the `*_CLOCK_DIVIDER` constants use a `u32` clock divider with 16 integer and 8 fractional bits (the divider multiplied by 256).
+
+The entries below describe the upstream `cyw43-pio` releases.
 
 ## 0.10.0 - 2026-03-10
 

@@ -1,30 +1,48 @@
 [package]
-name = "cyw43-pio"
-version = "0.10.0"
+name = "cyw43-pio-riscv"
+version = "0.1.0"
 edition = "2024"
-description = "RP2040 PIO SPI implementation for cyw43"
+description = "RP2350 RISC-V PIO SPI implementation for cyw43"
 keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
 categories = ["embedded", "hardware-support", "no-std", "network-programming", "asynchronous"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/cyw43-pio"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/cyw43-pio-riscv"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
+
+[lib]
+name = "cyw43_pio"
 
 [dependencies]
-cyw43 = { version = "0.7.0", path = "../cyw43" }
-embassy-rp = { version = "0.10.0", path = "../embassy-rp" }
+cyw43 = { package = "cyw43-riscv", version = "0.1.0", path = "../cyw43" }
+embassy-rp = { package = "embassy-rp-riscv", version = "0.2.0", path = "../embassy-rp" }
 embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
 defmt = { version = "1.0.1", optional = true }
+
+[dev-dependencies]
+embassy-net = { package = "embassy-net-riscv", version = "0.3.0", path = "../embassy-net", features = ["medium-ethernet", "ipv4"] }
+
+[[test]]
+name = "compatibility"
+harness = false
 
 [features]
 defmt = ["dep:defmt"]
 
 [package.metadata.embassy]
 build = [
-    {target = "thumbv6m-none-eabi", features = ["embassy-rp/rp2040"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["embassy-rp/rp235xa"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["embassy-rp/rp235xb", "defmt"]},
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/cyw43-pio-v$VERSION/cyw43-pio/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/cyw43-pio/src/"
-target = "thumbv6m-none-eabi"
-features = ["embassy-rp/rp2040"]
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/cyw43-pio/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/cyw43-pio/src/"
+target = "riscv32imac-unknown-none-elf"
+features = ["embassy-rp/rp235xa"]
+
+[package.metadata.docs.rs]
+default-target = "riscv32imac-unknown-none-elf"
+targets = ["riscv32imac-unknown-none-elf"]
+features = ["embassy-rp/rp235xa"]
