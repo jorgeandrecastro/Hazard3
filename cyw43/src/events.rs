@@ -7,6 +7,8 @@ use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::pubsub::{PubSubChannel, Subscriber};
 
 use crate::structs::BssInfo;
+#[cfg(feature = "action-frames")]
+use crate::structs::{ACTION_FRAME_MAX_LEN, ActionFrameRxHeader};
 
 crate::util::enum_from_u8! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -291,9 +293,20 @@ crate::util::enum_from_u8! {
 pub type EventQueue = PubSubChannel<NoopRawMutex, Message, 2, 1, 1>;
 pub type EventSubscriber<'a> = Subscriber<'a, NoopRawMutex, Message, 2, 1, 1>;
 
+/// Depth of the action frame queue.
+#[cfg(feature = "action-frames")]
+pub const ACTION_FRAME_QUEUE_SIZE: usize = 4;
+#[cfg(feature = "action-frames")]
+pub type ActionFrameQueue = PubSubChannel<NoopRawMutex, ReceivedActionFrame, ACTION_FRAME_QUEUE_SIZE, 1, 1>;
+#[cfg(feature = "action-frames")]
+pub type ActionFrameSubscriber<'a> = Subscriber<'a, NoopRawMutex, ReceivedActionFrame, ACTION_FRAME_QUEUE_SIZE, 1, 1>;
+
 pub struct Events {
     pub queue: EventQueue,
     pub mask: SharedEventMask,
+    /// Dedicated queue so the 256 byte frame body doesn't grow every `Message`.
+    #[cfg(feature = "action-frames")]
+    pub action_frames: ActionFrameQueue,
 }
 
 impl Events {
@@ -301,7 +314,79 @@ impl Events {
         Self {
             queue: EventQueue::new(),
             mask: SharedEventMask::new(),
+            #[cfg(feature = "action-frames")]
+            action_frames: ActionFrameQueue::new(),
         }
+    }
+}
+
+/// An 802.11 action frame received by the firmware (fixed size, no alloc).
+#[cfg(feature = "action-frames")]
+#[derive(Clone)]
+pub struct ReceivedActionFrame {
+    /// Transmitter address.
+    pub src: [u8; 6],
+    /// Received signal strength, in dBm.
+    pub rssi: i32,
+    /// Channel the frame was received on.
+    pub channel: u8,
+    /// The body didn't fit in [`ACTION_FRAME_MAX_LEN`] bytes and was cut.
+    pub truncated: bool,
+    len: u16,
+    data: [u8; ACTION_FRAME_MAX_LEN],
+}
+
+#[cfg(feature = "action-frames")]
+impl ReceivedActionFrame {
+    /// Action frame body, starting at the category byte (802.11 header stripped).
+    pub fn data(&self) -> &[u8] {
+        &self.data[..self.len as usize]
+    }
+
+    /// `peer` is the event's `addr` field, `evt_data` the event payload.
+    pub(crate) fn from_event(peer: [u8; 6], evt_data: &[u8]) -> Option<Self> {
+        const MGMT_HDR_LEN: usize = 24;
+
+        let (hdr, frame) = ActionFrameRxHeader::parse(evt_data)?;
+
+        // Depending on firmware, the payload is either a full 802.11 mgmt frame
+        // (FC byte 0xD0 Action / 0xE0 Action No Ack) or just the action body.
+        // TODO: confirm on hardware with a hexdump.
+        let (src, body) = if frame.len() >= MGMT_HDR_LEN && matches!(frame[0], 0xD0 | 0xE0) {
+            let mut a2 = [0u8; 6];
+            a2.copy_from_slice(&frame[10..16]); // addr2 = transmitter
+            (a2, &frame[MGMT_HDR_LEN..])
+        } else {
+            (peer, frame)
+        };
+
+        let n = body.len().min(ACTION_FRAME_MAX_LEN);
+        let mut data = [0u8; ACTION_FRAME_MAX_LEN];
+        data[..n].copy_from_slice(&body[..n]);
+
+        Some(Self {
+            src,
+            rssi: hdr.rssi,
+            channel: (hdr.chanspec & 0xFF) as u8,
+            truncated: body.len() > n,
+            len: n as u16,
+            data,
+        })
+    }
+}
+
+#[cfg(all(feature = "action-frames", feature = "defmt"))]
+impl defmt::Format for ReceivedActionFrame {
+    fn format(&self, f: defmt::Formatter) {
+        defmt::write!(
+            f,
+            "ReceivedActionFrame {{ src: {=[u8; 6]:x}, rssi: {=i32}, channel: {=u8}, truncated: {=bool}, data: {=[u8]:x} }}",
+            self.src,
+            self.rssi,
+            self.channel,
+            self.truncated,
+            self.data()
+        );
     }
 }
 
@@ -413,5 +498,48 @@ impl SharedEventMask {
 impl Default for SharedEventMask {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(all(test, feature = "action-frames"))]
+mod action_frame_tests {
+    use super::*;
+
+    fn rx_header(chanspec: u16, rssi: i32) -> [u8; 16] {
+        let mut h = [0u8; 16];
+        h[2..4].copy_from_slice(&chanspec.to_be_bytes());
+        h[4..8].copy_from_slice(&rssi.to_be_bytes());
+        h
+    }
+
+    #[test]
+    fn parses_full_mgmt_frame() {
+        let mut evt = [0u8; 16 + 24 + 3];
+        evt[..16].copy_from_slice(&rx_header(0x1006, -42));
+        evt[16] = 0xD0; // Action
+        evt[16 + 10..16 + 16].copy_from_slice(&[1, 2, 3, 4, 5, 6]); // addr2
+        evt[16 + 24..].copy_from_slice(&[0x7F, 0xAA, 0xBB]);
+
+        let f = ReceivedActionFrame::from_event([9; 6], &evt).unwrap();
+        assert_eq!(f.src, [1, 2, 3, 4, 5, 6]);
+        assert_eq!(f.rssi, -42);
+        assert_eq!(f.channel, 6);
+        assert_eq!(f.data(), &[0x7F, 0xAA, 0xBB]);
+        assert!(!f.truncated);
+    }
+
+    #[test]
+    fn parses_bare_body_and_truncates() {
+        let mut evt = [0x55u8; 16 + ACTION_FRAME_MAX_LEN + 10];
+        evt[..16].copy_from_slice(&rx_header(11, -70));
+        let f = ReceivedActionFrame::from_event([7; 6], &evt).unwrap();
+        assert_eq!(f.src, [7; 6]);
+        assert_eq!(f.data().len(), ACTION_FRAME_MAX_LEN);
+        assert!(f.truncated);
+    }
+
+    #[test]
+    fn rejects_short_payload() {
+        assert!(ReceivedActionFrame::from_event([0; 6], &[0u8; 15]).is_none());
     }
 }

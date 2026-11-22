@@ -38,6 +38,12 @@ pub use crate::runner::Runner;
 pub use crate::sdio::SdioBus;
 pub use crate::spi::{SpiBus, SpiBusCyw43};
 pub use crate::structs::BssInfo;
+#[cfg(feature = "action-frames")]
+pub use crate::control::{ActionFrameError, ActionFrameReceiver};
+#[cfg(feature = "action-frames")]
+pub use crate::events::ReceivedActionFrame;
+#[cfg(feature = "action-frames")]
+pub use crate::structs::ACTION_FRAME_MAX_LEN;
 
 const MTU: usize = 1514;
 

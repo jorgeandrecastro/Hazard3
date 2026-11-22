@@ -572,3 +572,92 @@ impl BssInfo {
         ))
     }
 }
+
+/// Maximum action frame body carried in either direction.
+#[cfg(feature = "action-frames")]
+pub const ACTION_FRAME_MAX_LEN: usize = 256;
+
+/// Broadcom `wl_action_frame`.
+#[cfg(feature = "action-frames")]
+#[derive(Clone, Copy)]
+#[repr(C, packed)]
+pub struct WlActionFrame {
+    /// Destination address.
+    pub da: [u8; 6],
+    /// Length of `data` actually used.
+    pub len: u16,
+    /// Caller-chosen id, echoed back in `ACTION_FRAME_COMPLETE`.
+    pub packet_id: u32,
+    /// Frame body, starting at the category byte.
+    pub data: [u8; ACTION_FRAME_MAX_LEN],
+}
+#[cfg(feature = "action-frames")]
+impl_bytes!(WlActionFrame);
+
+/// Broadcom `wl_af_params`.
+#[cfg(feature = "action-frames")]
+#[derive(Clone, Copy)]
+#[repr(C, packed)]
+pub struct WlAfParams {
+    /// Channel number to transmit on.
+    pub channel: u32,
+    /// Time to stay on the channel, in ms.
+    pub dwell_time: i32,
+    /// BSSID field of the frame.
+    pub bssid: [u8; 6],
+    /// Padding.
+    pub _pad: [u8; 2],
+    /// The action frame itself.
+    pub action_frame: WlActionFrame,
+}
+#[cfg(feature = "action-frames")]
+impl_bytes!(WlAfParams);
+
+// `core::assert!`: the crate-level `assert!` is defmt's, which isn't const.
+#[cfg(feature = "action-frames")]
+const _: () = core::assert!(WlActionFrame::SIZE == 268 && WlAfParams::SIZE == 284);
+
+/// `wl_event_rx_frame_data_t`: header of an `ACTION_FRAME_RX` event payload.
+///
+/// Big-endian on the wire, so it is parsed field by field instead of being
+/// cast like the little-endian structs above.
+#[cfg(feature = "action-frames")]
+#[allow(dead_code)] // version/mactime/rate are parsed but not exposed yet
+#[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+pub struct ActionFrameRxHeader {
+    /// Structure version.
+    pub version: u16,
+    /// Chanspec; the channel number is `chanspec & 0xFF`.
+    pub chanspec: u16,
+    /// Received signal strength, in dBm.
+    pub rssi: i32,
+    /// MAC timestamp of the reception.
+    pub mactime: u32,
+    /// Data rate, in 500 kbps units.
+    pub rate: u32,
+}
+
+#[cfg(feature = "action-frames")]
+impl ActionFrameRxHeader {
+    /// Bytes consumed by this header on the wire.
+    pub const SIZE: usize = 16;
+
+    /// Returns the header and the raw frame that follows it.
+    pub fn parse(buf: &[u8]) -> Option<(Self, &[u8])> {
+        if buf.len() < Self::SIZE {
+            return None;
+        }
+        let (h, rest) = buf.split_at(Self::SIZE);
+        Some((
+            Self {
+                version: u16::from_be_bytes([h[0], h[1]]),
+                chanspec: u16::from_be_bytes([h[2], h[3]]),
+                rssi: i32::from_be_bytes([h[4], h[5], h[6], h[7]]),
+                mactime: u32::from_be_bytes([h[8], h[9], h[10], h[11]]),
+                rate: u32::from_be_bytes([h[12], h[13], h[14], h[15]]),
+            },
+            rest,
+        ))
+    }
+}

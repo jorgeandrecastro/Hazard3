@@ -2,6 +2,8 @@ use core::cmp::{max, min};
 use core::iter::zip;
 use core::mem::DropGuard;
 use core::sync::atomic::AtomicBool;
+#[cfg(feature = "action-frames")]
+use core::sync::atomic::AtomicU32;
 use core::sync::atomic::Ordering::Relaxed;
 
 use embassy_net_driver_channel as ch;
@@ -10,6 +12,8 @@ use embassy_time::{Duration, Timer};
 
 use crate::consts::*;
 use crate::events::{Event, EventSubscriber, Events};
+#[cfg(feature = "action-frames")]
+use crate::events::{ActionFrameSubscriber, ReceivedActionFrame};
 use crate::fmt::Bytes;
 use crate::ioctl::{IoctlState, IoctlType};
 use crate::structs::*;
@@ -932,6 +936,117 @@ impl Scanner<'_> {
 impl Drop for Scanner<'_> {
     fn drop(&mut self) {
         self.events.mask.disable_all();
+    }
+}
+
+/// Error returned by [`Control::send_action_frame`].
+#[cfg(feature = "action-frames")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+pub enum ActionFrameError {
+    /// `data` is longer than [`ACTION_FRAME_MAX_LEN`](crate::ACTION_FRAME_MAX_LEN).
+    TooLong,
+}
+
+/// Receiver of 802.11 action frames, see [`Control::listen_action_frames`].
+#[cfg(feature = "action-frames")]
+pub struct ActionFrameReceiver<'a> {
+    events: &'a Events,
+    sub: ActionFrameSubscriber<'a>,
+}
+
+#[cfg(feature = "action-frames")]
+impl ActionFrameReceiver<'_> {
+    /// Wait for the next action frame. Frames dropped because the queue
+    /// overflowed are skipped.
+    ///
+    /// Always `Some` for now; `Option` is kept for API stability.
+    pub async fn next(&mut self) -> Option<ReceivedActionFrame> {
+        Some(self.sub.next_message_pure().await)
+    }
+}
+
+#[cfg(feature = "action-frames")]
+impl Drop for ActionFrameReceiver<'_> {
+    fn drop(&mut self) {
+        // Not `disable_all()`: only undo what `listen_action_frames` enabled.
+        self.events.mask.disable(&[Event::ACTION_FRAME_RX]);
+    }
+}
+
+#[cfg(feature = "action-frames")]
+impl<'a> Control<'a> {
+    /// Lock the radio on `channel` (2.4 GHz, 1..=14) and keep it awake without
+    /// being associated to an AP. Invalid channels are ignored.
+    pub async fn set_channel(&mut self, channel: u8) {
+        if !(1..=14).contains(&channel) {
+            warn!("set_channel: invalid channel {}", channel);
+            return;
+        }
+        // Idempotent after init().
+        self.up().await;
+        // mpc=1 (default) powers the radio down while unassociated.
+        self.set_iovar_u32("mpc", 0).await;
+        self.ioctl_set_u32(Ioctl::SetPm, 0, 0).await;
+        self.ioctl_set_u32(Ioctl::SetChannel, 0, channel as u32).await;
+    }
+
+    /// Transmit a raw action frame through the `bsscfg:actframe` iovar.
+    ///
+    /// `data` is the frame body, starting at the category byte.
+    pub async fn send_action_frame(
+        &mut self,
+        dest_mac: [u8; 6],
+        bssid: [u8; 6],
+        channel: u8,
+        data: &[u8],
+    ) -> Result<(), ActionFrameError> {
+        const AF_DWELL_TIME_MS: i32 = 50;
+        // load/store instead of fetch_add: Cortex-M0+ has no atomic RMW.
+        static NEXT_ID: AtomicU32 = AtomicU32::new(1);
+
+        if data.len() > ACTION_FRAME_MAX_LEN {
+            return Err(ActionFrameError::TooLong);
+        }
+        let packet_id = NEXT_ID.load(Relaxed);
+        NEXT_ID.store(packet_id.wrapping_add(1), Relaxed);
+
+        let mut body = [0u8; ACTION_FRAME_MAX_LEN];
+        body[..data.len()].copy_from_slice(data);
+
+        let params = WlAfParams {
+            channel: channel as u32,
+            dwell_time: AF_DWELL_TIME_MS,
+            bssid,
+            _pad: [0; 2],
+            action_frame: WlActionFrame {
+                da: dest_mac,
+                len: data.len() as u16,
+                packet_id,
+                data: body,
+            },
+        };
+
+        // "bsscfg:<iovar>" value = bsscfg_idx (u32 LE) ++ payload
+        let mut payload = [0u8; 4 + WlAfParams::SIZE];
+        payload[..4].copy_from_slice(&0u32.to_le_bytes());
+        payload[4..].copy_from_slice(params.to_bytes());
+
+        self.set_iovar_v::<512>("bsscfg:actframe", &payload).await;
+        Ok(())
+    }
+
+    /// Start receiving action frames.
+    ///
+    /// Only one receiver can exist at a time (panics otherwise, like `scan()`).
+    /// The firmware event is disabled again when the receiver is dropped.
+    pub fn listen_action_frames(&mut self) -> ActionFrameReceiver<'_> {
+        self.events.mask.enable(&[Event::ACTION_FRAME_RX]);
+        let sub = self.events.action_frames.subscriber().unwrap();
+        ActionFrameReceiver {
+            events: self.events,
+            sub,
+        }
     }
 }
 

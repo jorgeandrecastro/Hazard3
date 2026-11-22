@@ -1313,6 +1313,17 @@ impl<'a, BUS: Bus, CHIP: Chip> Runner<'a, BUS, CHIP> {
                     );
                 }
 
+                #[cfg(feature = "action-frames")]
+                if event_type == Event::ACTION_FRAME_RX {
+                    if self.events.mask.is_enabled(event_type)
+                        && let Some(frame) = events::ReceivedActionFrame::from_event(event_packet.msg.addr, evt_data)
+                    {
+                        // Non-blocking, same reasoning as the generic event queue below.
+                        self.events.action_frames.immediate_publisher().publish_immediate(frame);
+                    }
+                    return None;
+                }
+
                 if self.events.mask.is_enabled(event_type) {
                     let status = event_packet.msg.status;
                     let reason = event_packet.msg.reason;
