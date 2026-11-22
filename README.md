@@ -5,7 +5,7 @@
 > <https://github.com/jorgeandrecastro/embassy-riscv>. It adds RISC-V support, for example for the
 > RP2350 Hazard3 cores, which upstream Embassy does not provide.
 
-![RP2350 running Embassy-RISCV](embassy-rp-riscv-test.jpeg)
+![Raspberry Pi Pico 2 W running Embassy-RISCV](pico2w.jpeg)
 
 ## Vision
 
@@ -30,6 +30,9 @@ Use the `-riscv` crates **together** to avoid duplicate or incompatible copies o
 | [`embassy-rp-riscv`](embassy-rp/) | `embassy_rp` | RP2350 (RP235x) HAL for the Hazard3 RISC-V cores |
 | `rp-pac-riscv` | `rp_pac` | RP2350 PAC, RISC-V only, no Cortex-M vector table |
 | [`embassy-net-riscv`](embassy-net/) | `embassy_net` | Async networking stack |
+| [`cyw43-riscv`](cyw43/) | `cyw43` | CYW43 WiFi and Bluetooth driver for the forked network stack |
+| [`cyw43-pio-riscv`](cyw43-pio/) | `cyw43_pio` | RP2350 PIO transport for CYW43 |
+| [`embassy-net-driver-channel-riscv`](embassy-net-driver-channel/) | `embassy_net_driver_channel` | Channel-based Xarxa network drivers |
 | [`xarxa-riscv`](xarxa-riscv/) | `xarxa` | Network stack, pinned upstream sources |
 | [`xarxa-driver-riscv`](xarxa-riscv/xarxa-driver/) | `xarxa_driver` | Network driver interface |
 | `embassy-executor-riscv`, `embassy-executor-macros-riscv` | `embassy_executor` | Executor |
@@ -111,6 +114,8 @@ No maintained CI workflow, example build matrix, or hardware integration test su
   (`rp235xa`, `rp235xb`, and a release check on `rp235xa`) and has been tested on a real RP2350 running
   the Hazard3 cores. Not every peripheral is tested, and PSRAM support is not implemented yet. The
   commands are listed in its README.
+- [`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) are tested on hardware with a Raspberry Pi
+  Pico 2 W. The integration has been exercised for the CYW43 LED blink and for use with an OLED display.
 - The networking crates do not compile or test upstream examples and target-specific hardware
   integrations in this repository. Their host-oriented checks and development commands, including the
   new TCP unit tests, are documented in the individual crate READMEs.
