@@ -459,7 +459,9 @@ impl<'a> Control<'a> {
 
         impl Drop for UnsubscribeOnDrop<'_> {
             fn drop(&mut self) {
-                self.0.mask.disable_all();
+                // Not `disable_all()`: only undo what `wait_for_join` enabled, so a
+                // live action frame receiver keeps its event.
+                self.0.mask.disable(&[Event::SET_SSID, Event::AUTH, Event::PSK_SUP]);
             }
         }
 
@@ -921,7 +923,8 @@ impl Scanner<'_> {
     pub async fn next(&mut self) -> Option<BssInfo> {
         let event = self.subscriber.next_message_pure().await;
         if event.header.status != EStatus::PARTIAL {
-            self.events.mask.disable_all();
+            // Not `disable_all()`: keep other users' events (action frames) enabled.
+            self.events.mask.disable(&[Event::ESCAN_RESULT]);
             return None;
         }
 
@@ -935,7 +938,7 @@ impl Scanner<'_> {
 
 impl Drop for Scanner<'_> {
     fn drop(&mut self) {
-        self.events.mask.disable_all();
+        self.events.mask.disable(&[Event::ESCAN_RESULT]);
     }
 }
 
@@ -946,6 +949,38 @@ impl Drop for Scanner<'_> {
 pub enum ActionFrameError {
     /// `data` is longer than [`ACTION_FRAME_MAX_LEN`](crate::ACTION_FRAME_MAX_LEN).
     TooLong,
+}
+
+/// Per-bsscfg form of the `actframe` iovar.
+#[cfg(feature = "action-frames")]
+const ACTION_FRAME_IOVAR: &str = "bsscfg:actframe";
+/// `bsscfg_idx` (u32 LE) followed by a `wl_af_params`.
+#[cfg(feature = "action-frames")]
+const ACTION_FRAME_PAYLOAD_LEN: usize = 4 + WlAfParams::SIZE;
+/// Whole iovar request: name, NUL, payload.
+#[cfg(feature = "action-frames")]
+const ACTION_FRAME_IOVAR_LEN: usize = ACTION_FRAME_IOVAR.len() + 1 + ACTION_FRAME_PAYLOAD_LEN;
+// MAX_IOCTL_LEN is left untouched: the request must fit as is.
+#[cfg(feature = "action-frames")]
+const _: () = core::assert!(ACTION_FRAME_IOVAR_LEN <= crate::ioctl::MAX_IOCTL_LEN);
+
+#[cfg(feature = "action-frames")]
+fn build_action_frame_payload(
+    bsscfg_idx: u32,
+    channel: u32,
+    dwell_time_ms: i32,
+    packet_id: u32,
+    dest_mac: [u8; 6],
+    bssid: [u8; 6],
+    data: &[u8],
+) -> Result<[u8; ACTION_FRAME_PAYLOAD_LEN], ActionFrameError> {
+    let params = WlAfParams::new(channel, dwell_time_ms, bssid, dest_mac, packet_id, data)
+        .ok_or(ActionFrameError::TooLong)?;
+    let mut payload = [0u8; ACTION_FRAME_PAYLOAD_LEN];
+    let (idx, af) = payload.split_at_mut(4);
+    idx.copy_from_slice(&bsscfg_idx.to_le_bytes());
+    params.encode_into(af.try_into().unwrap());
+    Ok(payload)
 }
 
 /// Receiver of 802.11 action frames, see [`Control::listen_action_frames`].
@@ -993,7 +1028,9 @@ impl<'a> Control<'a> {
 
     /// Transmit a raw action frame through the `bsscfg:actframe` iovar.
     ///
-    /// `data` is the frame body, starting at the category byte.
+    /// `data` is the frame body, starting at the category byte. `Ok(())` means the
+    /// request was submitted to the firmware, not that the frame was acknowledged.
+    /// Can be called while an [`ActionFrameReceiver`] is alive.
     pub async fn send_action_frame(
         &mut self,
         dest_mac: [u8; 6],
@@ -1011,42 +1048,32 @@ impl<'a> Control<'a> {
         let packet_id = NEXT_ID.load(Relaxed);
         NEXT_ID.store(packet_id.wrapping_add(1), Relaxed);
 
-        let mut body = [0u8; ACTION_FRAME_MAX_LEN];
-        body[..data.len()].copy_from_slice(data);
-
-        let params = WlAfParams {
-            channel: channel as u32,
-            dwell_time: AF_DWELL_TIME_MS,
+        let payload = build_action_frame_payload(
+            0,
+            channel as u32,
+            AF_DWELL_TIME_MS,
+            packet_id,
+            dest_mac,
             bssid,
-            _pad: [0; 2],
-            action_frame: WlActionFrame {
-                da: dest_mac,
-                len: data.len() as u16,
-                packet_id,
-                data: body,
-            },
-        };
-
-        // "bsscfg:<iovar>" value = bsscfg_idx (u32 LE) ++ payload
-        let mut payload = [0u8; 4 + WlAfParams::SIZE];
-        payload[..4].copy_from_slice(&0u32.to_le_bytes());
-        payload[4..].copy_from_slice(params.to_bytes());
-
-        self.set_iovar_v::<512>("bsscfg:actframe", &payload).await;
+            data,
+        )?;
+        self.set_iovar_v::<{ ACTION_FRAME_IOVAR_LEN }>(ACTION_FRAME_IOVAR, &payload)
+            .await;
         Ok(())
     }
 
     /// Start receiving action frames.
     ///
-    /// Only one receiver can exist at a time (panics otherwise, like `scan()`).
-    /// The firmware event is disabled again when the receiver is dropped.
-    pub fn listen_action_frames(&mut self) -> ActionFrameReceiver<'_> {
-        self.events.mask.enable(&[Event::ACTION_FRAME_RX]);
-        let sub = self.events.action_frames.subscriber().unwrap();
-        ActionFrameReceiver {
-            events: self.events,
-            sub,
-        }
+    /// The receiver borrows only the shared event state, not this `Control`, so it can be
+    /// kept (or moved to another task) while [`send_action_frame`](Self::send_action_frame),
+    /// `scan()` or `join()` run. Only one receiver can exist at a time (panics otherwise,
+    /// like `scan()`). The firmware event is disabled again when the receiver is dropped.
+    pub fn listen_action_frames(&self) -> ActionFrameReceiver<'a> {
+        let events: &'a Events = self.events;
+        // Subscribe first: a panic must not leave the mask enabled.
+        let sub = events.action_frames.subscriber().unwrap();
+        events.mask.enable(&[Event::ACTION_FRAME_RX]);
+        ActionFrameReceiver { events, sub }
     }
 }
 
@@ -1395,5 +1422,200 @@ mod scan_cancellation_tests {
         drop(scanner);
         assert!(events.queue.subscriber().is_ok());
         assert!(ioctl.is_idle());
+    }
+}
+
+#[cfg(all(test, feature = "action-frames"))]
+mod action_frame_tests {
+    use core::future::Future;
+    use core::pin::pin;
+    use core::task::{Context, Poll, Waker};
+
+    use super::*;
+
+    fn take_pending(ioctl: &IoctlState, cx: &mut Context<'_>) -> crate::ioctl::PendingIoctl {
+        let mut pending = pin!(ioctl.wait_pending());
+        let Poll::Ready(request) = pending.as_mut().poll(cx) else {
+            panic!("expected a pending ioctl");
+        };
+        request
+    }
+
+    #[test]
+    fn payload_is_bsscfg_index_then_wl_af_params() {
+        let p = build_action_frame_payload(
+            0,
+            6,
+            50,
+            0x0403_0201,
+            [0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6],
+            [1, 2, 3, 4, 5, 6],
+            &[0x7F, 0xAA, 0xBB],
+        )
+        .unwrap();
+        assert_eq!(p.len(), 4 + WlAfParams::SIZE);
+        assert_eq!(&p[0..4], &[0, 0, 0, 0]); // bsscfg idx
+        assert_eq!(&p[4..8], &6u32.to_le_bytes()); // channel
+        assert_eq!(&p[8..12], &50i32.to_le_bytes()); // dwell
+        assert_eq!(&p[12..18], &[1, 2, 3, 4, 5, 6]); // bssid
+        assert_eq!(&p[18..20], &[0, 0]); // pad
+        assert_eq!(&p[20..26], &[0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6]); // da
+        assert_eq!(&p[26..28], &3u16.to_le_bytes()); // len
+        assert_eq!(&p[28..32], &0x0403_0201u32.to_le_bytes()); // packet id
+        assert_eq!(&p[32..35], &[0x7F, 0xAA, 0xBB]);
+        assert!(p[35..].iter().all(|&b| b == 0));
+    }
+
+    #[test]
+    fn length_limits() {
+        let data = [0x7Fu8; ACTION_FRAME_MAX_LEN + 1];
+        let build = |d: &[u8]| build_action_frame_payload(0, 1, 50, 1, [0; 6], [0; 6], d);
+        for len in [0, 1, 250, ACTION_FRAME_MAX_LEN] {
+            assert!(build(&data[..len]).is_ok());
+        }
+        assert_eq!(build(&data).unwrap_err(), ActionFrameError::TooLong);
+    }
+
+    #[test]
+    fn iovar_fits_the_unchanged_ioctl_buffer() {
+        assert_eq!(ACTION_FRAME_IOVAR_LEN, 16 + 4 + 293);
+        assert!(ACTION_FRAME_IOVAR_LEN <= crate::ioctl::MAX_IOCTL_LEN);
+    }
+
+    #[test]
+    fn send_issues_bsscfg_actframe_setvar() {
+        let mut state = crate::State::new();
+        let (runner, _device) = ch::new(&mut state.net.ch, HardwareAddress::Ethernet([0; 6]), crate::MTU);
+        let mut control = Control::new(
+            runner.state_runner(),
+            &state.net.events,
+            &state.ioctl_state,
+            &state.net.secure_network,
+        );
+        let mut cx = Context::from_waker(Waker::noop());
+
+        let data = [0x7Fu8; ACTION_FRAME_MAX_LEN];
+        let mut send = pin!(control.send_action_frame([1; 6], [2; 6], 6, &data));
+        assert!(send.as_mut().poll(&mut cx).is_pending());
+
+        let req = take_pending(&state.ioctl_state, &mut cx);
+        assert!(matches!(req.cmd, Ioctl::SetVar));
+        assert!(req.kind == IoctlType::Set);
+        assert_eq!(req.len, ACTION_FRAME_IOVAR_LEN);
+        {
+            let r = state.ioctl_state.request();
+            assert_eq!(&r[..16], b"bsscfg:actframe\0");
+            assert_eq!(&r[16..20], &[0u8; 4]); // bsscfg idx
+            assert_eq!(&r[20..24], &6u32.to_le_bytes()); // channel
+            assert_eq!(&r[28..34], &[2u8; 6]); // bssid
+            assert_eq!(&r[36..42], &[1u8; 6]); // da
+            assert_eq!(&r[42..44], &(ACTION_FRAME_MAX_LEN as u16).to_le_bytes());
+            assert!(r[48..ACTION_FRAME_IOVAR_LEN].iter().all(|&b| b == 0x7F));
+        }
+        state.ioctl_state.ioctl_done(&[]);
+        assert!(matches!(send.as_mut().poll(&mut cx), Poll::Ready(Ok(()))));
+    }
+
+    #[test]
+    fn too_long_is_rejected_without_touching_the_ioctl_slot() {
+        let mut state = crate::State::new();
+        let (runner, _device) = ch::new(&mut state.net.ch, HardwareAddress::Ethernet([0; 6]), crate::MTU);
+        let mut control = Control::new(
+            runner.state_runner(),
+            &state.net.events,
+            &state.ioctl_state,
+            &state.net.secure_network,
+        );
+        let mut cx = Context::from_waker(Waker::noop());
+
+        let data = [0u8; ACTION_FRAME_MAX_LEN + 1];
+        let mut send = pin!(control.send_action_frame([0; 6], [0; 6], 1, &data));
+        assert!(matches!(
+            send.as_mut().poll(&mut cx),
+            Poll::Ready(Err(ActionFrameError::TooLong))
+        ));
+        assert!(state.ioctl_state.is_idle());
+    }
+
+    #[test]
+    fn receiver_stays_armed_during_tx_scan_and_join() {
+        let mut state = crate::State::new();
+        let (runner, _device) = ch::new(&mut state.net.ch, HardwareAddress::Ethernet([0; 6]), crate::MTU);
+        let mut control = Control::new(
+            runner.state_runner(),
+            &state.net.events,
+            &state.ioctl_state,
+            &state.net.secure_network,
+        );
+        let events = &state.net.events;
+        let ioctl = &state.ioctl_state;
+        let mut cx = Context::from_waker(Waker::noop());
+
+        let mut rx = control.listen_action_frames();
+        assert!(events.mask.is_enabled(Event::ACTION_FRAME_RX));
+
+        // TX while the receiver is alive: this used to be E0499.
+        {
+            let mut send = pin!(control.send_action_frame([0xFF; 6], [0xFF; 6], 1, &[0x7F, 1, 2]));
+            assert!(send.as_mut().poll(&mut cx).is_pending());
+            take_pending(ioctl, &mut cx);
+
+            // A frame arrives while the TX ioctl is in flight.
+            let mut evt = [0u8; 16 + 4];
+            evt[16..].copy_from_slice(&[0x7F, 9, 8, 7]);
+            let frame = ReceivedActionFrame::from_event([5; 6], &evt).unwrap();
+            events.action_frames.immediate_publisher().publish_immediate(frame);
+
+            ioctl.ioctl_done(&[]);
+            assert!(matches!(send.as_mut().poll(&mut cx), Poll::Ready(Ok(()))));
+        }
+        {
+            let mut next = pin!(rx.next());
+            let Poll::Ready(Some(f)) = next.as_mut().poll(&mut cx) else {
+                panic!("frame lost while transmitting");
+            };
+            assert_eq!(f.src, [5; 6]);
+            assert_eq!(f.data(), &[0x7F, 9, 8, 7]);
+        }
+
+        // A scan must not disable the action frame event.
+        {
+            let mut scan = pin!(control.scan(ScanOptions::default()));
+            assert!(scan.as_mut().poll(&mut cx).is_pending());
+            take_pending(ioctl, &mut cx);
+            ioctl.ioctl_done(&[]);
+            let Poll::Ready(scanner) = scan.as_mut().poll(&mut cx) else {
+                panic!("scan startup did not complete");
+            };
+            drop(scanner);
+        }
+        assert!(events.mask.is_enabled(Event::ACTION_FRAME_RX));
+        assert!(!events.mask.is_enabled(Event::ESCAN_RESULT));
+
+        // Neither must a join.
+        {
+            let mut join = pin!(control.wait_for_join(SsidInfo { len: 0, ssid: [0; 32] }, false));
+            assert!(join.as_mut().poll(&mut cx).is_pending());
+            take_pending(ioctl, &mut cx);
+            ioctl.ioctl_done(&[]);
+            assert!(join.as_mut().poll(&mut cx).is_pending());
+            events
+                .queue
+                .immediate_publisher()
+                .publish_immediate(events::Message::new(
+                    events::Status {
+                        event_type: Event::SET_SSID,
+                        status: EStatus::SUCCESS as u32,
+                        reason: 0,
+                    },
+                    events::Payload::None,
+                ));
+            assert!(matches!(join.as_mut().poll(&mut cx), Poll::Ready(Ok(()))));
+        }
+        assert!(events.mask.is_enabled(Event::ACTION_FRAME_RX));
+        assert!(!events.mask.is_enabled(Event::SET_SSID));
+
+        drop(rx);
+        assert!(!events.mask.is_enabled(Event::ACTION_FRAME_RX));
     }
 }

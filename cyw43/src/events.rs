@@ -304,7 +304,7 @@ pub type ActionFrameSubscriber<'a> = Subscriber<'a, NoopRawMutex, ReceivedAction
 pub struct Events {
     pub queue: EventQueue,
     pub mask: SharedEventMask,
-    /// Dedicated queue so the 256 byte frame body doesn't grow every `Message`.
+    /// Dedicated queue so the frame body doesn't grow every `Message`.
     #[cfg(feature = "action-frames")]
     pub action_frames: ActionFrameQueue,
 }
@@ -336,29 +336,70 @@ pub struct ReceivedActionFrame {
     data: [u8; ACTION_FRAME_MAX_LEN],
 }
 
+/// 802.11 management header: FC(2) dur(2) addr1(6) addr2(6) addr3(6) seq(2).
+#[cfg(feature = "action-frames")]
+const MGMT_HDR_LEN: usize = 24;
+/// HT Control field, present when the Order bit of the frame control is set.
+#[cfg(feature = "action-frames")]
+const HT_CONTROL_LEN: usize = 4;
+#[cfg(feature = "action-frames")]
+const FC0_ACTION: u8 = 0xD0;
+#[cfg(feature = "action-frames")]
+const FC0_ACTION_NO_ACK: u8 = 0xE0;
+#[cfg(feature = "action-frames")]
+const FC1_ORDER: u8 = 0x80;
+
+/// What follows the `wl_event_rx_frame_data_t` header in an `ACTION_FRAME_RX` event.
+#[cfg(feature = "action-frames")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RxLayout {
+    /// The action body only, starting at the category byte.
+    Bare,
+    /// A full 802.11 management frame; the body starts after `header_len` bytes.
+    Mgmt { header_len: usize },
+}
+
+#[cfg(feature = "action-frames")]
+impl RxLayout {
+    /// A leading 0xD0/0xE0 is an Action / Action-No-Ack frame control: 0xD0 and 0xE0
+    /// are reserved category values (>= 0x80), so a bare body never starts with them.
+    /// A header cut short is malformed (`None`), never reinterpreted as a bare body.
+    fn detect(frame: &[u8]) -> Option<Self> {
+        let fc0 = *frame.first()?;
+        if !matches!(fc0, FC0_ACTION | FC0_ACTION_NO_ACK) {
+            return Some(Self::Bare);
+        }
+        let fc1 = *frame.get(1)?;
+        let header_len = MGMT_HDR_LEN + if fc1 & FC1_ORDER != 0 { HT_CONTROL_LEN } else { 0 };
+        (frame.len() >= header_len).then_some(Self::Mgmt { header_len })
+    }
+}
+
 #[cfg(feature = "action-frames")]
 impl ReceivedActionFrame {
-    /// Action frame body, starting at the category byte (802.11 header stripped).
+    /// Action frame body, starting at the category byte (802.11 header stripped if present).
     pub fn data(&self) -> &[u8] {
         &self.data[..self.len as usize]
     }
 
     /// `peer` is the event's `addr` field, `evt_data` the event payload.
+    ///
+    /// Returns `None` for a payload shorter than the RX header, a truncated management
+    /// header, or an empty body.
     pub(crate) fn from_event(peer: [u8; 6], evt_data: &[u8]) -> Option<Self> {
-        const MGMT_HDR_LEN: usize = 24;
-
         let (hdr, frame) = ActionFrameRxHeader::parse(evt_data)?;
 
-        // Depending on firmware, the payload is either a full 802.11 mgmt frame
-        // (FC byte 0xD0 Action / 0xE0 Action No Ack) or just the action body.
-        // TODO: confirm on hardware with a hexdump.
-        let (src, body) = if frame.len() >= MGMT_HDR_LEN && matches!(frame[0], 0xD0 | 0xE0) {
-            let mut a2 = [0u8; 6];
-            a2.copy_from_slice(&frame[10..16]); // addr2 = transmitter
-            (a2, &frame[MGMT_HDR_LEN..])
-        } else {
-            (peer, frame)
+        let (src, body) = match RxLayout::detect(frame)? {
+            RxLayout::Bare => (peer, frame),
+            RxLayout::Mgmt { header_len } => {
+                let mut a2 = [0u8; 6];
+                a2.copy_from_slice(&frame[10..16]); // addr2 = transmitter
+                (a2, &frame[header_len..])
+            }
         };
+        if body.is_empty() {
+            return None;
+        }
 
         let n = body.len().min(ACTION_FRAME_MAX_LEN);
         let mut data = [0u8; ACTION_FRAME_MAX_LEN];
@@ -516,7 +557,7 @@ mod action_frame_tests {
     fn parses_full_mgmt_frame() {
         let mut evt = [0u8; 16 + 24 + 3];
         evt[..16].copy_from_slice(&rx_header(0x1006, -42));
-        evt[16] = 0xD0; // Action
+        evt[16] = 0xD0;
         evt[16 + 10..16 + 16].copy_from_slice(&[1, 2, 3, 4, 5, 6]); // addr2
         evt[16 + 24..].copy_from_slice(&[0x7F, 0xAA, 0xBB]);
 
@@ -529,17 +570,84 @@ mod action_frame_tests {
     }
 
     #[test]
-    fn parses_bare_body_and_truncates() {
-        let mut evt = [0x55u8; 16 + ACTION_FRAME_MAX_LEN + 10];
+    fn parses_action_no_ack() {
+        let mut evt = [0u8; 16 + 24 + 2];
+        evt[..16].copy_from_slice(&rx_header(1, -50));
+        evt[16] = 0xE0;
+        evt[16 + 10..16 + 16].copy_from_slice(&[6; 6]);
+        evt[16 + 24..].copy_from_slice(&[0x7F, 0x01]);
+        let f = ReceivedActionFrame::from_event([0; 6], &evt).unwrap();
+        assert_eq!(f.src, [6; 6]);
+        assert_eq!(f.data(), &[0x7F, 0x01]);
+    }
+
+    #[test]
+    fn mgmt_header_with_ht_control_is_28_bytes() {
+        let mut evt = [0u8; 16 + 28 + 2];
+        evt[..16].copy_from_slice(&rx_header(1, -50));
+        evt[16] = 0xD0;
+        evt[17] = 0x80; // Order bit => +HTC
+        evt[16 + 28..].copy_from_slice(&[0x7F, 0x02]);
+        let f = ReceivedActionFrame::from_event([0; 6], &evt).unwrap();
+        assert_eq!(f.data(), &[0x7F, 0x02]);
+    }
+
+    #[test]
+    fn bare_body_is_not_stripped_and_uses_event_addr() {
+        let mut evt = [0u8; 16 + 5];
         evt[..16].copy_from_slice(&rx_header(11, -70));
+        evt[16..].copy_from_slice(&[0x7F, 1, 2, 3, 4]);
         let f = ReceivedActionFrame::from_event([7; 6], &evt).unwrap();
         assert_eq!(f.src, [7; 6]);
+        assert_eq!(f.channel, 11);
+        assert_eq!(f.data(), &[0x7F, 1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn espnow_v1_max_frame_fits_in_both_layouts() {
+        // bare
+        let mut evt = [0x7Fu8; 16 + ACTION_FRAME_MAX_LEN];
+        evt[..16].copy_from_slice(&rx_header(1, -1));
+        *evt.last_mut().unwrap() = 0x42;
+        let f = ReceivedActionFrame::from_event([0; 6], &evt).unwrap();
+        assert_eq!(f.data().len(), ACTION_FRAME_MAX_LEN);
+        assert_eq!(f.data()[ACTION_FRAME_MAX_LEN - 1], 0x42);
+        assert!(!f.truncated);
+
+        // full mgmt header
+        let mut evt = [0x7Fu8; 16 + 24 + ACTION_FRAME_MAX_LEN];
+        evt[..16].copy_from_slice(&rx_header(1, -1));
+        evt[16..16 + 24].fill(0);
+        evt[16] = 0xD0;
+        *evt.last_mut().unwrap() = 0x42;
+        let f = ReceivedActionFrame::from_event([0; 6], &evt).unwrap();
+        assert_eq!(f.data().len(), ACTION_FRAME_MAX_LEN);
+        assert_eq!(f.data()[ACTION_FRAME_MAX_LEN - 1], 0x42);
+        assert!(!f.truncated);
+    }
+
+    #[test]
+    fn one_byte_over_the_limit_is_truncated() {
+        let mut evt = [0x55u8; 16 + ACTION_FRAME_MAX_LEN + 1];
+        evt[..16].copy_from_slice(&rx_header(11, -70));
+        let f = ReceivedActionFrame::from_event([7; 6], &evt).unwrap();
         assert_eq!(f.data().len(), ACTION_FRAME_MAX_LEN);
         assert!(f.truncated);
     }
 
     #[test]
-    fn rejects_short_payload() {
+    fn rejects_malformed_payloads() {
+        // shorter than the RX header
         assert!(ReceivedActionFrame::from_event([0; 6], &[0u8; 15]).is_none());
+        // RX header only: empty body
+        assert!(ReceivedActionFrame::from_event([0; 6], &[0u8; 16]).is_none());
+        // truncated management header is not reinterpreted as a bare body
+        let mut evt = [0u8; 16 + 10];
+        evt[16] = 0xD0;
+        assert!(ReceivedActionFrame::from_event([0; 6], &evt).is_none());
+        // complete management header, no body
+        let mut evt = [0u8; 16 + 24];
+        evt[16] = 0xD0;
+        assert!(ReceivedActionFrame::from_event([0; 6], &evt).is_none());
     }
 }

@@ -573,9 +573,12 @@ impl BssInfo {
     }
 }
 
-/// Maximum action frame body carried in either direction.
+/// Maximum action frame body carried in either direction, from the category byte.
+///
+/// 265 = ESP-NOW v1 worst case: category (1) + OUI (3) + random (4) + vendor
+/// element [id (1) + len (1) + OUI (3) + type (1) + version (1) + body (250)].
 #[cfg(feature = "action-frames")]
-pub const ACTION_FRAME_MAX_LEN: usize = 256;
+pub const ACTION_FRAME_MAX_LEN: usize = 265;
 
 /// Broadcom `wl_action_frame`.
 #[cfg(feature = "action-frames")]
@@ -613,9 +616,72 @@ pub struct WlAfParams {
 #[cfg(feature = "action-frames")]
 impl_bytes!(WlAfParams);
 
-// `core::assert!`: the crate-level `assert!` is defmt's, which isn't const.
 #[cfg(feature = "action-frames")]
-const _: () = core::assert!(WlActionFrame::SIZE == 268 && WlAfParams::SIZE == 284);
+impl WlAfParams {
+    /// Build the parameters; `None` if `data` exceeds [`ACTION_FRAME_MAX_LEN`].
+    pub fn new(
+        channel: u32,
+        dwell_time_ms: i32,
+        bssid: [u8; 6],
+        da: [u8; 6],
+        packet_id: u32,
+        data: &[u8],
+    ) -> Option<Self> {
+        if data.len() > ACTION_FRAME_MAX_LEN {
+            return None;
+        }
+        let mut body = [0u8; ACTION_FRAME_MAX_LEN];
+        body[..data.len()].copy_from_slice(data);
+        Some(Self {
+            channel,
+            dwell_time: dwell_time_ms,
+            bssid,
+            _pad: [0; 2],
+            action_frame: WlActionFrame {
+                da,
+                len: data.len() as u16,
+                packet_id,
+                data: body,
+            },
+        })
+    }
+
+    /// Serialize with explicit little-endian fields (independent of host endianness).
+    pub fn encode_into(&self, out: &mut [u8; Self::SIZE]) {
+        let channel = self.channel;
+        let dwell = self.dwell_time;
+        let af = &self.action_frame;
+        let len = af.len;
+        let packet_id = af.packet_id;
+
+        out[0..4].copy_from_slice(&channel.to_le_bytes());
+        out[4..8].copy_from_slice(&dwell.to_le_bytes());
+        out[8..14].copy_from_slice(&self.bssid);
+        out[14..16].copy_from_slice(&self._pad);
+        out[16..22].copy_from_slice(&af.da);
+        out[22..24].copy_from_slice(&len.to_le_bytes());
+        out[24..28].copy_from_slice(&packet_id.to_le_bytes());
+        out[28..].copy_from_slice(&af.data);
+    }
+}
+
+// Layout proof. `core::assert!`: the crate-level `assert!` is defmt's, which isn't const.
+#[cfg(feature = "action-frames")]
+const _: () = {
+    use core::mem::{align_of, offset_of, size_of};
+    core::assert!(align_of::<WlAfParams>() == 1);
+    core::assert!(size_of::<WlActionFrame>() == 12 + ACTION_FRAME_MAX_LEN);
+    core::assert!(size_of::<WlAfParams>() == 16 + size_of::<WlActionFrame>());
+    core::assert!(offset_of!(WlAfParams, channel) == 0);
+    core::assert!(offset_of!(WlAfParams, dwell_time) == 4);
+    core::assert!(offset_of!(WlAfParams, bssid) == 8);
+    core::assert!(offset_of!(WlAfParams, _pad) == 14);
+    core::assert!(offset_of!(WlAfParams, action_frame) == 16);
+    core::assert!(offset_of!(WlAfParams, action_frame.da) == 16);
+    core::assert!(offset_of!(WlAfParams, action_frame.len) == 22);
+    core::assert!(offset_of!(WlAfParams, action_frame.packet_id) == 24);
+    core::assert!(offset_of!(WlAfParams, action_frame.data) == 28);
+};
 
 /// `wl_event_rx_frame_data_t`: header of an `ACTION_FRAME_RX` event payload.
 ///
@@ -659,5 +725,86 @@ impl ActionFrameRxHeader {
             },
             rest,
         ))
+    }
+}
+
+#[cfg(all(test, feature = "action-frames"))]
+mod action_frame_layout_tests {
+    use super::*;
+
+    #[test]
+    fn max_len_is_the_espnow_v1_frame() {
+        const CATEGORY: usize = 1;
+        const OUI: usize = 3;
+        const RANDOM: usize = 4;
+        const VENDOR_ELEMENT_HDR: usize = 1 + 1 + 3 + 1 + 1; // id, len, OUI, type, version
+        const ESPNOW_V1_PAYLOAD: usize = 250;
+        let frame = CATEGORY + OUI + RANDOM + VENDOR_ELEMENT_HDR + ESPNOW_V1_PAYLOAD;
+        assert_eq!(frame, 265);
+        assert_eq!(ACTION_FRAME_MAX_LEN, frame);
+    }
+
+    #[test]
+    fn wire_sizes() {
+        assert_eq!(WlActionFrame::SIZE, 12 + ACTION_FRAME_MAX_LEN);
+        assert_eq!(WlAfParams::SIZE, 28 + ACTION_FRAME_MAX_LEN);
+        assert_eq!(WlAfParams::SIZE, 293);
+    }
+
+    #[test]
+    fn encode_matches_firmware_layout() {
+        let p = WlAfParams::new(
+            6,
+            50,
+            [1, 2, 3, 4, 5, 6],
+            [0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6],
+            0x0403_0201,
+            &[0x7F, 0xAA, 0xBB],
+        )
+        .unwrap();
+        let mut out = [0xEEu8; WlAfParams::SIZE]; // prefill: every byte must be written
+        p.encode_into(&mut out);
+        assert_eq!(
+            &out[..28],
+            &[
+                6, 0, 0, 0, // channel
+                50, 0, 0, 0, // dwell
+                1, 2, 3, 4, 5, 6, // bssid
+                0, 0, // pad
+                0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, // da
+                3, 0, // len
+                1, 2, 3, 4, // packet_id
+            ]
+        );
+        assert_eq!(&out[28..31], &[0x7F, 0xAA, 0xBB]);
+        assert!(out[31..].iter().all(|&b| b == 0));
+    }
+
+    #[cfg(target_endian = "little")]
+    #[test]
+    fn encode_equals_repr_c_cast_on_little_endian() {
+        let p = WlAfParams::new(11, 50, [9; 6], [8; 6], 77, &[0x7F; 40]).unwrap();
+        let mut out = [0u8; WlAfParams::SIZE];
+        p.encode_into(&mut out);
+        assert_eq!(&out[..], &p.to_bytes()[..]);
+    }
+
+    #[test]
+    fn new_enforces_length_limit() {
+        let data = [0u8; ACTION_FRAME_MAX_LEN + 1];
+        assert!(WlAfParams::new(1, 50, [0; 6], [0; 6], 1, &data[..0]).is_some());
+        assert!(WlAfParams::new(1, 50, [0; 6], [0; 6], 1, &data[..ACTION_FRAME_MAX_LEN]).is_some());
+        assert!(WlAfParams::new(1, 50, [0; 6], [0; 6], 1, &data).is_none());
+    }
+
+    #[test]
+    fn rx_header_is_big_endian() {
+        let buf = [
+            0, 1, 0x10, 0x0B, 0xFF, 0xFF, 0xFF, 0xD6, 0, 0, 0, 5, 0, 0, 0, 2, 0xAA,
+        ];
+        let (h, rest) = ActionFrameRxHeader::parse(&buf).unwrap();
+        assert_eq!((h.version, h.chanspec, h.rssi, h.mactime, h.rate), (1, 0x100B, -42, 5, 2));
+        assert_eq!(rest, &[0xAA]);
+        assert!(ActionFrameRxHeader::parse(&buf[..15]).is_none());
     }
 }

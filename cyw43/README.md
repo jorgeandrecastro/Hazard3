@@ -38,6 +38,33 @@ The repository's upstream Arm examples are not maintained for this fork.
 See the [`cyw43-pio-riscv` README](../cyw43-pio/README.md) for dependency
 selection and the RISC-V compatibility check.
 
+## Source layout
+
+```text
+cyw43-riscv/
+├── Cargo.toml
+├── Cargo.lock
+├── CHANGELOG.md
+├── README.md
+├── src/
+│   ├── lib.rs
+│   ├── bluetooth.rs
+│   ├── bluetooth_tests.rs
+│   ├── chip.rs
+│   ├── consts.rs
+│   ├── control.rs
+│   ├── countries.rs
+│   ├── events.rs
+│   ├── fmt.rs
+│   ├── ioctl.rs
+│   ├── runner.rs
+│   ├── sdio.rs
+│   ├── spi.rs
+│   ├── structs.rs
+│   └── util.rs
+└── target/
+```
+
 ## Development
 
 Run these commands from the `cyw43` directory. Install the RISC-V target if needed:
