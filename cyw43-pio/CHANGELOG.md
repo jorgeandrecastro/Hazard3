@@ -6,9 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## 0.1.0 - 2026-11-22
+## 0.2.0 - 2026-11-22
 
 - Fork as `cyw43-pio-riscv`, retaining the `cyw43_pio` library name and using `embassy-rp-riscv` and `cyw43-riscv`.
+- Updated dependency alignment for the RISC-V fork:
+  - `cyw43-riscv` 0.2.0 for CYW43 and ESP-NOW action-frame support.
+  - `embassy-rp-riscv` 0.2.0 for RP2350 RISC-V support.
+  - `embassy-futures` 0.1.2 for the PIO transport implementation.
+  - `embassy-net-riscv` 0.3.0 for the compatibility test dependency.
+- Added README documentation for ESP-NOW hardware validation between the
+  Pico 2 W/CYW43439 and an ESP32-C3 Mini.
 - Fix deterministic single-bit corruption on RP2350 backplane reads by using two DMA channels (TX + RX). The single single-channel pattern raced with the PIO state machine in debug builds, causing the LSB of the last sampled word in `cmd_read` to be cleared.
 - Breaking: `PioSpi::new` now takes two `dma::Channel` arguments (TX and RX) instead of one.
 - Breaking: removed the `fixed` dependency. `PioSpi::new` and the `*_CLOCK_DIVIDER` constants use a `u32` clock divider with 16 integer and 8 fractional bits (the divider multiplied by 256).
