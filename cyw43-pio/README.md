@@ -21,7 +21,7 @@ MIT OR Apache-2.0 licenses.
 
 ## Development
 
-Run these commands from the repository root. Install the RISC-V target if needed:
+Run these commands from the `cyw43-pio` directory. Install the RISC-V target if needed:
 
 ```sh
 rustup target add riscv32imac-unknown-none-elf
@@ -31,17 +31,16 @@ Check the integration with the HAL, CYW43 driver and RISC-V networking stack:
 
 ```sh
 # RP2350A
-cargo check --manifest-path cyw43-pio/Cargo.toml --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xa
+cargo check --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xa
 
 # RP2350B with defmt
-cargo check --manifest-path cyw43-pio/Cargo.toml --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xb,defmt
+cargo check --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xb,defmt
 ```
 
 Generate the documentation:
 
 ```sh
 cargo doc \
-    --manifest-path cyw43-pio/Cargo.toml \
     --target riscv32imac-unknown-none-elf \
     --features embassy-rp/rp235xa \
     --no-deps \
@@ -51,10 +50,10 @@ cargo doc \
 Package and publish with the RP2350A target configuration:
 
 ```sh
-cargo package --manifest-path cyw43-pio/Cargo.toml \
+cargo package \
     --target riscv32imac-unknown-none-elf \
     --features embassy-rp/rp235xa
-cargo publish --manifest-path cyw43-pio/Cargo.toml \
+cargo publish \
     --target riscv32imac-unknown-none-elf \
     --features embassy-rp/rp235xa
 ```
