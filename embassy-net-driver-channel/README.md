@@ -1,4 +1,12 @@
-# embassy-net-driver-channel
+# embassy-net-driver-channel-riscv
+
+This fork uses `embassy-sync-riscv` and `xarxa-driver-riscv` to integrate
+drivers such as `cyw43-riscv` with `embassy-net-riscv`. The Rust library name
+remains `embassy_net_driver_channel`; the license remains MIT OR Apache-2.0.
+
+This crate is derived from [Embassy's `embassy-net-driver-channel`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-driver-channel).
+All credit for the original work goes to Embassy and its contributors. This
+independent fork focuses on RISC-V and is not affiliated with or endorsed by Embassy.
 
 This crate provides a toolkit for implementing [`embassy-net`](https://crates.io/crates/embassy-net) drivers in a
 higher level way than implementing the [`xarxa-driver`](https://crates.io/crates/xarxa-driver) `Driver` trait directly.
@@ -86,3 +94,14 @@ These `embassy-net` drivers are implemented using this crate. You can look at th
 ## Interoperability
 
 This crate can run on any executor.
+
+## Development
+
+Run these commands from the `embassy-net-driver-channel` directory to check,
+package and publish for RISC-V:
+
+```sh
+cargo check --target riscv32imac-unknown-none-elf
+cargo package --target riscv32imac-unknown-none-elf
+cargo publish --target riscv32imac-unknown-none-elf
+```

@@ -5,12 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- next-header -->
-## Unreleased - 2026-11-18
+## 0.1.0 - 2026-11-22
 
+- Fork as `embassy-net-driver-channel-riscv`, retaining the library name and using `embassy-sync-riscv`.
 - Port to the `xarxa-driver` `Driver` trait, replacing `embassy-net-driver`.
 - Packets are now owned `PacketBuf`s from the stack's packet pool, passed through plain channels instead of zero-copy channels.
 - Runners receive into empty buffers handed out by the stack, taken with `rx_buf`, `try_rx_buf` or `poll_rx_buf`.
+
+The entries below describe the upstream `embassy-net-driver-channel` releases.
 
 ## 0.4.0 - 2026-03-11
 

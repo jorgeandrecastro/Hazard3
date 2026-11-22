@@ -1,11 +1,13 @@
 [package]
-name = "embassy-net-driver-channel"
-version = "0.4.0"
+name = "embassy-net-driver-channel-riscv"
+version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "High-level channel-based driver for the `embassy-net` async TCP/IP network stack."
-repository = "https://github.com/embassy-rs/embassy"
-documentation = "https://docs.embassy.dev/embassy-net-driver-channel"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/embassy-net-driver-channel-riscv"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock"]
 categories = [
     "embedded",
     "no-std",
@@ -13,19 +15,24 @@ categories = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/embassy-rs/embassy/blob/embassy-net-driver-channel-v$VERSION/embassy-net-driver-channel/src/"
-src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-net-driver-channel/src/"
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/embassy-net-driver-channel/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/embassy-net-driver-channel/src/"
 features = ["defmt"]
-target = "thumbv7em-none-eabi"
+target = "riscv32imac-unknown-none-elf"
 
 [package.metadata.docs.rs]
+default-target = "riscv32imac-unknown-none-elf"
+targets = ["riscv32imac-unknown-none-elf"]
 features = ["defmt"]
+
+[lib]
+name = "embassy_net_driver_channel"
 
 [dependencies]
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-embassy-sync = { version = "0.8.0", path = "../embassy-sync" }
+embassy-sync = { package = "embassy-sync-riscv", version = "0.1.0", path = "../embassy-sync" }
 xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1.0", path = "../xarxa-riscv/xarxa-driver", features = ["async"] }
 
 [features]
