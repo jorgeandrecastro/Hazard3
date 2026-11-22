@@ -69,7 +69,8 @@ cargo doc \
     --document-private-items
 ```
 
-Package and publish for RISC-V:
+Publish `embassy-net-driver-channel-riscv` first, then package and publish this
+crate for RISC-V:
 
 ```sh
 cargo package --target riscv32imac-unknown-none-elf
