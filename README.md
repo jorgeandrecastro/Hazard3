@@ -1,17 +1,20 @@
-# Embassy-RISCV
+# Hazard3
 
-> **RISC-V fork of Embassy.** This independent fork of [Embassy](https://github.com/embassy-rs/embassy)
-> is maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
+> **RISC-V fork of Embassy.** Hazard3 is an independent fork of [Embassy](https://github.com/embassy-rs/embassy),
+> maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/embassy-riscv>. It adds RISC-V support, for example for the
 > RP2350 Hazard3 cores, which upstream Embassy does not provide.
+>
+> **Migration:** check crates.io for the availability of the `hazard3-*` packages.
+> The latest releases of the former `*-riscv` packages carry migration notices.
 
 ![Raspberry Pi Pico 2 W running Embassy-RISCV](pico2w.jpeg)
 
 ## ESP-NOW: flagship feature
 
-![CYW43-RISC-V ESP-NOW validation](cyw43/cyw43-riscv-espnow.png)
+![CYW43-RISC-V ESP-NOW validation](hazard3-cyw43/cyw43-riscv-espnow.png)
 
-[`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) provide the fork's
+[`hazard3-cyw43`](hazard3-cyw43/) and [`hazard3-cyw43-pio`](hazard3-cyw43-pio/) provide the fork's
 main hardware feature: bidirectional ESP-NOW communication on the Raspberry Pi
 Pico 2 W. The Pico 2 W uses the RP2350 Hazard3 core and the CYW43439 radio
 through the RISC-V PIO transport, and communicates with an ESP32-C3 Mini using
@@ -25,50 +28,83 @@ with zero transmission errors, invalid PONGs, unexpected PONGs and timeouts.
 
 ## Vision
 
-Embassy-RISCV is a **RISC-V-first** fork. The goal is to make async embedded Rust with Embassy a
+Hazard3 is a **RISC-V-first** fork. The goal is to make async embedded Rust with Embassy a
 first-class experience on RISC-V microcontrollers, starting with the Hazard3 cores of the RP2350.
 
 - **RISC-V only.** This fork does not support Arm Cortex-M and does not support the RP2040
   (which has no RISC-V cores). Cortex-M code, features, dependencies and interrupt vector tables are
   removed rather than kept behind `cfg` flags. For Arm or RP2040, use upstream Embassy.
-- **Publishable on crates.io.** Upstream crates that depend on Git revisions or unreleased changes
-  are republished under `-riscv` package names so the whole stack can be used from crates.io.
+- **Publishable on crates.io.** The previously published fork packages are being renamed to
+  `hazard3-*`; upstream crates outside this fork's published stack are not being renamed.
 - **Source compatible.** The Rust library names stay the same as upstream (`embassy_time`,
   `embassy_executor`, `embassy_rp`, `embassy_net`, `rp_pac`, ...), so only the `package = "..."` key
   changes in `Cargo.toml`.
 
-Use the `-riscv` crates **together** to avoid duplicate or incompatible copies of Embassy dependencies.
+Use the `hazard3-*` crates **together** to avoid duplicate or incompatible copies of Embassy
+dependencies. Check crates.io for each package's availability.
 
 ## Crates
 
 | Package | Library name | Role |
 |---|---|---|
-| [`embassy-rp-riscv`](embassy-rp/) | `embassy_rp` | RP2350 (RP235x) HAL for the Hazard3 RISC-V cores |
-| `rp-pac-riscv` | `rp_pac` | RP2350 PAC, RISC-V only, no Cortex-M vector table |
-| [`embassy-net-riscv`](embassy-net/) | `embassy_net` | Async networking stack |
-| [`cyw43-riscv`](cyw43/) | `cyw43` | CYW43 WiFi and Bluetooth driver for the forked network stack |
-| [`cyw43-pio-riscv`](cyw43-pio/) | `cyw43_pio` | RP2350 PIO transport for CYW43 |
-| [`embassy-net-driver-channel-riscv`](embassy-net-driver-channel/) | `embassy_net_driver_channel` | Channel-based Xarxa network drivers |
-| [`xarxa-riscv`](xarxa-riscv/) | `xarxa` | Network stack, pinned upstream sources |
-| [`xarxa-driver-riscv`](xarxa-riscv/xarxa-driver/) | `xarxa_driver` | Network driver interface |
-| `embassy-executor-riscv`, `embassy-executor-macros-riscv` | `embassy_executor` | Executor |
-| `embassy-time-riscv`, `embassy-time-driver-riscv` | `embassy_time`, `embassy_time_driver` | Timekeeping |
-| `embassy-sync-riscv` | `embassy_sync` | Synchronization primitives |
-| `embassy-embedded-hal-riscv` | `embassy_embedded_hal` | `embedded-hal` adapters |
-| `embassy-usb-driver-riscv` | `embassy_usb_driver` | USB driver traits |
-| `embassy-hal-internal-riscv` | `embassy_hal_internal` | HAL internals, including Hazard3 `Xh3irq` interrupts |
+| [`hazard3-rp`](hazard3-rp/) | `embassy_rp` | RP2350 HAL |
+| [`hazard3-rp-pac`](hazard3-rp-pac/) | `rp_pac` | RP2350 PAC |
+| [`hazard3-net-async`](hazard3-net-async/) | `embassy_net` | Async networking stack |
+| [`hazard3-cyw43`](hazard3-cyw43/) | `cyw43` | CYW43 WiFi and Bluetooth driver |
+| [`hazard3-cyw43-pio`](hazard3-cyw43-pio/) | `cyw43_pio` | RP2350 PIO transport for CYW43 |
+| [`hazard3-net-driver-channel`](hazard3-net-driver-channel/) | `embassy_net_driver_channel` | Channel-based network drivers |
+| [`hazard3-net`](hazard3-net/) | `xarxa` | Xarxa-derived network stack |
+| [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/) | `xarxa_driver` | Network driver interface |
+| `hazard3-executor`, `hazard3-executor-macros`, `hazard3-executor-timer-queue` | `embassy_executor`, `embassy_executor_macros`, `embassy_executor_timer_queue` | Executor |
+| `hazard3-time`, `hazard3-time-driver`, `hazard3-time-queue-utils` | `embassy_time`, `embassy_time_driver`, `embassy_time_queue_utils` | Timekeeping |
+| `hazard3-sync` | `embassy_sync` | Synchronization primitives |
+| `hazard3-embedded-hal` | `embassy_embedded_hal` | `embedded-hal` adapters |
+| `hazard3-usb-driver` | `embassy_usb_driver` | USB driver traits |
+| `hazard3-hal-internal` | `embassy_hal_internal` | HAL internals |
+| `hazard3-unitrait`, `hazard3-unitrait-macros` | `unitrait`, `unitrait_macros` | Global implementation traits |
 
 For linking and flashing on the Pico 2 in RISC-V mode, use
 [`rp2350-riscv-linker`](https://crates.io/crates/rp2350-riscv-linker) 0.2 or later.
 
+## Package migration
+
+| Former package | Hazard3 package |
+|---|---|
+| `embassy-rp-riscv` | `hazard3-rp` |
+| `rp-pac-riscv` | `hazard3-rp-pac` |
+| `embassy-net-riscv` | `hazard3-net-async` |
+| `xarxa-riscv` | `hazard3-net` |
+| `xarxa-driver-riscv` | `hazard3-net-driver` |
+| `embassy-net-driver-channel-riscv` | `hazard3-net-driver-channel` |
+| `cyw43-riscv` | `hazard3-cyw43` |
+| `cyw43-pio-riscv` | `hazard3-cyw43-pio` |
+| `embassy-executor-riscv` | `hazard3-executor` |
+| `embassy-executor-macros-riscv` | `hazard3-executor-macros` |
+| `embassy-executor-timer-queue-riscv` | `hazard3-executor-timer-queue` |
+| `embassy-time-riscv` | `hazard3-time` |
+| `embassy-time-driver-riscv` | `hazard3-time-driver` |
+| `embassy-time-queue-utils-riscv` | `hazard3-time-queue-utils` |
+| `embassy-sync-riscv` | `hazard3-sync` |
+| `embassy-embedded-hal-riscv` | `hazard3-embedded-hal` |
+| `embassy-usb-driver-riscv` | `hazard3-usb-driver` |
+| `embassy-hal-internal-riscv` | `hazard3-hal-internal` |
+| `unitrait-riscv` | `hazard3-unitrait` |
+| `unitrait-macros-riscv` | `hazard3-unitrait-macros` |
+
+Keep the dependency key, for example `embassy-time`, and change its `package` value
+to `hazard3-time`. Rust imports such as `embassy_time` remain unchanged. See
+[RELEASE.md](RELEASE.md) for publication order and yank guidance.
+
 ## Quick start
+
+Use these package names once the corresponding Hazard3 packages are available:
 
 ```toml
 [dependencies]
-embassy-rp = { package = "embassy-rp-riscv", version = "0.2", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
-embassy-time = { package = "embassy-time-riscv", version = "0.1" }
-embassy-executor = { package = "embassy-executor-riscv", version = "0.1", features = ["platform-riscv32", "executor-thread"] }
-embassy-sync = { package = "embassy-sync-riscv", version = "0.1" }
+embassy-rp = { package = "hazard3-rp", version = "0.2", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+embassy-time = { package = "hazard3-time", version = "0.1" }
+embassy-executor = { package = "hazard3-executor", version = "0.1", features = ["platform-riscv32", "executor-thread"] }
+embassy-sync = { package = "hazard3-sync", version = "0.1" }
 rp2350-riscv-linker = "1.0.0"
 ```
 
@@ -77,9 +113,11 @@ rustup target add riscv32imac-unknown-none-elf
 cargo build --release --target riscv32imac-unknown-none-elf
 ```
 
-See the [`embassy-rp-riscv` README](embassy-rp/README.md) for the full setup.
+See the [`hazard3-rp` README](hazard3-rp/README.md) for the full setup.
 
 ## What is new
+
+The following entries describe releases under the former package names.
 
 ### CYW43 ESP-NOW support 0.2.1 (2026-11-22)
 
@@ -87,7 +125,7 @@ See the [`embassy-rp-riscv` README](embassy-rp/README.md) for the full setup.
 - `cyw43-pio-riscv` 0.2.1 documents and aligns the PIO transport with the ESP-NOW example.
 - Validated bidirectional PING/PONG communication with an ESP32-C3 Mini.
 - Recorded 1,000 successful exchanges, with no TX errors, invalid or unexpected PONGs, or timeouts.
-- Average measured RTT was 13.732 ms; see the [CYW43 benchmark](cyw43/README.md#esp-now-benchmark).
+- Average measured RTT was 13.732 ms; see the [CYW43 benchmark](hazard3-cyw43/README.md#esp-now-benchmark).
 
 ### embassy-rp-riscv 0.2.0 (2026-11-21)
 
@@ -113,18 +151,17 @@ The detailed history is in each crate's `CHANGELOG.md`.
 
 ## RISC-V networking
 
-[`embassy-net-riscv`](embassy-net/) is required to bring Embassy networking to this RISC-V ecosystem.
-It cannot publish successfully when it depends directly on upstream Git dependencies, and it must be
-aligned with the other `-riscv` crates.
+[`hazard3-net-async`](hazard3-net-async/) brings Embassy networking to this RISC-V ecosystem.
+It uses local, versioned network dependencies rather than Git dependencies.
 
-This repository also provides the pinned Xarxa sources needed by `embassy-net-riscv`:
+This repository also provides the pinned Xarxa sources needed by `hazard3-net-async`:
 
-- [`xarxa-riscv`](xarxa-riscv/) — network stack package.
-- [`xarxa-driver-riscv`](xarxa-riscv/xarxa-driver/) — driver interface package.
+- [`hazard3-net`](hazard3-net/) — network stack package.
+- [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/) — driver interface package.
 
 The Rust library names remain unchanged: `embassy_net`, `xarxa`, and `xarxa_driver`. Cargo users
-must select the forked packages with `package = "embassy-net-riscv"`,
-`package = "xarxa-riscv"`, or `package = "xarxa-driver-riscv"` as appropriate.
+must select the forked packages with `package = "hazard3-net-async"`,
+`package = "hazard3-net"`, or `package = "hazard3-net-driver"` as appropriate after publication.
 
 These networking forks are published under the same repository and are not replacements for upstream
 Xarxa or upstream Embassy outside RISC-V projects.
@@ -137,10 +174,10 @@ No maintained CI workflow, example build matrix, or hardware integration test su
   (`rp235xa`, `rp235xb`, and a release check on `rp235xa`) and has been tested on a real RP2350 running
   the Hazard3 cores. Not every peripheral is tested, and PSRAM support is not implemented yet. The
   commands are listed in its README.
-- [`cyw43-riscv`](cyw43/) and [`cyw43-pio-riscv`](cyw43-pio/) are available for the Raspberry Pi Pico 2 W
+- [`cyw43-riscv`](hazard3-cyw43/) and [`cyw43-pio-riscv`](hazard3-cyw43-pio/) are available for the Raspberry Pi Pico 2 W
   and have been tested on hardware. The integration has been exercised for ESP-NOW bidirectional
   PING/PONG communication with an ESP32-C3 Mini, CYW43 LED blinking and use with an OLED display.
-- The networking crates are not compiled or tested as part of this README or repository validation.
+- The networking crate has been checked for the RISC-V target; this is not a hardware integration test.
 - There is no maintained test suite or hardware integration check for the upstream network examples
   or target-specific networking configurations in this repository.
 
@@ -152,22 +189,22 @@ Arm or RP2040 support are out of scope for this fork.
 
 ## License
 
-The Embassy-RISCV sources remain licensed under the upstream MIT OR Apache-2.0 terms:
+The Hazard3 Embassy-derived sources remain licensed under the upstream MIT OR Apache-2.0 terms:
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
 - MIT license ([LICENSE-MIT](LICENSE-MIT))
 
-The integrated [`xarxa-riscv`](xarxa-riscv/) and [`xarxa-driver-riscv`](xarxa-riscv/xarxa-driver/)
-sources retain the upstream 0-Clause BSD license. The `rp-pac-riscv` register definitions are generated
+The integrated [`hazard3-net`](hazard3-net/) and [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/)
+sources retain the upstream 0-Clause BSD license. The `hazard3-rp-pac` register definitions are generated
 from the Pico SDK SVD files and keep their BSD-3-Clause license.
 
 ## Acknowledgements
 
-Embassy-RISCV is derivative work based on the Embassy project and the Xarxa project. All credit for
+Hazard3 is derivative work based on the Embassy project and the Xarxa project. All credit for
 the original code goes to their respective authors and contributors:
 
 - [Embassy](https://github.com/embassy-rs/embassy)
 - [Xarxa](https://github.com/embassy-rs/xarxa)
 
 The original copyright and license notices are preserved in the corresponding directories.
-Embassy-RISCV is not affiliated with or endorsed by the Embassy or Xarxa projects.
+Hazard3 is not affiliated with or endorsed by the Embassy or Xarxa projects.

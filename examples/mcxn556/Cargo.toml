@@ -10,9 +10,9 @@ cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = { version = "0.7", features = ["set-sp", "set-vtor"] }
 defmt = "1.0"
 defmt-rtt = "1.0"
-embassy-executor = { version = "0.10.0", path = "../../embassy-executor", default-features = false, features = ["platform-cortex-m", "executor-thread", "defmt"] }
+embassy-executor = { version = "0.10.0", path = "../../hazard3-executor", default-features = false, features = ["platform-cortex-m", "executor-thread", "defmt"] }
 embassy-mcxa = { version = "0.1.0", path = "../../embassy-mcxa", default-features = false, features = ["mcxn556", "time-driver-ostimer", "defmt", "unstable-pac"] }
-embassy-time = { version = "0.5.1", path = "../../embassy-time", features = ["defmt", "defmt-timestamp-uptime"] }
+embassy-time = { version = "0.5.1", path = "../../hazard3-time", features = ["defmt", "defmt-timestamp-uptime"] }
 panic-probe = { version = "1.0", features = ["print-defmt"] }
 
 [profile.release]

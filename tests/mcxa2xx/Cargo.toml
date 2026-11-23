@@ -15,12 +15,12 @@ critical-section = "1.2.0"
 defmt = "1.0"
 defmt-rtt = "1.0"
 
-embassy-embedded-hal = { version = "0.6.0", path = "../../embassy-embedded-hal" }
-embassy-executor = { version = "0.10.0", path = "../../embassy-executor", features = ["platform-cortex-m", "executor-interrupt", "executor-thread"], default-features = false }
+embassy-embedded-hal = { version = "0.6.0", path = "../../hazard3-embedded-hal" }
+embassy-executor = { version = "0.10.0", path = "../../hazard3-executor", features = ["platform-cortex-m", "executor-interrupt", "executor-thread"], default-features = false }
 embassy-futures = { version = "0.1.2", path = "../../embassy-futures" }
 embassy-mcxa = { version = "0.1.0", path = "../../embassy-mcxa", default-features = false, features = ["rt", "swd-swo-as-gpio", "dma-ipd-req", "defmt", "unstable-pac", "mcxa266"] }
-embassy-time = { version = "0.5.1", path = "../../embassy-time", features = ["defmt", "defmt-timestamp-uptime"] }
-embassy-time-driver = { version = "0.2.2", path = "../../embassy-time-driver", optional = true }
+embassy-time = { version = "0.5.1", path = "../../hazard3-time", features = ["defmt", "defmt-timestamp-uptime"] }
+embassy-time-driver = { version = "0.2.2", path = "../../hazard3-time-driver", optional = true }
 
 embedded-io-async = "0.7.0"
 panic-probe = { version = "1.0", features = ["print-defmt"] }

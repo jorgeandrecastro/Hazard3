@@ -12,7 +12,7 @@ mspm0g3519 = [ "embassy-mspm0/mspm0g3519pz" ]
 [dependencies]
 teleprobe-meta = "1.1"
 
-embassy-executor = { version = "0.10.0", path = "../../embassy-executor", features = [ "platform-cortex-m", "executor-thread", "defmt" ] }
+embassy-executor = { version = "0.10.0", path = "../../hazard3-executor", features = [ "platform-cortex-m", "executor-thread", "defmt" ] }
 embassy-mspm0 = { version = "0.1.0", path = "../../embassy-mspm0", features = [ "rt", "defmt", "unstable-pac", "time-driver-any" ]  }
 
 defmt = "1.0.1"

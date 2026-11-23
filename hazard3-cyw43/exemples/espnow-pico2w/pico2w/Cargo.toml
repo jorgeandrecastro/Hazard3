@@ -1,0 +1,151 @@
+
+[package]
+name = "pico2-riscv"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[[bin]]
+name = "pico2-riscv"
+path = "main.rs"
+
+[dependencies]
+
+# ============================================================
+# LOGGING
+# ============================================================
+
+defmt = "1.0.1"
+defmt-rtt = "1.0.0"
+
+# ============================================================
+# EMBASSY RISC-V
+# ============================================================
+
+embassy-embedded-hal = {
+    package = "hazard3-embedded-hal",
+    version = "0.1"
+}
+
+embassy-executor = {
+    package = "hazard3-executor",
+    version = "0.1.1",
+    features = ["executor-thread", "defmt"]
+}
+
+embassy-time = {
+    package = "hazard3-time",
+    version = "0.1",
+    features = ["defmt", "defmt-timestamp-uptime"]
+}
+
+embassy-sync = {
+    package = "hazard3-sync",
+    version = "0.1"
+}
+
+embassy-futures = "0.1.2"
+
+embassy-rp = {
+    package = "hazard3-rp",
+    version = "0.2",
+    default-features = false,
+    features = [
+        "rp235xa",
+        "riscv",
+        "time-driver",
+        "critical-section-impl",
+        "defmt",
+        "imagedef-none"
+    ]
+}
+
+static_cell = "2.1"
+
+# ============================================================
+# RISC-V RUNTIME
+# ============================================================
+
+riscv-rt = {
+    version = "0.18.0",
+    optional = true
+}
+
+panic-halt = "0.2.0"
+
+# ============================================================
+# RP2350 LINKER
+# ============================================================
+
+rp2350-riscv-linker = "1.0.0"
+
+# ============================================================
+# DISPLAYS
+# ============================================================
+
+embassy-ssd1306 = {
+    version = "0.7",
+    default-features = false,
+    features = ["time-riscv"]
+}
+
+cyw43 = {
+    package = "hazard3-cyw43",
+    version = "0.2.1",
+    path = "../../../../hazard3-cyw43",
+    features = ["defmt", "action-frames"]
+}
+cyw43-setup = "1.0.0"
+cyw43-pio = {
+    package = "hazard3-cyw43-pio",
+    version = "0.2.1",
+    path = "../../../../hazard3-cyw43-pio",
+}
+
+rp-pac = {
+    package = "hazard3-rp-pac",
+    version = "0.2.0",
+    path = "../../../../hazard3-rp-pac",
+    features = ["rp235x"]
+}
+
+
+# Use the local Hazard3 crates for direct and transitive dependencies.
+[patch.crates-io]
+hazard3-embedded-hal = { path = "../../../../hazard3-embedded-hal" }
+hazard3-executor = { path = "../../../../hazard3-executor" }
+hazard3-executor-macros = { path = "../../../../hazard3-executor-macros" }
+hazard3-executor-timer-queue = { path = "../../../../hazard3-executor-timer-queue" }
+embassy-futures = { path = "../../../../embassy-futures" }
+hazard3-hal-internal = { path = "../../../../hazard3-hal-internal" }
+hazard3-rp = { path = "../../../../hazard3-rp" }
+hazard3-sync = { path = "../../../../hazard3-sync" }
+hazard3-time = { path = "../../../../hazard3-time" }
+hazard3-time-driver = { path = "../../../../hazard3-time-driver" }
+hazard3-time-queue-utils = { path = "../../../../hazard3-time-queue-utils" }
+hazard3-usb-driver = { path = "../../../../hazard3-usb-driver" }
+hazard3-rp-pac = { path = "../../../../hazard3-rp-pac" }
+hazard3-unitrait = { path = "../../../../hazard3-unitrait" }
+hazard3-unitrait-macros = { path = "../../../../hazard3-unitrait-macros" }
+
+# ============================================================
+# FEATURES
+# ============================================================
+
+[features]
+default = ["riscv-target"]
+
+riscv-target = [
+    "dep:riscv-rt",
+    "embassy-executor/platform-riscv32"
+]
+
+# ============================================================
+# RELEASE PROFILE
+# ============================================================
+
+[profile.release]
+debug = true
+lto = true
+opt-level = "z"
+panic = "abort"

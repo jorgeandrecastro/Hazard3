@@ -37,9 +37,9 @@ portable-atomic = { version = "1" }
 
 document-features = "0.2.7"
 
-embassy-sync = { version = "0.8.0", path = "../embassy-sync" }
-embassy-time = { version = "0.5.1", path = "../embassy-time", optional = true }
-embassy-usb-driver = { version = "0.2.2", path = "../embassy-usb-driver" }
+embassy-sync = { version = "0.8.0", path = "../hazard3-sync" }
+embassy-time = { version = "0.5.1", path = "../hazard3-time", optional = true }
+embassy-usb-driver = { version = "0.2.2", path = "../hazard3-usb-driver" }
 
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }

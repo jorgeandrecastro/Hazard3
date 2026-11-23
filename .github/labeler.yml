@@ -17,15 +17,15 @@ e-crypto:
 e-cyw43:
   - changed-files:
       - any-glob-to-any-file:
-          - cyw43/**
-          - cyw43-pio/**
+          - hazard3-cyw43/**
+          - hazard3-cyw43-pio/**
 
 e-executor:
   - changed-files:
       - any-glob-to-any-file:
-          - embassy-executor/**
-          - embassy-executor-macros/**
-          - embassy-executor-timer-queue/**
+          - hazard3-executor/**
+          - hazard3-executor-macros/**
+          - hazard3-executor-timer-queue/**
 
 e-futures:
   - changed-files:
@@ -42,9 +42,9 @@ e-mspm0:
 e-net:
   - changed-files:
       - any-glob-to-any-file:
-          - embassy-net/**
+          - hazard3-net-async/**
           - embassy-net-adin1110/**
-          - embassy-net-driver-channel/**
+          - hazard3-net-driver-channel/**
           - embassy-net-enc28j60/**
           - embassy-net-nrf91/**
           - embassy-net-pp/**
@@ -65,7 +65,7 @@ e-nxp:
 
 e-rp:
   - changed-files:
-      - any-glob-to-any-file: "embassy-rp/**"
+      - any-glob-to-any-file: "hazard3-rp/**"
 
 e-stm32:
   - changed-files:
@@ -79,21 +79,21 @@ e-wpan:
 
 e-sync:
   - changed-files:
-      - any-glob-to-any-file: "embassy-sync/**"
+      - any-glob-to-any-file: "hazard3-sync/**"
 
 e-time:
   - changed-files:
       - any-glob-to-any-file:
-          - embassy-time/**
-          - embassy-time-driver/**
-          - embassy-time-queue-utils/**
+          - hazard3-time/**
+          - hazard3-time-driver/**
+          - hazard3-time-queue-utils/**
 
 e-usb:
   - changed-files:
       - any-glob-to-any-file:
           - embassy-usb/**
           - embassy-usb-dfu/**
-          - embassy-usb-driver/**
+          - hazard3-usb-driver/**
           - embassy-usb-logger/**
           - embassy-usb-synopsys-otg/**
 

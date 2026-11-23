@@ -1,0 +1,50 @@
+[package]
+name = "hazard3-net-driver"
+version = "0.1.0"
+edition = "2024"
+description = "Driver trait for the `xarxa` network stack."
+documentation = "https://docs.rs/hazard3-net-driver/"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+readme = "README.md"
+keywords = ["ip", "tcp", "udp", "ethernet", "network"]
+categories = ["embedded", "network-programming"]
+license = "0BSD"
+exclude = ["target/", "Cargo.lock"]
+
+[lib]
+name = "xarxa_driver"
+
+[package.metadata.embassy_docs]
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-net/hazard3-net-driver/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/hazard3-net/hazard3-net-driver/src/"
+features = ["packetmeta-timestamp", "async"]
+target = "x86_64-unknown-linux-gnu"
+
+[package.metadata.docs.rs]
+# No feature is on by default, so document everything that adds API. defmt is
+# left out: it only adds `defmt::Format` impls.
+features = ["async", "packetmeta-timestamp"]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[features]
+## Derive `defmt::Format` on the types in this crate.
+defmt = ["dep:defmt"]
+
+## Enable the async parts of the driver API: `Driver::register_waker`.
+async = []
+
+#! ### Packet metadata
+## Enable the `PacketMeta::id` field: an opaque number that travels with a packet
+## through the whole stack.
+packetmeta-id = []
+## Enable the `PacketMeta::timestamp` and `PacketMeta::request_timestamp` fields, and
+## `Driver::poll_tx_timestamp`.
+##
+## Transmit timestamps are correlated back to the packet that produced them by
+## `PacketMeta::id`, so this implies `packetmeta-id`.
+packetmeta-timestamp = ["packetmeta-id"]
+
+[dependencies]
+document-features = "0.2.11"
+defmt = { version = "1", optional = true }
+

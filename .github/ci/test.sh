@@ -12,13 +12,13 @@ export CARGO_TARGET_DIR=/ci/cache/target
 # used when pointing stm32-metapac to a CI-built one.
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
-cargo test --manifest-path ./embassy-executor/Cargo.toml --features metadata-name
+cargo test --manifest-path ./hazard3-executor/Cargo.toml --features metadata-name
 cargo test --manifest-path ./embassy-futures/Cargo.toml
-cargo test --manifest-path ./embassy-sync/Cargo.toml
-cargo test --manifest-path ./embassy-embedded-hal/Cargo.toml
-cargo test --manifest-path ./embassy-hal-internal/Cargo.toml
-cargo test --manifest-path ./embassy-time/Cargo.toml --features mock-driver,embassy-time-queue-utils/generic-queue-8
-cargo test --manifest-path ./embassy-time-driver/Cargo.toml
+cargo test --manifest-path ./hazard3-sync/Cargo.toml
+cargo test --manifest-path ./hazard3-embedded-hal/Cargo.toml
+cargo test --manifest-path ./hazard3-hal-internal/Cargo.toml
+cargo test --manifest-path ./hazard3-time/Cargo.toml --features mock-driver,embassy-time-queue-utils/generic-queue-8
+cargo test --manifest-path ./hazard3-time-driver/Cargo.toml
 cargo test --manifest-path ./embassy-ptp-driver/Cargo.toml --all-features
 
 cargo test --manifest-path ./embassy-boot/Cargo.toml
@@ -26,8 +26,8 @@ cargo test --manifest-path ./embassy-boot/Cargo.toml
 cargo test --manifest-path ./embassy-nrf/Cargo.toml --no-default-features --features nrf52840,time-driver-rtc1
 
 for chip in rp235xa rp235xb; do
-    cargo build --manifest-path ./embassy-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver"
-    rp_deps=$(cargo tree --manifest-path ./embassy-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver" --edges normal --prefix none)
+    cargo build --manifest-path ./hazard3-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver"
+    rp_deps=$(cargo tree --manifest-path ./hazard3-rp/Cargo.toml --target riscv32imac-unknown-none-elf --no-default-features --features "riscv,rt,$chip,time-driver" --edges normal --prefix none)
     if grep -Eq '^(cortex-m|cortex-m-rt|rp2040-boot2) v' <<< "$rp_deps"; then
         echo "Unexpected ARM or RP2040 dependency in $chip RISC-V build" >&2
         exit 1
@@ -49,4 +49,4 @@ cargo test --manifest-path ./embassy-crypto-rand/Cargo.toml
 cargo test --manifest-path ./embassy-usb-dfu/Cargo.toml --features dfu
 cargo test --manifest-path ./embassy-usb/Cargo.toml --features block-device-driver
 cargo test --manifest-path ./embassy-usb-synopsys-otg/Cargo.toml
-cargo test --manifest-path ./embassy-net/Cargo.toml --features tcp,dhcpv4,medium-ethernet,ipv6
+cargo test --manifest-path ./hazard3-net-async/Cargo.toml --features tcp,dhcpv4,medium-ethernet,ipv6

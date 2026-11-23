@@ -179,20 +179,20 @@ features = ["defmt", "unstable-pac", "exti", "time-driver-any", "time", "stm32h7
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-embassy-sync = { version = "0.8.0", path = "../embassy-sync" }
-embassy-time = { version = "0.5.1", path = "../embassy-time", optional = true }
-embassy-time-driver = { version = "0.2.2", path = "../embassy-time-driver", optional = true }
-embassy-time-queue-utils = { version = "0.3.2", path = "../embassy-time-queue-utils", optional = true }
+embassy-sync = { version = "0.8.0", path = "../hazard3-sync" }
+embassy-time = { version = "0.5.1", path = "../hazard3-time", optional = true }
+embassy-time-driver = { version = "0.2.2", path = "../hazard3-time-driver", optional = true }
+embassy-time-queue-utils = { version = "0.3.2", path = "../hazard3-time-queue-utils", optional = true }
 embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
-embassy-hal-internal = { version = "0.5.0", path = "../embassy-hal-internal", features = ["cortex-m", "prio-bits-4"] }
-embassy-embedded-hal = { version = "0.6.0", path = "../embassy-embedded-hal", default-features = false }
-xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1.0", path = "../xarxa-riscv/xarxa-driver", features = ["async"] }
+embassy-hal-internal = { version = "0.5.0", path = "../hazard3-hal-internal", features = ["cortex-m", "prio-bits-4"] }
+embassy-embedded-hal = { version = "0.6.0", path = "../hazard3-embedded-hal", default-features = false }
+xarxa-driver = { package = "hazard3-net-driver", version = "0.1.0", path = "../hazard3-net/hazard3-net-driver", features = ["async"] }
 embassy-crypto = { version = "0.1.0", path = "../embassy-crypto", features = ["large-contexts"] }
 crypto-bigint = { version = "0.7.5", default-features = false, optional = true }
 embassy-ptp-driver = { version = "0.1.0", path = "../embassy-ptp-driver", optional = true }
-embassy-usb-driver = { version = "0.2.2", path = "../embassy-usb-driver" }
+embassy-usb-driver = { version = "0.2.2", path = "../hazard3-usb-driver" }
 embassy-usb-synopsys-otg = { version = "0.4.0", path = "../embassy-usb-synopsys-otg" }
-embassy-executor = { version = "0.10.0", path = "../embassy-executor", optional = true }
+embassy-executor = { version = "0.10.0", path = "../hazard3-executor", optional = true }
 
 embedded-hal-02 = { package = "embedded-hal", version = "0.2.7", features = ["unproven"] }
 embedded-hal-1 = { package = "embedded-hal", version = "1.0" }

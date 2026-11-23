@@ -8,8 +8,8 @@ publish = false
 [dependencies]
 rtic = { version = "2", features = ["thumbv7-backend"] }
 
-embassy-time = { version = "0.5.1", path = "../../embassy-time", features = [ "defmt", "defmt-timestamp-uptime"] }
-embassy-time-queue-utils = { version = "0.3.2", path = "../../embassy-time-queue-utils", features = ["generic-queue-8"] }
+embassy-time = { version = "0.5.1", path = "../../hazard3-time", features = [ "defmt", "defmt-timestamp-uptime"] }
+embassy-time-queue-utils = { version = "0.3.2", path = "../../hazard3-time-queue-utils", features = ["generic-queue-8"] }
 embassy-nrf = { version = "0.11.0", path = "../../embassy-nrf", features = [ "defmt", "nrf52840", "time-driver-rtc1", "unstable-pac", "time"] }
 
 defmt = "1.0.1"

@@ -15,11 +15,11 @@ defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4", default-features = false, optional = true }
 embedded-hal-1 = { package = "embedded-hal", version = "1.0" }
 embedded-hal-async = { version = "1.0" }
-embassy-net-driver-channel = { version = "0.4.0", path = "../embassy-net-driver-channel" }
-embassy-time = { version = "0.5.1", path = "../embassy-time" }
+embassy-net-driver-channel = { version = "0.4.0", path = "../hazard3-net-driver-channel" }
+embassy-time = { version = "0.5.1", path = "../hazard3-time" }
 embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
 bitfield = "0.20.0"
-xarxa-driver = { package = "xarxa-driver-riscv", version = "0.1.0", path = "../xarxa-riscv/xarxa-driver", optional = true, features = ["async"] }
+xarxa-driver = { package = "hazard3-net-driver", version = "0.1.0", path = "../hazard3-net/hazard3-net-driver", optional = true, features = ["async"] }
 
 [dev-dependencies]
 embedded-hal-mock = { version = "0.11.1", features = ["embedded-hal-async", "eh1"] }
@@ -27,7 +27,7 @@ embedded-hal-bus = { version = "0.3", features = ["async"] }
 crc = "3.0.1"
 critical-section = { version = "1.1.2", features = ["std"] }
 futures-test = "0.3.28"
-xarxa = { package = "xarxa-riscv", version = "0.1.0", path = "../xarxa-riscv", default-features = false }
+xarxa = { package = "hazard3-net", version = "0.1.0", path = "../hazard3-net", default-features = false }
 
 [features]
 default = ["generic-spi"]

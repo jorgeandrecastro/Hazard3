@@ -13,8 +13,8 @@ cargo-fuzz = true
 
 [dependencies]
 embassy-boot = { path = ".." }
-embassy-embedded-hal = { path = "../../embassy-embedded-hal" }
-embassy-sync = { path = "../../embassy-sync" }
+embassy-embedded-hal = { path = "../../hazard3-embedded-hal" }
+embassy-sync = { path = "../../hazard3-sync" }
 embedded-storage = "0.3.1"
 critical-section = { version = "1.1.1", features = ["std"] }
 libfuzzer-sys = "0.4"

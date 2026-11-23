@@ -6,10 +6,10 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [dependencies]
-embassy-sync = { version = "0.8.0", path = "../../../../embassy-sync" }
-embassy-executor = { version = "0.10.0", path = "../../../../embassy-executor", features = ["platform-cortex-m", "executor-thread"] }
-embassy-time = { version = "0.5.1", path = "../../../../embassy-time", features = [] }
-embassy-rp = { version = "0.10.0", path = "../../../../embassy-rp", features = ["time-driver", "rp235xa"] }
+embassy-sync = { version = "0.8.0", path = "../../../../hazard3-sync" }
+embassy-executor = { version = "0.10.0", path = "../../../../hazard3-executor", features = ["platform-cortex-m", "executor-thread"] }
+embassy-time = { version = "0.5.1", path = "../../../../hazard3-time", features = [] }
+embassy-rp = { version = "0.10.0", path = "../../../../hazard3-rp", features = ["time-driver", "rp235xa"] }
 embassy-boot-rp = { version = "0.10.0", path = "../../../../embassy-boot-rp", features = [] }
 
 defmt = "1.0.1"

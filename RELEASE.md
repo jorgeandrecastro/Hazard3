@@ -1,58 +1,51 @@
-# RELEASE.md
+# Releasing Hazard3
 
-This document outlines the process for releasing Embassy crates using `cargo-release` and the `release/bump-dependency.sh` script.
+The `hazard3-*` packages replace the former `*-riscv` packages. Their Rust
+library names stay unchanged. Preserve upstream license and attribution files.
+Check crates.io for the current publication status. The latest releases of the
+old packages carry migration notices.
 
-When releasing a crate, keep in mind that you may need to recursively release dependencies as well. 
+## Preparation
 
-## Prerequisites
+- Check the package names and versions on crates.io before publishing. A
+  published version cannot be replaced.
+- Run the target checks documented in each crate's README, and review the
+  package contents with `cargo package --list`.
+- Check the dependency versions and publish in dependency order. A dependent
+  package cannot be verified against crates.io until its dependencies exist.
+- Run `cargo publish --dry-run` with the same target and features before each
+  upload. Publish from a clean, committed tree.
 
-- Install [`cargo-release`](https://github.com/crate-ci/cargo-release):
+One dependency order for the migrated packages is:
 
-  ```sh
-  cargo binstall cargo-release
+1. `hazard3-unitrait-macros`, `hazard3-unitrait`, `hazard3-executor-timer-queue`
+2. `hazard3-time-driver`, `hazard3-time-queue-utils`, `hazard3-sync`
+3. `hazard3-executor-macros`, `hazard3-executor`, `hazard3-time`
+4. `hazard3-hal-internal`, `hazard3-embedded-hal`, `hazard3-usb-driver`, `hazard3-rp-pac`
+5. `hazard3-rp`, `hazard3-net/hazard3-net-driver`, `hazard3-net`
+6. `hazard3-net-driver-channel`, `hazard3-net-async`, `hazard3-cyw43`, `hazard3-cyw43-pio`
 
-## Crate release
+These are repository directory names, not package names. Allow each upload to
+appear in the registry before publishing its dependants. For example, from
+`hazard3-cyw43-pio/`, after its dependencies are available:
 
-Check if there are changes to the public API since the last release. If there is a breaking change, follow
-the process for creating a minor release. Otherwise, follow the process for creating a new patch release.
-
-Keep in mind that some crates may need the --features and --target flags passed to cargo release. For more information on that,
-look at the `Cargo.toml` files.
-
-### Patch release (no breaking public API changes)
-
-```
-cd embassy-nrf/
-cargo release patch --features time,defmt,unstable-pac,gpiote,time-driver-rtc1,nrf52840 --target thumbv7em-none-eabi
-
-# If dry-run is OK (no missing dependencies on crates.io) 
-cargo release patch --execute --features time,defmt,unstable-pac,gpiote,time-driver-rtc1,nrf52840 --target thumbv7em-none-eabi
-```
-
-### Minor release
-
-```
-# Bump versions in crate files
-./release/bump-dependency.sh embassy-nrf 0.4.0
-
-# Commit version bump
-git commit -am 'chore: update to `embassy-nrf` v0.4.0'
-
-# Release crate
-cd embassy-nrf/
-cargo release minor --features time,defmt,unstable-pac,gpiote,time-driver-rtc1,nrf52840 --target thumbv7em-none-eabi
-
-# If dry-run is OK (no missing dependencies on crates.io) 
-cargo release minor --execute --features time,defmt,unstable-pac,gpiote,time-driver-rtc1,nrf52840 --target thumbv7em-none-eabi
+```sh
+cargo publish --dry-run --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xa
+cargo publish --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xa
 ```
 
-## Push tags
+## Former packages
 
-Push the git tags that `cargo release` created earlier:
+Yanking is not a redirect or a migration message. It prevents new dependency
+resolution from selecting the yanked version; existing lockfiles can continue
+using it. It may break downstream builds. Only consider yanking individual
+versions after the new stack is published and verified, with an explicit
+decision about the impact:
 
+```sh
+cargo yank OLD-PACKAGE@VERSION
+# To undo a yank:
+cargo yank --undo OLD-PACKAGE@VERSION
 ```
-git push --tags
-```
-## Reference
 
-* [PR introducing release automation](https://github.com/embassy-rs/embassy/pull/4289)
+See the [Cargo yank documentation](https://doc.rust-lang.org/cargo/commands/cargo-yank.html).

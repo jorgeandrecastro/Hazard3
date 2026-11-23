@@ -1,0 +1,75 @@
+[package]
+name = "hazard3-cyw43"
+version = "0.2.1"
+edition = "2024"
+description = "Rust driver for the CYW43439 WiFi chip, used in the Raspberry Pi Pico W."
+keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
+categories = ["embedded", "hardware-support", "no-std", "network-programming", "asynchronous"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+documentation = "https://docs.rs/hazard3-cyw43"
+readme = "README.md"
+exclude = ["target/", "Cargo.lock", "exemples/"]
+
+[lib]
+name = "cyw43"
+
+[features]
+defmt = ["dep:defmt", "heapless/defmt", "embassy-time/defmt", "embedded-io-async?/defmt"]
+log = ["dep:log"]
+bluetooth = ["dep:bt-hci-transport", "dep:embedded-io-async"]
+
+
+# Fetch console logs from the WiFi firmware and forward them to `log` or `defmt`.
+firmware-logs = []
+
+# Low-level 802.11 vendor-specific action frame TX/RX (ESP-NOW groundwork).
+action-frames = []
+
+[dependencies]
+embassy-time = { package = "hazard3-time", version = "0.1.2", path = "../hazard3-time"}
+embassy-sync = { package = "hazard3-sync", version = "0.1.0", path = "../hazard3-sync"}
+embassy-futures = { version = "0.1.2", path = "../embassy-futures"}
+embassy-net-driver-channel = { package = "hazard3-net-driver-channel", version = "0.1.0", path = "../hazard3-net-driver-channel" }
+
+defmt = { version = "1.0.1", optional = true }
+log = { version = "0.4.17", optional = true }
+sdio = "0.5.0"
+
+embedded-hal-1 = { package = "embedded-hal", version = "1.0" }
+heapless = "0.9"
+aligned = "0.4.3"
+
+# Bluetooth deps
+embedded-io-async = { version = "0.7.0", optional = true }
+bt-hci-transport = { version = "0.1.0", optional = true }
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+critical-section = { version = "1.1", features = ["std"] }
+embassy-time = { package = "hazard3-time", version = "0.1.2", path = "../hazard3-time", features = ["std", "generic-queue-8"] }
+
+[package.metadata.embassy]
+build = [
+    {target = "riscv32imac-unknown-none-elf", features = []},
+    {target = "riscv32imac-unknown-none-elf", features = ["log"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["defmt"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["firmware-logs", "log"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["defmt", "firmware-logs"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["bluetooth", "firmware-logs", "log"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["bluetooth", "defmt", "firmware-logs"]},
+    #espnow-pico2w
+    {target = "riscv32imac-unknown-none-elf", features = ["action-frames"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["action-frames", "log"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["action-frames", "defmt"]},
+]
+
+[package.metadata.embassy_docs]
+src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-cyw43/src/"
+src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/hazard3-cyw43/src/"
+target = "riscv32imac-unknown-none-elf"
+features = ["defmt", "firmware-logs"]
+
+[package.metadata.docs.rs]
+default-target = "riscv32imac-unknown-none-elf"
+targets = ["riscv32imac-unknown-none-elf"]
+features = ["defmt", "firmware-logs"]

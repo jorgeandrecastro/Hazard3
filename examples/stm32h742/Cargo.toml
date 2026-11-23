@@ -14,12 +14,12 @@ embassy-stm32 = { version = "0.6.0", path = "../../embassy-stm32", features = [
     "time-driver-any",
     "exti",
 ] }
-embassy-executor = { version = "0.10.0", path = "../../embassy-executor", features = [
+embassy-executor = { version = "0.10.0", path = "../../hazard3-executor", features = [
     "platform-cortex-m",
     "executor-thread",
     "defmt",
 ] }
-embassy-time = { version = "0.5.1", path = "../../embassy-time", features = [
+embassy-time = { version = "0.5.1", path = "../../hazard3-time", features = [
     "defmt",
     "defmt-timestamp-uptime",
     "tick-hz-32_768",

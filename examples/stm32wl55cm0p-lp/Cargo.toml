@@ -15,8 +15,8 @@ embassy-stm32 = { version = "0.6.0", path = "../../embassy-stm32", features = [
   "low-power",
   "executor-thread"
 ] }
-embassy-executor = { version = "0.10.0", path = "../../embassy-executor", features = [] }
-embassy-time = { version = "0.5.1", path = "../../embassy-time", features = [
+embassy-executor = { version = "0.10.0", path = "../../hazard3-executor", features = [] }
+embassy-time = { version = "0.5.1", path = "../../hazard3-time", features = [
   "tick-hz-1_000",
 ] }
 

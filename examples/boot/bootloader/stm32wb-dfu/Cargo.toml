@@ -17,7 +17,7 @@ embassy-crypto-stub = { path = "../../../../embassy-crypto-stub", features = ["e
 embassy-stm32 = { path = "../../../../embassy-stm32", features = [] }
 embassy-boot-stm32 = { path = "../../../../embassy-boot-stm32" }
 cortex-m = { version = "0.7.6", features = ["inline-asm", "critical-section-single-core"] }
-embassy-sync = { version = "0.8.0", path = "../../../../embassy-sync" }
+embassy-sync = { version = "0.8.0", path = "../../../../hazard3-sync" }
 cortex-m-rt = { version = "0.7" }
 embassy-usb-dfu = { version = "0.3.0", path = "../../../../embassy-usb-dfu", features = ["dfu"] }
 embassy-usb = { version = "0.6.0", path = "../../../../embassy-usb", default-features = false, features = ["device", "class-dfu"] }
