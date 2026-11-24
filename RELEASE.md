@@ -60,9 +60,7 @@ wait for each upload to become available on crates.io before publishing its
 dependants:
 
 ```sh
-publish_hazard3 hazard3-executor --features platform-riscv32,executor-thread
 publish_hazard3 hazard3-time
-publish_hazard3 hazard3-hal-internal --features riscv
 publish_hazard3 hazard3-embedded-hal
 publish_hazard3 hazard3-usb-driver
 publish_hazard3 hazard3-rp-pac --features rp235x
