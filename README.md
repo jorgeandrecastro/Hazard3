@@ -208,4 +208,4 @@ the original code goes to their respective authors and contributors:
 - [Xarxa](https://github.com/embassy-rs/xarxa)
 
 The original copyright and license notices are preserved in the corresponding directories.
-Hazard3 is not affiliated with or endorsed by the Embassy or Xarxa projects.
+Hazard3 is not affiliated with or endorsed by the Embassy or Xarxa projects
