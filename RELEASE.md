@@ -18,9 +18,9 @@ old packages carry migration notices.
 
 ## Hazard3 migration status
 
-As of 2026-11-24, the repository rename and yank transition are ready for the
-following patch releases. These versions include the new `Hazard3` repository
-metadata and supersede the corresponding earlier crates.io releases:
+As of 2026-11-24, the repository rename and yank transition is complete. These
+published patch releases include the new `Hazard3` repository metadata and
+supersede the corresponding earlier crates.io releases:
 
 | Package | Version |
 |---|---|
