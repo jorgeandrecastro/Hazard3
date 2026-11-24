@@ -1,6 +1,6 @@
 # hazard3-net-async
 
-> **Migration in progress:** `hazard3-net-async` replaces the formerly published `embassy-net-riscv`.
+> **Published replacement:** `hazard3-net-async` replaces the formerly published `embassy-net-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -10,7 +10,7 @@
 
 > **Fork of Embassy for RISC-V.** `hazard3-net-async` is an independent copy of [`embassy-net`](https://github.com/embassy-rs/embassy/tree/main/embassy-net)
 > taken from the Embassy `main` branch and maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
-> <https://github.com/jorgeandrecastro/embassy-riscv>.
+> <https://github.com/jorgeandrecastro/Hazard3>.
 > The library name is still `embassy_net`; use it with `package = "hazard3-net-async"` in your `Cargo.toml`.
 > **Use the Hazard3 packages together** (`hazard3-time`, `hazard3-sync`, `hazard3-executor`, ...)
 > to avoid duplicate or incompatible copies in your build.
@@ -26,7 +26,7 @@ Git dependencies. The Rust library names remain `xarxa` and `xarxa_driver`.
 ## Vision of this fork
 
 This fork offers an alternative `embassy-net` that is harmonized with the RISC-V support provided
-by [`embassy-riscv`](https://github.com/jorgeandrecastro/embassy-riscv). It is maintained alongside
+by [`Hazard3`](https://github.com/jorgeandrecastro/Hazard3). It is maintained alongside
 the other essential Hazard3 crates so that RISC-V projects can use a coherent set of packages, but
 it is not limited to a single upstream or downstream use case. Its goals are deliberately limited to:
 

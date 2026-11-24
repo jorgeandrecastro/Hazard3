@@ -1,6 +1,6 @@
 # hazard3-cyw43-pio
 
-> **Migration in progress:** `hazard3-cyw43-pio` replaces the formerly published `cyw43-pio-riscv`.
+> **Published replacement:** `hazard3-cyw43-pio` replaces the formerly published `cyw43-pio-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -33,8 +33,8 @@ Use the matching forked packages together:
 
 ```toml
 [dependencies]
-cyw43 = { package = "hazard3-cyw43", version = "0.2.1" }
-cyw43-pio = { package = "hazard3-cyw43-pio", version = "0.2.1" }
+cyw43 = { package = "hazard3-cyw43", version = "0.2.2" }
+cyw43-pio = { package = "hazard3-cyw43-pio", version = "0.2.2" }
 embassy-rp = { package = "hazard3-rp", version = "0.2", features = ["rp235xa"] }
 ```
 

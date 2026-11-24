@@ -1,6 +1,6 @@
 # hazard3-cyw43
 
-> **Migration in progress:** `hazard3-cyw43` replaces the formerly published `cyw43-riscv`.
+> **Published replacement:** `hazard3-cyw43` replaces the formerly published `cyw43-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 

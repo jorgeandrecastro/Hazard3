@@ -1,9 +1,9 @@
 [package]
 name = "hazard3-unitrait-macros"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Implementation detail of the `unitrait` crate"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-unitrait-macros"
 license = "MIT OR Apache-2.0"
 readme = "README.md"

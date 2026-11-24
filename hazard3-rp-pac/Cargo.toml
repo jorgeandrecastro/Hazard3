@@ -1,10 +1,10 @@
 
 [package]
 name = "hazard3-rp-pac"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 license = "BSD-3-Clause"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-rp-pac"
 readme = "README.md"
 description = "RISC-V Peripheral Access Crate for Raspberry Pi RP235x microcontrollers."
@@ -27,8 +27,8 @@ defmt = ["dep:defmt"]
 debug = []
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-rp-pac/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-rp-pac/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-rp-pac/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-rp-pac/src/"
 flavors = [
     { name = "rp235x", features = ["rp235x"], target = "riscv32imac-unknown-none-elf" },
 ]

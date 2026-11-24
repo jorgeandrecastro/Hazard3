@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
+- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
+
 - Rename package `cyw43-riscv` to `hazard3-cyw43` while retaining the Rust library name.
 
 ## [0.2.1] - 2026-11-22

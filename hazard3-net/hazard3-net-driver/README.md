@@ -10,7 +10,7 @@
 > **RISC-V Embassy fork.** `hazard3-net-driver` is an exact copy of upstream
 > [`xarxa-driver`](https://github.com/embassy-rs/xarxa/tree/main/xarxa-driver) at commit
 > `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`, republished for use by
-> [`embassy-riscv`](https://github.com/jorgeandrecastro/embassy-riscv).
+> [`Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
 > The library name stays `xarxa_driver`; depend on this package with
 > `package = "hazard3-net-driver"` in your `Cargo.toml`.
 

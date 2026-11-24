@@ -1,6 +1,6 @@
 # hazard3-executor-macros
 
-> **Migration in progress:** `hazard3-executor-macros` replaces the formerly published `embassy-executor-macros-riscv`.
+> **Published replacement:** `hazard3-executor-macros` replaces the formerly published `embassy-executor-macros-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -10,7 +10,7 @@
 
 > **Fork of Embassy for RISC-V.** `hazard3-executor-macros` is an independent, **unmodified copy** of [`embassy-executor-macros`](https://github.com/embassy-rs/embassy/tree/main/embassy-executor-macros)
 > taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
-> <https://github.com/jorgeandrecastro/embassy-riscv>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
+> <https://github.com/jorgeandrecastro/Hazard3>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
 > needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
 > The library name is still `embassy_executor_macros`; use it with `package = "hazard3-executor-macros"` in your `Cargo.toml`.
 > **Use the `hazard3-*` versions of the forked crates together** (`hazard3-time`, `hazard3-executor`, `hazard3-sync`, ...) to avoid duplicate/incompatible copies in your build.

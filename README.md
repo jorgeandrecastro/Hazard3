@@ -2,11 +2,12 @@
 
 > **RISC-V fork of Embassy.** Hazard3 is an independent fork of [Embassy](https://github.com/embassy-rs/embassy),
 > maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
-> <https://github.com/jorgeandrecastro/embassy-riscv>. It adds RISC-V support, for example for the
+> <https://github.com/jorgeandrecastro/Hazard3>. It adds RISC-V support, for example for the
 > RP2350 Hazard3 cores, which upstream Embassy does not provide.
 >
-> **Migration:** check crates.io for the availability of the `hazard3-*` packages.
-> The latest releases of the former `*-riscv` packages carry migration notices.
+> **Migration complete:** all `hazard3-*` replacement packages are published on crates.io.
+> Every release of the former `*-riscv` packages is yanked; existing lockfiles may
+> continue to use them, but new dependency resolution should use `hazard3-*`.
 
 ![Raspberry Pi Pico 2 W running Embassy-RISCV](pico2w.jpeg)
 
@@ -184,7 +185,7 @@ No maintained CI workflow, example build matrix, or hardware integration test su
 ## Contributing
 
 Issues and reports about odd behaviour, in particular on the Hazard3 interrupt code, are welcome in the
-[issue tracker](https://github.com/jorgeandrecastro/embassy-riscv/issues). Changes that reintroduce
+[issue tracker](https://github.com/jorgeandrecastro/Hazard3/issues). Changes that reintroduce
 Arm or RP2040 support are out of scope for this fork.
 
 ## License

@@ -1,10 +1,10 @@
 [package]
 name = "hazard3-executor-macros"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "macros for creating the entry point and tasks for embassy-executor"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-executor-macros"
 readme = "README.md"
 exclude = ["target/", "Cargo.lock"]

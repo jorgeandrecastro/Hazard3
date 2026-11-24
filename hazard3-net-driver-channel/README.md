@@ -1,6 +1,6 @@
 # hazard3-net-driver-channel
 
-> **Migration in progress:** `hazard3-net-driver-channel` replaces the formerly published `embassy-net-driver-channel-riscv`.
+> **Published replacement:** `hazard3-net-driver-channel` replaces the formerly published `embassy-net-driver-channel-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 

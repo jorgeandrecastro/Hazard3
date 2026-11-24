@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-usb-driver"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Driver trait for `embassy-usb`, an async USB device stack for embedded devices."
@@ -8,12 +8,12 @@ keywords = ["embedded", "async", "usb", "hal", "embedded-hal"]
 readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
 categories = ["embedded", "hardware-support", "no-std", "asynchronous"]
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-usb-driver"
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-usb-driver/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-usb-driver/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-usb-driver/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-usb-driver/src/"
 features = ["defmt"]
 target = "thumbv7em-none-eabi"
 

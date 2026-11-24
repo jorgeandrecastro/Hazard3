@@ -1,9 +1,9 @@
 [package]
 name = "hazard3-sync"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "no-std, no-alloc synchronization primitives with async support"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-sync"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
@@ -23,8 +23,8 @@ build = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-sync/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-sync/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-sync/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-sync/src/"
 target = "thumbv7em-none-eabi"
 
 [features]

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
+- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
+
 - Rename package `embassy-rp-riscv` to `hazard3-rp` while retaining the Rust library name.
 - Include the interrupt fallback linker script required to link RISC-V applications.
 

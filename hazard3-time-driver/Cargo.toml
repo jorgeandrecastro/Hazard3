@@ -1,9 +1,9 @@
 [package]
 name = "hazard3-time-driver"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "Driver trait for embassy-time"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-time-driver"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
@@ -16,8 +16,8 @@ categories = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-time-driver/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-time-driver/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-time-driver/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-time-driver/src/"
 target = "x86_64-unknown-linux-gnu"
 
 [features]

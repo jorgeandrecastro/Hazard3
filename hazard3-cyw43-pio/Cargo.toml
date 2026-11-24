@@ -1,12 +1,12 @@
 [package]
 name = "hazard3-cyw43-pio"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2024"
 description = "RP2350 RISC-V PIO SPI implementation for cyw43"
 keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
 categories = ["embedded", "hardware-support", "no-std", "network-programming", "asynchronous"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-cyw43-pio"
 readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
@@ -15,13 +15,13 @@ exclude = ["target/", "Cargo.lock"]
 name = "cyw43_pio"
 
 [dependencies]
-cyw43 = { package = "hazard3-cyw43", version = "0.2.1", path = "../hazard3-cyw43" }
-embassy-rp = { package = "hazard3-rp", version = "0.2.0", path = "../hazard3-rp" }
+cyw43 = { package = "hazard3-cyw43", version = "0.2.2", path = "../hazard3-cyw43" }
+embassy-rp = { package = "hazard3-rp", version = "0.2.1", path = "../hazard3-rp" }
 embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
 defmt = { version = "1.0.1", optional = true }
 
 [dev-dependencies]
-embassy-net = { package = "hazard3-net-async", version = "0.3.0", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
+embassy-net = { package = "hazard3-net-async", version = "0.3.1", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
 
 [[test]]
 name = "compatibility"
@@ -37,8 +37,8 @@ build = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-cyw43-pio/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/hazard3-cyw43-pio/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-cyw43-pio/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/$COMMIT/hazard3-cyw43-pio/src/"
 target = "riscv32imac-unknown-none-elf"
 features = ["embassy-rp/rp235xa"]
 

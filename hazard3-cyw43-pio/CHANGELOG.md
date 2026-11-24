@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
+- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
+
 - Rename package `cyw43-pio-riscv` to `hazard3-cyw43-pio` while retaining the Rust library name.
 
 ## 0.2.1 - 2026-11-22

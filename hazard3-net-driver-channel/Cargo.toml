@@ -1,10 +1,10 @@
 [package]
 name = "hazard3-net-driver-channel"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "High-level channel-based driver for the `embassy-net` async TCP/IP network stack."
-repository = "https://github.com/jorgeandrecastro/embassy-riscv"
+repository = "https://github.com/jorgeandrecastro/Hazard3"
 documentation = "https://docs.rs/hazard3-net-driver-channel"
 readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
@@ -15,8 +15,8 @@ categories = [
 ]
 
 [package.metadata.embassy_docs]
-src_base = "https://github.com/jorgeandrecastro/embassy-riscv/blob/main/hazard3-net-driver-channel/src/"
-src_base_git = "https://github.com/jorgeandrecastro/embassy-riscv/blob/$COMMIT/hazard3-net-driver-channel/src/"
+src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-net-driver-channel/src/"
+src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/$COMMIT/hazard3-net-driver-channel/src/"
 features = ["defmt"]
 target = "riscv32imac-unknown-none-elf"
 
@@ -32,8 +32,8 @@ name = "embassy_net_driver_channel"
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-embassy-sync = { package = "hazard3-sync", version = "0.1.0", path = "../hazard3-sync" }
-xarxa-driver = { package = "hazard3-net-driver", version = "0.1.0", path = "../hazard3-net/hazard3-net-driver", features = ["async"] }
+embassy-sync = { package = "hazard3-sync", version = "0.1.1", path = "../hazard3-sync" }
+xarxa-driver = { package = "hazard3-net-driver", version = "0.1.1", path = "../hazard3-net/hazard3-net-driver", features = ["async"] }
 
 [features]
 defmt = ["dep:defmt", "xarxa-driver/defmt"]

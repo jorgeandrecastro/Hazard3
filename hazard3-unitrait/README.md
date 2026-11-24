@@ -1,6 +1,6 @@
 # hazard3-unitrait
 
-> **Migration in progress:** `hazard3-unitrait` replaces the formerly published `unitrait-riscv`.
+> **Published replacement:** `hazard3-unitrait` replaces the formerly published `unitrait-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -9,7 +9,7 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
 > **Fork for RISC-V.** `hazard3-unitrait` is an independent, **unmodified copy** of `unitrait` (unreleased 2.0.0 revision `bb96601` of [embassy-rs/unitrait](https://github.com/embassy-rs/unitrait)),
-> maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/embassy-riscv>.
+> maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/Hazard3>.
 > It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp) needs these unreleased changes and crates.io does not accept git dependencies.
 > The library name is still `unitrait`; use it with `package = "hazard3-unitrait"` in your `Cargo.toml`.
 > Use the related Hazard3 crates together to avoid duplicate/incompatible copies in your build.

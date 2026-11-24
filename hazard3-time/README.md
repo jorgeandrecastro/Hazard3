@@ -1,6 +1,6 @@
 # hazard3-time
 
-> **Migration in progress:** `hazard3-time` replaces the formerly published `embassy-time-riscv`.
+> **Published replacement:** `hazard3-time` replaces the formerly published `embassy-time-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -10,7 +10,7 @@
 
 > **Fork of Embassy for RISC-V.** `hazard3-time` is an independent, **unmodified copy** of [`embassy-time`](https://github.com/embassy-rs/embassy/tree/main/embassy-time)
 > taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
-> <https://github.com/jorgeandrecastro/embassy-riscv>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
+> <https://github.com/jorgeandrecastro/Hazard3>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
 > needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
 > The library name is still `embassy_time`; use it with `package = "hazard3-time"` in your `Cargo.toml`.
 > **Use the `hazard3-*` versions of the forked crates together** (`hazard3-time`, `hazard3-executor`, `hazard3-sync`, ...) to avoid duplicate/incompatible copies in your build.

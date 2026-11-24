@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
+- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
+
 - Rename package `xarxa-riscv` to `hazard3-net` while retaining the Rust library name.
 
 ## 0.1.1 - 2026-11-20

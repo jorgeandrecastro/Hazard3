@@ -1,6 +1,6 @@
 # hazard3-net
 
-> **Migration in progress:** `hazard3-net` replaces the formerly published `xarxa-riscv`.
+> **Published replacement:** `hazard3-net` replaces the formerly published `xarxa-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -8,7 +8,7 @@
 [![crates.io](https://img.shields.io/crates/v/hazard3-net.svg)](https://crates.io/crates/hazard3-net)
 [![License](https://img.shields.io/badge/license-0BSD-blue.svg)](LICENSE-0BSD.txt)
 
-> **RISC-V Embassy fork.** `hazard3-net` is a fork of the original [Xarxa](https://github.com/embassy-rs/xarxa), based on upstream commit `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`, maintained for integration into the [`embassy-riscv`](https://github.com/jorgeandrecastro/embassy-riscv) ecosystem.
+> **RISC-V Embassy fork.** `hazard3-net` is a fork of the original [Xarxa](https://github.com/embassy-rs/xarxa), based on upstream commit `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`, maintained for integration into the [`Hazard3`](https://github.com/jorgeandrecastro/Hazard3) ecosystem.
 >
 > The package name is `hazard3-net`. The Rust crate name remains `xarxa`; use `package = "hazard3-net"` in your `Cargo.toml`.
 
@@ -262,7 +262,7 @@ The following items were identified as not yet implemented in the upstream proje
 
 The fork is maintained separately from upstream to allow target-specific compatibility work and integration without requiring modifications to the original project.
 
-Repository: [jorgeandrecastro/embassy-riscv](https://github.com/jorgeandrecastro/embassy-riscv)
+Repository: [jorgeandrecastro/Hazard3](https://github.com/jorgeandrecastro/Hazard3)
 
 ## License
 

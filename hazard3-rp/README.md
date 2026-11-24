@@ -1,6 +1,6 @@
 # hazard3-rp
 
-> **Migration in progress:** `hazard3-rp` replaces the formerly published `embassy-rp-riscv`.
+> **Published replacement:** `hazard3-rp` replaces the formerly published `embassy-rp-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
@@ -9,7 +9,7 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
 > **RISC-V fork of Embassy.** This is an independent fork of [Embassy](https://github.com/embassy-rs/embassy) maintained by
-> [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/embassy-riscv>.
+> [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/Hazard3>.
 > It adds RISC-V support (e.g. RP2350 Hazard3 cores) which is not provided upstream. All credit for Embassy goes to the
 > Embassy team and contributors. Licensed under the same terms as upstream (MIT OR Apache-2.0). Not affiliated with or endorsed by the Embassy project.
 
@@ -23,8 +23,8 @@ complete operations in low power mode and handling interrupts, so that applicati
 
 * [hazard3-rp on crates.io](https://crates.io/crates/hazard3-rp)
 * [Documentation](https://docs.rs/hazard3-rp)
-* [Source](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/hazard3-rp)
-* [Examples](https://github.com/jorgeandrecastro/embassy-riscv/tree/main/examples/rp/src/bin)
+* [Source](https://github.com/jorgeandrecastro/Hazard3/tree/main/hazard3-rp)
+* [Examples](https://github.com/jorgeandrecastro/Hazard3/tree/main/examples/rp/src/bin)
 * [Changelog](./CHANGELOG.md)
 
 ## RISC-V support (RP2350 Hazard3)
@@ -161,7 +161,7 @@ embassy-sync = { package = "hazard3-sync", version = "0.1" }
 * The `embassy-crypto-rng` feature of upstream was removed.
 * 0.2.0 is validated with `cargo check` on `riscv32imac-unknown-none-elf` for both `rp235xa` and `rp235xb` (features `riscv`, `rt`, `time-driver`). See [Development](#development).
 * The build still emits 8 compiler warnings (checked with `rp235xb`) that do not prevent compilation: 7 come from the unfinished PSRAM code in `src/psram.rs` (unreachable code, unused variables and constants, unnecessary `mut`) and 1 is a missing doc comment on `div_int` in `src/clocks.rs`.
-* The Hazard3 interrupt code was written from the RP2350 datasheet; report odd behaviour in the [issue tracker](https://github.com/jorgeandrecastro/embassy-riscv/issues).
+* The Hazard3 interrupt code was written from the RP2350 datasheet; report odd behaviour in the [issue tracker](https://github.com/jorgeandrecastro/Hazard3/issues).
 
 ## Credits and license
 

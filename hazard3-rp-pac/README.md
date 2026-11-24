@@ -1,6 +1,6 @@
 # hazard3-rp-pac
 
-> **Migration in progress:** `hazard3-rp-pac` replaces the formerly published `rp-pac-riscv`.
+> **Published replacement:** `hazard3-rp-pac` replaces the formerly published `rp-pac-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
 > Rust library names and upstream license and attribution notices are retained.
 
