@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 - 2026-11-28
+
+### Added
+
+- `NeighborCache::for_each`: calls a closure for every entry in one pass, under one lock of the
+  stack. It is O(n) and sees a consistent view of the cache.
+- Unit tests in `src/time.rs` (not present in upstream `embassy-net`): round trips of instants
+  in both directions, behaviour past the wrap of the 32-bit millisecond count, saturation of far
+  offsets, clamping before the epoch, and duration conversions. They do not read the clock.
+- Compile-time checks of the public API in `src/neighbor.rs`: signatures of every public method,
+  and the `Copy`/`Eq`/`Debug` guarantees of `Neighbor`, `NeighborState` and `NeighborCache`.
+
+### Changed
+
+- `NeighborCache::iter` is documented as locking the stack once per entry, costing O(n²) for a full
+  pass, and possibly skipping or repeating an entry if the cache changes meanwhile. Its behaviour is
+  unchanged. Use `for_each` for a consistent pass.
+- `src/time.rs`: offsets now saturate at `xarxa::time::Duration::MAX`, as documented, instead of at
+  `u32::MAX` milliseconds.
+- `src/time.rs`: the conversions between instants are split into private helpers that take `now` as
+  a parameter. The public (`pub(crate)`) functions are unchanged, and each now reads the clock once.
+- `src/time.rs`: removed the blanket `#![allow(unused)]`. Only `duration_to_xarxa` keeps a targeted
+  `#[allow(dead_code)]`, because it is used by the DHCPv4 client and server, the reassembly
+  timeout and the TCP socket options, and a build without those features would warn.
+
+### Documentation
+
+- README: the interoperability section refers to `hazard3-time` for timekeeping.
+- README: `time.rs` and `neighbor.rs` in the source layout and in the test coverage table, and the
+  version in the Getting started example.
+
+### Removed / not provided
+
+- No CI compilation or test suite is provided for this release.
+- No examples or hardware integrations are compiled or tested.
+- No automated build matrix or target-platform validation is provided.
+
 ## 0.4.0 - 2026-11-28
 
 ### Changed

@@ -79,6 +79,7 @@ pub struct NeighborCache<'d> {
 }
 
 impl<'d> NeighborCache<'d> {
+    #[inline]
     pub(crate) fn new(stack: Stack<'d>) -> Self {
         Self { stack }
     }
@@ -95,11 +96,32 @@ impl<'d> NeighborCache<'d> {
     }
 
     /// Iterate over all entries.
+    ///
+    /// This locks the stack once per entry, and each step walks the cache from
+    /// the start, so a full pass costs O(n²). The lock is released between
+    /// entries: if the stack changes the cache meanwhile (an ARP reply, an
+    /// expiry, an eviction), the pass can skip an entry or return one twice.
+    ///
+    /// Prefer [`NeighborCache::for_each`], which makes one pass under one lock.
     pub fn iter(&self) -> impl Iterator<Item = Neighbor> + 'd {
         let stack = self.stack;
         (0..self.len())
             .filter_map(move |n| stack.with(|i| (i.stack.neighbor_cache().iter().nth(n), NoWake)))
             .map(Neighbor::from_xarxa)
+    }
+
+    /// Call `f` for every entry, in one pass.
+    ///
+    /// The stack is locked for the whole call, so `f` sees a consistent view of
+    /// the cache, and the pass is O(n). Keep `f` short, and do not call the
+    /// stack from it: that would deadlock or panic.
+    pub fn for_each(&self, mut f: impl FnMut(Neighbor)) {
+        self.stack.with(|i| {
+            for n in i.stack.neighbor_cache().iter() {
+                f(Neighbor::from_xarxa(n));
+            }
+            ((), NoWake)
+        })
     }
 
     /// Add or replace an entry, mapping `addr` on `iface` to `hardware_addr`.
@@ -179,5 +201,45 @@ impl<'d> NeighborCache<'d> {
     /// Whether the cache is empty.
     pub fn is_empty(&self) -> bool {
         self.stack.with(|i| (i.stack.neighbor_cache().is_empty(), NoWake))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use core::fmt::Debug;
+
+    use super::*;
+
+    // Compile-time checks of the public API. Runtime tests of the cache need a
+    // `Stack` and a mock driver, which these checks do not build.
+
+    fn assert_value_type<T: Copy + Clone + Debug + PartialEq + Eq>() {}
+
+    #[test]
+    fn entry_types_are_plain_values() {
+        assert_value_type::<Neighbor>();
+        assert_value_type::<NeighborState>();
+    }
+
+    #[test]
+    fn cache_handle_is_copy() {
+        fn assert_copy<T: Copy + Clone>() {}
+        assert_copy::<NeighborCache<'static>>();
+    }
+
+    /// Never called: it only has to compile. It pins the signature of every public
+    /// method, so that a change to one of them shows up here.
+    #[allow(dead_code)]
+    fn api_signatures(cache: NeighborCache<'static>, iface: IfaceHandle, addr: IpAddr, hw: HardwareAddress) {
+        let _: Option<Neighbor> = cache.get(iface, addr);
+        let _: Option<Neighbor> = cache.remove(iface, addr);
+        let _: Result<(), NotUnicast> = cache.insert(iface, addr, hw, Instant::from_millis(0));
+        let _: usize = cache.len();
+        let _: bool = cache.is_empty();
+        cache.for_each(|_n: Neighbor| {});
+        cache.retain(|_n: &Neighbor| true);
+        cache.clear_iface(iface);
+        cache.clear();
+        for _n in cache.iter() {}
     }
 }

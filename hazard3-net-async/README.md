@@ -42,7 +42,7 @@ The Rust library is named `embassy_net`, the package is named `hazard3-net-async
 
 ```toml
 [dependencies]
-embassy-net = { package = "hazard3-net-async", version = "0.4", features = [
+embassy-net = { package = "hazard3-net-async", version = "0.5", features = [
     "tcp",
     "udp",
     "dns",
@@ -58,7 +58,7 @@ The network stack underneath ([`hazard3-net`](../hazard3-net/)) also has count f
 You also need:
 
 - a network **driver** for your hardware, see [Hardware support](#hardware-support);
-- an `embassy-time` driver, see [Interoperability](#interoperability);
+- a `hazard3-time` driver, see [Interoperability](#interoperability);
 - Rust **1.95** or newer, which is the minimum version of `hazard3-net` 0.2.
 
 ## The Hazard3 packages
@@ -81,7 +81,7 @@ the other essential Hazard3 crates so that RISC-V projects can use a coherent se
 it is not limited to a single upstream or downstream use case. Its goals are deliberately limited to:
 
 - **More tests.** Upstream has very few unit tests. This fork adds them module by module: error
-  mapping, data structures, and compile-time checks of the public API. Runtime tests of the sockets
+  mapping, data structures, time conversions, and compile-time checks of the public API. Runtime tests of the sockets
   against a mock driver are the next step. The test command below is the maintained host-side
   baseline; examples and hardware integrations are not considered tested by this fork unless that
   is explicitly stated.
@@ -91,13 +91,14 @@ it is not limited to a single upstream or downstream use case. Its goals are del
   - the old `udp.rs` is now a root module plus `error`, `socket`, `recv` and `send`.
 - **Robustness.** Panicking placeholders are replaced by proper errors where the public API allows
   it (for example, `DnsClient::get_host_by_address` returns `Error::Unsupported` instead of
-  calling `todo!()`).
+  calling `todo!()`). Conversions that can overflow saturate instead, see `time.rs`.
 - **Useful examples.** This fork may add or improve focused examples, but example coverage is not
   intended to replace upstream functionality or to imply that every upstream example builds.
 
 The public API stays compatible with upstream `embassy-net`: refactors move code around, they do not
 rename or remove public items. The only deviations are small additions, such as the `Unsupported`
-variant of `dns::Error` in 0.3.0, which matters only to code that matches exhaustively on that enum.
+variant of `dns::Error` in 0.3.0, which matters only to code that matches exhaustively on that enum,
+and `NeighborCache::for_each` in 0.5.0.
 Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Features
@@ -108,6 +109,7 @@ Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
 - TCP sockets implement the `embedded-io` async traits.
 - Multicast
 - Multiple interface support
+- Neighbor cache access (ARP/NDISC), with a one-pass `for_each`
 - Timestamping sent and received packets for e.g PTP
 
 See the [`hazard3-net`](../hazard3-net/) README for a detailed list of implemented and
@@ -130,9 +132,9 @@ hazard3-net-async/
 └── src/
     ├── lib.rs              # Stack, shared helpers (TryError, wake helpers), main loop
     ├── fmt.rs              # logging / unwrap! macros (log or defmt)
-    ├── time.rs             # embassy-time <-> xarxa time conversions
+    ├── time.rs             # embassy-time <-> xarxa time conversions (with unit tests)
     ├── route.rs            # routing
-    ├── neighbor.rs         # neighbor cache
+    ├── neighbor.rs         # neighbor cache (with compile-time API checks)
     ├── raw.rs              # raw sockets
     ├── dns.rs              # DNS errors and embedded-nal-async DNS client (with unit tests)
     ├── iface/
@@ -166,12 +168,16 @@ cargo test --lib --features "tcp,tcp-listener,embedded-nal,iface-bind,ipv4,mediu
 cargo test --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
 ```
 
-Depending on your setup, linking may need a host `embassy-time` driver (for example a mock driver).
+The current unit tests do not read the clock, so they link without a `hazard3-time` driver. Tests
+that call `Instant::now()` (for example runtime tests of the sockets) will need a host driver, such
+as a mock one.
 
 Current coverage:
 
 | Module | Kind of test |
 | --- | --- |
+| `time.rs` | `embassy-time` to `xarxa` conversions: round trips, saturation, wrap of the 32-bit millisecond count, clamping before the epoch |
+| `neighbor.rs` | compile-time checks of the public API and of the value types |
 | `dns.rs` | `GetQueryResultError`/`StartQueryError` to `dns::Error` mapping, `Display`, `Error` trait |
 | `tcp.rs` | `Display`, `ErrorKind` mapping, `Copy`/`Eq`/`Error` traits of the error types |
 | `tcp/client.rs` | runtime tests of the buffer pool used by `TcpClient` |
