@@ -6,6 +6,7 @@ exclude = ["bench", "xarxa_old"]
 name = "hazard3-net"
 version = "0.1.2"
 edition = "2024"
+rust-version = "1.85"
 description = "Network stack designed for embedded, real-time systems without a heap."
 documentation = "https://docs.rs/hazard3-net/"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -65,11 +66,13 @@ default = [
 ## - Socket slabs
 ## - Owned interfaces
 ## - Owned TCP socket buffers
+## - `AllocPool`, which recycles its buffers through a critical-section-protected free list.
+##   The firmware must provide a `critical-section` implementation.
 alloc = ["serde?/alloc"]
 ## Enable functionality that requires the Rust standard library: the
 ## `driver_impls` module (`TunTapDriver`, `RawSocketDriver`, `wait`) and
 ## `Instant::now()`.
-std = ["dep:libc", "serde?/std"]
+std = ["dep:libc", "critical-section/std", "serde?/std"]
 ## Waker registration on sockets and on the driver, for building `Future`s on top
 ## of the stack.
 async = ["xarxa-driver/async"]
@@ -145,6 +148,7 @@ icmp-errors = []
 ## Use the Reno congestion control algorithm on TCP sockets.
 tcp-reno = ["tcp"]
 ## Use the CUBIC congestion control algorithm on TCP sockets. Warning: it uses `f64` arithmetic which can be slow and pull in soft-float code depending on the target.
+## Avoid it on RISC-V cores without the F/D extensions (such as Hazard3): use `tcp-reno` instead.
 tcp-cubic = ["tcp"]
 
 #! ### Packet metadata
@@ -473,10 +477,9 @@ libc = { version = "0.2", optional = true }
 defmt = { version = "1", optional = true, features = ["ip_in_core"] }
 log = { version = "0.4", optional = true }
 serde = { version = "1.0.222", optional = true, default-features = false }
-
-# Targets with atomic load/store but no atomic read-modify-write
-# (e.g. thumbv6m) take a critical section around pool allocation instead.
-[target.'cfg(not(all(target_has_atomic = "8", target_has_atomic = "ptr")))'.dependencies]
+# Used by `AllocPool` (free list) on every target, and by the pools on targets with
+# atomic load/store but no atomic read-modify-write (e.g. thumbv6m, riscv32imc).
+# Only linked if used: the firmware must provide an implementation.
 critical-section = "1"
 
 [dev-dependencies]
@@ -485,6 +488,8 @@ rand = "0.8"
 paste = "1.0"
 cbor4ii = { version = "1.2", features = ["use_std", "serde1"] }
 serde_json = "1.0.151"
+# Implementation of `critical-section` for tests and doctests on the host.
+critical-section = { version = "1", features = ["std"] }
 
 [[test]]
 name = "packet_pool"
@@ -532,3 +537,26 @@ required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(fuzzing)"] }
+
+# Release profile tuned for small RISC-V firmware (Hazard3 / RP2350).
+# Note: Cargo only reads profiles from the workspace root, so these apply when this
+# workspace is built (examples, bench). In your firmware crate, copy them into its
+# own Cargo.toml.
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = false
+overflow-checks = false
+incremental = false
+
+# Smallest possible binary: `cargo build --profile tiny`.
+[profile.tiny]
+inherits = "release"
+opt-level = "z"
+
+# Fastest code: `cargo build --profile fast`.
+[profile.fast]
+inherits = "release"
+opt-level = 3
