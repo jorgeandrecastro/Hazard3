@@ -4,9 +4,9 @@ exclude = ["bench", "xarxa_old"]
 
 [package]
 name = "hazard3-net"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.95"
 description = "Network stack designed for embedded, real-time systems without a heap."
 documentation = "https://docs.rs/hazard3-net/"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -537,26 +537,3 @@ required-features = ["std", "log", "medium-ethernet", "medium-ip", "ipv4", "ipv6
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(fuzzing)"] }
-
-# Release profile tuned for small RISC-V firmware (Hazard3 / RP2350).
-# Note: Cargo only reads profiles from the workspace root, so these apply when this
-# workspace is built (examples, bench). In your firmware crate, copy them into its
-# own Cargo.toml.
-[profile.release]
-opt-level = "s"
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-debug = false
-overflow-checks = false
-incremental = false
-
-# Smallest possible binary: `cargo build --profile tiny`.
-[profile.tiny]
-inherits = "release"
-opt-level = "z"
-
-# Fastest code: `cargo build --profile fast`.
-[profile.fast]
-inherits = "release"
-opt-level = 3
