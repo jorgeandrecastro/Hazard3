@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-net-async"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Async TCP/IP network stack for embedded systems"
@@ -149,7 +149,7 @@ log = { version = "0.4.14", optional = true }
 
 xarxa = {
     package = "hazard3-net",
-    version = "0.1.2",
+    version = "0.2.0",
     path = "../hazard3-net",
     default-features = false,
     features = ["async"]

@@ -5,13 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 - 2026-11-28
 
-## Unreleased
+### Changed
 
+- Updated the `hazard3-net` dependency to 0.2.0. See the
+  [`hazard3-net` changelog](../hazard3-net/CHANGELOG.md) for what changed in the network stack.
+  There are no other source changes in this crate.
 - Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
-- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
-
 - Rename package `embassy-net-riscv` to `hazard3-net-async` while retaining the Rust library name.
+- Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended
+  for new dependency resolution.
+
+### Documentation
+
+- README: new Getting started section and a section on the Hazard3 packages that go with this
+  crate, a clearer Testing section, and a single Development tools section.
+- README: the CYW43 WiFi driver entry now points to
+  [`hazard3-cyw43`](https://crates.io/crates/hazard3-cyw43) instead of the upstream `cyw43`.
+
+### Removed / not provided
+
+- No CI compilation or test suite is provided for this release.
+- No examples or hardware integrations are compiled or tested.
+- No automated build matrix or target-platform validation is provided.
 
 ## 0.3.0 - 2026-11-22
 

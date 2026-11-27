@@ -12,16 +12,66 @@
 > taken from the Embassy `main` branch and maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/Hazard3>.
 > The library name is still `embassy_net`; use it with `package = "hazard3-net-async"` in your `Cargo.toml`.
-> **Use the Hazard3 packages together** (`hazard3-time`, `hazard3-sync`, `hazard3-executor`, ...)
-> to avoid duplicate or incompatible copies in your build.
 
 `hazard3-net-async` is a no-std, no-alloc async network stack designed for embedded systems.
 
-It uses the [`hazard3-net`](../hazard3-net/) network stack, adds convenient async wrappers,
+It uses the [`hazard3-net`](../hazard3-net/) network stack (0.2), adds convenient async wrappers,
 and implements the main loop. `hazard3-net` and [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/)
 are copies of upstream Xarxa pinned to revision `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`,
 prepared under new package names so that the crates.io release of `hazard3-net-async` has no
 Git dependencies. The Rust library names remain `xarxa` and `xarxa_driver`.
+
+## Table of contents
+
+- [Getting started](#getting-started)
+- [The Hazard3 packages](#the-hazard3-packages)
+- [Vision of this fork](#vision-of-this-fork)
+- [Features](#features)
+- [Source layout](#source-layout)
+- [Testing](#testing)
+- [Development tools](#development-tools)
+- [Hardware support](#hardware-support)
+- [Examples](#examples)
+- [Adding support for new hardware](#adding-support-for-new-hardware)
+- [Interoperability](#interoperability)
+- [Acknowledgements](#acknowledgements)
+
+## Getting started
+
+The Rust library is named `embassy_net`, the package is named `hazard3-net-async`:
+
+```toml
+[dependencies]
+embassy-net = { package = "hazard3-net-async", version = "0.4", features = [
+    "tcp",
+    "udp",
+    "dns",
+    "ipv4",
+    "medium-ethernet",
+] }
+```
+
+Pick the features your application needs. See [`Cargo.toml`](Cargo.toml) for the full list.
+The network stack underneath ([`hazard3-net`](../hazard3-net/)) also has count features
+(`tcp-socket-count-N`, `udp-socket-count-N`, ...) that set how much static RAM it uses.
+
+You also need:
+
+- a network **driver** for your hardware, see [Hardware support](#hardware-support);
+- an `embassy-time` driver, see [Interoperability](#interoperability);
+- Rust **1.95** or newer, which is the minimum version of `hazard3-net` 0.2.
+
+## The Hazard3 packages
+
+Use the Hazard3 packages together (`hazard3-time`, `hazard3-sync`, `hazard3-executor`, ...) to avoid
+duplicate or incompatible copies in your build.
+
+| Package | Role |
+| --- | --- |
+| `hazard3-net-async` | This crate: async sockets and the main loop. |
+| [`hazard3-net`](../hazard3-net/) | The network stack (`xarxa`). |
+| [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/) | The `Driver` trait that network chip drivers implement. |
+| [`hazard3-cyw43`](https://crates.io/crates/hazard3-cyw43) | WiFi driver for CYW43xx chips, used in the Raspberry Pi Pico W. |
 
 ## Vision of this fork
 
@@ -60,10 +110,12 @@ Every notable change is listed in [`CHANGELOG.md`](CHANGELOG.md).
 - Multiple interface support
 - Timestamping sent and received packets for e.g PTP
 
-See the [`xarxa`](https://github.com/embassy-rs/xarxa) README for a detailed list of implemented and
+See the [`hazard3-net`](../hazard3-net/) README for a detailed list of implemented and
 unimplemented features of the network protocols.
 
-Embassy-net focuses on the network/transport layer protocols up to TCP. Higher-level application layer protocols live in other crates built on top of `embassy-net`:
+This crate focuses on the network/transport layer protocols up to TCP. Higher-level application
+layer protocols live in other crates built on top of `embassy-net`:
+
 - [`edge-net`](https://crates.io/crates/edge-net)
 - [`sntpc`](https://crates.io/crates/sntpc)
 - PTP implementation coming soon
@@ -106,9 +158,7 @@ Unit tests live next to the code they test, in a `#[cfg(test)] mod tests` at the
 
 ## Testing
 
-No examples or hardware integrations are compiled or tested by this fork. The examples in this
-repository are not necessarily part of a maintained CI path, and their build status must not be
-assumed. The host-side unit tests run on the host, not on the embedded target:
+The unit tests run on the host, not on the embedded target:
 
 ```sh
 cargo test --lib --features "tcp,tcp-listener,embedded-nal,iface-bind,ipv4,medium-ethernet"
@@ -117,6 +167,7 @@ cargo test --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
 ```
 
 Depending on your setup, linking may need a host `embassy-time` driver (for example a mock driver).
+
 Current coverage:
 
 | Module | Kind of test |
@@ -129,22 +180,18 @@ Current coverage:
 
 ## Development tools
 
-This fork currently compiles and tests nothing as part of an automated CI workflow. No maintained
-build matrix runs the examples, target-specific configurations, upstream Embassy HAL integrations
-or hardware integrations. The source is not currently compiled or tested by a CI pipeline in this
-repository. Additional dependencies or fixes may therefore be required outside the host-oriented
-checks documented below. Documentation warning fixes are maintained here, but this is not a
-promise to compile or validate every example or platform.
+This repository has no automated CI. No build matrix runs the examples, target-specific
+configurations, upstream Embassy HAL integrations or hardware integrations, and their build status
+must not be assumed. The host-side checks below are the maintained baseline. Additional
+dependencies or fixes may be required outside them.
 
 ### Compilation
-
-Compile the host-oriented feature set locally:
 
 ```sh
 cargo check --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
 ```
 
-Run with warnings promoted to errors:
+With warnings promoted to errors:
 
 ```sh
 RUSTFLAGS="-D warnings" cargo check --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
@@ -160,8 +207,8 @@ cargo check --no-default-features --features "dns,embedded-nal,ipv6,medium-ether
 
 ### Documentation
 
-The upstream `embassy-net` documentation produced warnings. This fork fixes documentation warnings
-in the maintained source and verifies the generated API documentation with:
+The upstream `embassy-net` documentation produced warnings. This fork fixes the documentation
+warnings in the maintained source and verifies the generated API documentation with:
 
 ```sh
 RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --features "dns,embedded-nal,ipv4,udp,medium-ethernet"
@@ -170,7 +217,7 @@ RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --features "dns,embedded-nal,ipv4
 ## Hardware support
 
 - [`esp-radio`](https://crates.io/crates/esp-radio) for WiFi support ESP32 chips. Maintained by Espressif.
-- [`cyw43`](https://github.com/embassy-rs/embassy/tree/main/cyw43) for WiFi on CYW43xx chips, used in the Raspberry Pi Pico W
+- [`hazard3-cyw43`](https://crates.io/crates/hazard3-cyw43) for WiFi on CYW43xx chips, used in the Raspberry Pi Pico W
 - [`embassy-usb`](https://github.com/embassy-rs/embassy/tree/main/embassy-usb) for Ethernet-over-USB (CDC NCM) support.
 - [`embassy-stm32`](https://github.com/embassy-rs/embassy/tree/main/embassy-stm32) for the builtin Ethernet MAC in all STM32 chips (STM32F1, STM32F2, STM32F4, STM32F7, STM32H7, STM32H5).
 - [`embassy-net-wiznet`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-wiznet) for Wiznet SPI Ethernet MAC+PHY chips (W5100S, W5500)
@@ -192,20 +239,21 @@ RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --features "dns,embedded-nal,ipv4
 ## Adding support for new hardware
 
 To add `embassy-net` support for new hardware (i.e. a new Ethernet or WiFi chip, or
-an Ethernet/WiFi MCU peripheral), you have to implement the [`xarxa-driver`](https://crates.io/crates/xarxa-driver)
-`Driver` trait. Enable its `async` feature and implement `Driver::register_waker`: `embassy-net`
+an Ethernet/WiFi MCU peripheral), you have to implement the
+[`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/) `Driver` trait (library name
+`xarxa_driver`). Enable its `async` feature and implement `Driver::register_waker`: this crate
 needs it to sleep until the driver has something new.
 
-Drivers should depend only on `xarxa-driver`. Never on the main `embassy-net` crate. This allows
-existing drivers to continue working for newer `embassy-net` major versions, without needing an
-update, if the driver trait has not had breaking changes.
+Drivers should depend only on `hazard3-net-driver`, never on the main `hazard3-net-async` crate.
+This allows existing drivers to keep working with newer major versions of this crate, without an
+update, as long as the driver trait has no breaking changes.
 
 ## Interoperability
 
 This crate can run on any executor.
 
-[`embassy-time`](https://crates.io/crates/embassy-time) is used for timekeeping and timeouts. You must
-link an `embassy-time` driver in your project to use this crate.
+[`hazard3-time`](https://crates.io/crates/hazard3-time) is used for timekeeping and timeouts. You must
+link an `hazard3-time` driver in your project to use this crate.
 
 ## Acknowledgements
 
