@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[symbol = "_ui_impl_not_a_type"]
         fn foo() -> u32;

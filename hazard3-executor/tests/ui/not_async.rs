@@ -2,7 +2,7 @@
 
 struct Foo<'a>(&'a ());
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 fn task() {}
 
 fn main() {}

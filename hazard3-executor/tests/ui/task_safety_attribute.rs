@@ -3,12 +3,13 @@
 
 use std::mem;
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async fn safe() {}
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async unsafe fn not_safe() {}
 
+#[cfg(not(all(feature = "platform-std", feature = "executor-thread")))]
 #[unsafe(export_name = "__pender")]
 fn pender(_: *mut ()) {
     // The test doesn't link if we don't include this.

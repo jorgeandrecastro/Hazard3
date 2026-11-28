@@ -3,7 +3,7 @@
 //! macro's glob import won, the shims would register the dispatch type as the implementation
 //! and every call would recurse into itself.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait.
     pub trait CounterDriver {
         /// An opaque type, so the opaque shims resolve the implementor's type too.

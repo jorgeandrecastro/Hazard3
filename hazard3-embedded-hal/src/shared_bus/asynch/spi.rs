@@ -3,9 +3,9 @@
 //! # Example (nrf52)
 //!
 //! ```rust,ignore
-//! use embassy_embedded_hal::shared_bus::spi::SpiDevice;
-//! use embassy_sync::mutex::Mutex;
-//! use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+//! use hazard3_embedded_hal::shared_bus::spi::SpiDevice;
+//! use hazard3_sync::mutex::Mutex;
+//! use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
 //!
 //! static SPI_BUS: StaticCell<Mutex<NoopRawMutex, spim::Spim<SPI3>>> = StaticCell::new();
 //! let mut config = spim::Config::default();
@@ -27,8 +27,8 @@
 
 use core::mem::DropGuard;
 
-use embassy_sync::blocking_mutex::raw::RawMutex;
-use embassy_sync::mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::mutex::Mutex;
 use embedded_hal_1::digital::OutputPin;
 use embedded_hal_1::spi::Operation;
 use embedded_hal_async::spi;
@@ -93,7 +93,7 @@ where
                     Operation::DelayNs(ns) => match bus.flush().await {
                         Err(e) => Err(e),
                         Ok(()) => {
-                            embassy_time::Timer::after_nanos(*ns as _).await;
+                            hazard3_time::Timer::after_nanos(*ns as _).await;
                             Ok(())
                         }
                     },
@@ -187,7 +187,7 @@ where
                     Operation::DelayNs(ns) => match bus.flush().await {
                         Err(e) => Err(e),
                         Ok(()) => {
-                            embassy_time::Timer::after_nanos(*ns as _).await;
+                            hazard3_time::Timer::after_nanos(*ns as _).await;
                             Ok(())
                         }
                     },

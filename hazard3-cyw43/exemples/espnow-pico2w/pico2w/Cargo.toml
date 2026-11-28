@@ -19,36 +19,31 @@ defmt = "1.0.1"
 defmt-rtt = "1.0.0"
 
 # ============================================================
-# EMBASSY RISC-V
+# HAZARD3 RISC-V
 # ============================================================
 
-embassy-embedded-hal = {
-    package = "hazard3-embedded-hal",
-    version = "0.1.1"
+hazard3-embedded-hal = {
+    version = "0.2.0"
 }
 
-embassy-executor = {
-    package = "hazard3-executor",
-    version = "0.1.2",
+hazard3-executor = {
+    version = "0.2.0",
     features = ["executor-thread", "defmt"]
 }
 
-embassy-time = {
-    package = "hazard3-time",
-    version = "0.1.3",
+hazard3-time = {
+    version = "0.2.0",
     features = ["defmt", "defmt-timestamp-uptime"]
 }
 
-embassy-sync = {
-    package = "hazard3-sync",
-    version = "0.1.1"
+hazard3-sync = {
+    version = "0.2.0"
 }
 
 embassy-futures = "0.1.2"
 
-embassy-rp = {
-    package = "hazard3-rp",
-    version = "0.2.1",
+hazard3-rp = {
+    version = "0.3.0",
     default-features = false,
     features = [
         "rp235xa",
@@ -89,22 +84,19 @@ embassy-ssd1306 = {
     features = ["time-riscv"]
 }
 
-cyw43 = {
-    package = "hazard3-cyw43",
-    version = "0.2.2",
+hazard3-cyw43 = {
+    version = "0.3.0",
     path = "../../../../hazard3-cyw43",
     features = ["defmt", "action-frames"]
 }
 cyw43-setup = "1.0.0"
-cyw43-pio = {
-    package = "hazard3-cyw43-pio",
-    version = "0.2.2",
+hazard3-cyw43-pio = {
+    version = "0.3.0",
     path = "../../../../hazard3-cyw43-pio",
 }
 
-rp-pac = {
-    package = "hazard3-rp-pac",
-    version = "0.2.1",
+hazard3-rp-pac = {
+    version = "0.3.0",
     path = "../../../../hazard3-rp-pac",
     features = ["rp235x"]
 }
@@ -137,7 +129,7 @@ default = ["riscv-target"]
 
 riscv-target = [
     "dep:riscv-rt",
-    "embassy-executor/platform-riscv32"
+    "hazard3-executor/platform-riscv32"
 ]
 
 # ============================================================

@@ -55,7 +55,7 @@
 //!
 //! ### Manual configuration for advanced scenarios
 //! ```rust,ignore
-//! use embassy_rp::clocks::{ClockConfig, XoscConfig, PllConfig, CoreVoltage};
+//! use hazard3_rp::clocks::{ClockConfig, XoscConfig, PllConfig, CoreVoltage};
 //!
 //! // Start with defaults and customize
 //! let mut config = ClockConfig::default();

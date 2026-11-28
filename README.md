@@ -5,7 +5,8 @@
 > <https://github.com/jorgeandrecastro/Hazard3>. It adds RISC-V support, for example for the
 > RP2350 Hazard3 cores, which upstream Embassy does not provide.
 >
-> **Migration complete:** all `hazard3-*` replacement packages are published on crates.io.
+> The existing `hazard3-*` packages are published on crates.io. The library-name
+> changes described here apply to the next releases.
 > Every release of the former `*-riscv` packages is yanked; existing lockfiles may
 > continue to use them, but new dependency resolution should use `hazard3-*`.
 
@@ -37,9 +38,8 @@ first-class experience on RISC-V microcontrollers, starting with the Hazard3 cor
   removed rather than kept behind `cfg` flags. For Arm or RP2040, use upstream Embassy.
 - **Publishable on crates.io.** The previously published fork packages are being renamed to
   `hazard3-*`; upstream crates outside this fork's published stack are not being renamed.
-- **Source compatible.** The Rust library names stay the same as upstream (`embassy_time`,
-  `embassy_executor`, `embassy_rp`, `embassy_net`, `rp_pac`, ...), so only the `package = "..."` key
-  changes in `Cargo.toml`.
+- **Consistent names.** Each Rust library uses its `hazard3-*` package name, with
+  underscores in Rust imports (for example `hazard3_time`).
 
 Use the `hazard3-*` crates **together** to avoid duplicate or incompatible copies of Embassy
 dependencies. Check crates.io for each package's availability.
@@ -48,21 +48,21 @@ dependencies. Check crates.io for each package's availability.
 
 | Package | Library name | Role |
 |---|---|---|
-| [`hazard3-rp`](hazard3-rp/) | `embassy_rp` | RP2350 HAL |
-| [`hazard3-rp-pac`](hazard3-rp-pac/) | `rp_pac` | RP2350 PAC |
-| [`hazard3-net-async`](hazard3-net-async/) | `embassy_net` | Async networking stack |
-| [`hazard3-cyw43`](hazard3-cyw43/) | `cyw43` | CYW43 WiFi and Bluetooth driver |
-| [`hazard3-cyw43-pio`](hazard3-cyw43-pio/) | `cyw43_pio` | RP2350 PIO transport for CYW43 |
-| [`hazard3-net-driver-channel`](hazard3-net-driver-channel/) | `embassy_net_driver_channel` | Channel-based network drivers |
-| [`hazard3-net`](hazard3-net/) | `xarxa` | Xarxa-derived network stack |
-| [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/) | `xarxa_driver` | Network driver interface |
-| `hazard3-executor`, `hazard3-executor-macros`, `hazard3-executor-timer-queue` | `embassy_executor`, `embassy_executor_macros`, `embassy_executor_timer_queue` | Executor |
-| `hazard3-time`, `hazard3-time-driver`, `hazard3-time-queue-utils` | `embassy_time`, `embassy_time_driver`, `embassy_time_queue_utils` | Timekeeping |
-| `hazard3-sync` | `embassy_sync` | Synchronization primitives |
-| `hazard3-embedded-hal` | `embassy_embedded_hal` | `embedded-hal` adapters |
-| `hazard3-usb-driver` | `embassy_usb_driver` | USB driver traits |
-| `hazard3-hal-internal` | `embassy_hal_internal` | HAL internals |
-| `hazard3-unitrait`, `hazard3-unitrait-macros` | `unitrait`, `unitrait_macros` | Global implementation traits |
+| [`hazard3-rp`](hazard3-rp/) | `hazard3_rp` | RP2350 HAL |
+| [`hazard3-rp-pac`](hazard3-rp-pac/) | `hazard3_rp_pac` | RP2350 PAC |
+| [`hazard3-net-async`](hazard3-net-async/) | `hazard3_net_async` | Async networking stack |
+| [`hazard3-cyw43`](hazard3-cyw43/) | `hazard3_cyw43` | CYW43 WiFi and Bluetooth driver |
+| [`hazard3-cyw43-pio`](hazard3-cyw43-pio/) | `hazard3_cyw43_pio` | RP2350 PIO transport for CYW43 |
+| [`hazard3-net-driver-channel`](hazard3-net-driver-channel/) | `hazard3_net_driver_channel` | Channel-based network drivers |
+| [`hazard3-net`](hazard3-net/) | `hazard3_net` | Xarxa-derived network stack |
+| [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/) | `hazard3_net_driver` | Network driver interface |
+| `hazard3-executor`, `hazard3-executor-macros`, `hazard3-executor-timer-queue` | `hazard3_executor`, `hazard3_executor_macros`, `hazard3_executor_timer_queue` | Executor |
+| `hazard3-time`, `hazard3-time-driver`, `hazard3-time-queue-utils` | `hazard3_time`, `hazard3_time_driver`, `hazard3_time_queue_utils` | Timekeeping |
+| `hazard3-sync` | `hazard3_sync` | Synchronization primitives |
+| `hazard3-embedded-hal` | `hazard3_embedded_hal` | `embedded-hal` adapters |
+| `hazard3-usb-driver` | `hazard3_usb_driver` | USB driver traits |
+| `hazard3-hal-internal` | `hazard3_hal_internal` | HAL internals |
+| `hazard3-unitrait`, `hazard3-unitrait-macros` | `hazard3_unitrait`, `hazard3_unitrait_macros` | Global implementation traits |
 
 For linking and flashing on the Pico 2 in RISC-V mode, use
 [`rp2350-riscv-linker`](https://crates.io/crates/rp2350-riscv-linker) 0.2 or later.
@@ -92,20 +92,25 @@ For linking and flashing on the Pico 2 in RISC-V mode, use
 | `unitrait-riscv` | `hazard3-unitrait` |
 | `unitrait-macros-riscv` | `hazard3-unitrait-macros` |
 
-Keep the dependency key, for example `embassy-time`, and change its `package` value
-to `hazard3-time`. Rust imports such as `embassy_time` remain unchanged. See
-[RELEASE.md](RELEASE.md) for publication order and yank guidance.
+Replace old dependency keys and Rust imports, for example `embassy-time` and
+`embassy_time`, with `hazard3-time` and `hazard3_time`. This is a source-breaking
+change; previously published releases retain their old library names. See
+the crate changelogs for the version-specific migration details. The executor's
+`embassy-time-driver` feature is now `hazard3-time-driver`; update feature lists
+as well as imports.
 
 ## Quick start
 
-Use these package names once the corresponding Hazard3 packages are available:
+After releases containing these changes are published, use the new release
+versions with these dependency names. Existing published versions still use
+the old Rust library names:
 
 ```toml
 [dependencies]
-embassy-rp = { package = "hazard3-rp", version = "0.2", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
-embassy-time = { package = "hazard3-time", version = "0.1" }
-embassy-executor = { package = "hazard3-executor", version = "0.1", features = ["platform-riscv32", "executor-thread"] }
-embassy-sync = { package = "hazard3-sync", version = "0.1" }
+hazard3-rp = { version = "0.3", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+hazard3-time = "0.2"
+hazard3-executor = { version = "0.2", features = ["platform-riscv32", "executor-thread"] }
+hazard3-sync = "0.2"
 rp2350-riscv-linker = "1.0.0"
 ```
 
@@ -160,9 +165,8 @@ This repository also provides the pinned Xarxa sources needed by `hazard3-net-as
 - [`hazard3-net`](hazard3-net/) — network stack package.
 - [`hazard3-net-driver`](hazard3-net/hazard3-net-driver/) — driver interface package.
 
-The Rust library names remain unchanged: `embassy_net`, `xarxa`, and `xarxa_driver`. Cargo users
-must select the forked packages with `package = "hazard3-net-async"`,
-`package = "hazard3-net"`, or `package = "hazard3-net-driver"` as appropriate after publication.
+The Rust library names are `hazard3_net_async`, `hazard3_net`, and
+`hazard3_net_driver`, respectively.
 
 These networking forks are published under the same repository and are not replacements for upstream
 Xarxa or upstream Embassy outside RISC-V projects.

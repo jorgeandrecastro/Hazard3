@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[inline]
         #[symbol = "_ui_attr_on_method"]

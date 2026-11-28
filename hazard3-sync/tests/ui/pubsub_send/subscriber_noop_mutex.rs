@@ -1,5 +1,5 @@
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::pubsub::{PubSubChannel, SendDynSubscriber};
+use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
+use hazard3_sync::pubsub::{PubSubChannel, SendDynSubscriber};
 
 // NoopRawMutex is not Sync, so converting a Subscriber backed by it into a
 // SendDynSubscriber must fail to compile.

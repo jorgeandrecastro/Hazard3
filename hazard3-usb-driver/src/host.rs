@@ -421,7 +421,7 @@ impl Default for TimeoutConfig {
 /// ### NAK handling
 /// Implementations must retry on NAK if appropriate for the transfer type.
 /// - For **control** transfers, the implementation should retry until the configurable timeout expires (see [`UsbPipe::set_timeout`]).
-/// - For **bulk** transfers, the implementation must retry indefinitely. Use `embassy_time::with_timeout` around the future to impose a deadline; dropping the future must abort the transfer.
+/// - For **bulk** transfers, the implementation must retry indefinitely. Use `hazard3_time::with_timeout` around the future to impose a deadline; dropping the future must abort the transfer.
 /// - For **interrupt** transfers, a NAK indicates no data is available; the implementation should poll again at the next interval.
 ///
 /// ### Data toggle

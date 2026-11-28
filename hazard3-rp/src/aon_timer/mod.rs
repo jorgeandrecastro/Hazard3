@@ -48,13 +48,13 @@
 //! # Example - WFI/WFE Wake (Default)
 //!
 //! ```rust,ignore
-//! use embassy_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
-//! use embassy_rp::bind_interrupts;
-//! use embassy_time::Duration;
+//! use hazard3_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
+//! use hazard3_rp::bind_interrupts;
+//! use hazard3_time::Duration;
 //!
 //! // Bind the interrupt handler
 //! bind_interrupts!(struct Irqs {
-//!     POWMAN_IRQ_TIMER => embassy_rp::aon_timer::InterruptHandler;
+//!     POWMAN_IRQ_TIMER => hazard3_rp::aon_timer::InterruptHandler;
 //! });
 //!
 //! let config = Config {
@@ -75,12 +75,12 @@
 //! # Example - DORMANT Wake
 //!
 //! ```rust,ignore
-//! use embassy_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
-//! use embassy_rp::bind_interrupts;
-//! use embassy_time::Duration;
+//! use hazard3_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
+//! use hazard3_rp::bind_interrupts;
+//! use hazard3_time::Duration;
 //!
 //! bind_interrupts!(struct Irqs {
-//!     POWMAN_IRQ_TIMER => embassy_rp::aon_timer::InterruptHandler;
+//!     POWMAN_IRQ_TIMER => hazard3_rp::aon_timer::InterruptHandler;
 //! });
 //!
 //! let config = Config {
@@ -101,12 +101,12 @@
 //! # Example - Runtime Wake Mode Change
 //!
 //! ```rust,ignore
-//! use embassy_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
-//! use embassy_rp::bind_interrupts;
-//! use embassy_time::Duration;
+//! use hazard3_rp::aon_timer::{AonTimer, Config, ClockSource, AlarmWakeMode};
+//! use hazard3_rp::bind_interrupts;
+//! use hazard3_time::Duration;
 //!
 //! bind_interrupts!(struct Irqs {
-//!     POWMAN_IRQ_TIMER => embassy_rp::aon_timer::InterruptHandler;
+//!     POWMAN_IRQ_TIMER => hazard3_rp::aon_timer::InterruptHandler;
 //! });
 //!
 //! let mut timer = AonTimer::new(p.POWMAN, Irqs, Config::default());
@@ -129,9 +129,9 @@ use core::sync::atomic::{AtomicBool, Ordering, compiler_fence};
 use core::task::Poll;
 
 use crate::interrupt::InterruptExt;
-use embassy_hal_internal::Peri;
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_time::Duration;
+use hazard3_hal_internal::Peri;
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_time::Duration;
 
 use crate::{interrupt, pac};
 

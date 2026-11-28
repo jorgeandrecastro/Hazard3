@@ -2,7 +2,7 @@
 
 struct Foo<'a>(&'a ());
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async fn task<T: Sized>(_t: T) {}
 
 fn main() {}

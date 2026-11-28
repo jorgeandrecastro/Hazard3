@@ -7,7 +7,7 @@ pub use thread::*;
 mod thread {
     use core::marker::PhantomData;
 
-    pub use embassy_executor_macros::main_spin as main;
+    pub use hazard3_executor_macros::main_spin as main;
 
     use crate::{Spawner, raw};
 

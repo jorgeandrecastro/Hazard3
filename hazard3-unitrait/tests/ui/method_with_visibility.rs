@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[symbol = "_ui_method_with_visibility"]
         pub fn foo() -> u32;

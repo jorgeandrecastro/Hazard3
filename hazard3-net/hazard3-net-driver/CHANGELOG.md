@@ -1,8 +1,15 @@
 # Changelog
 
-## Unreleased
+## Unreleased (0.2.0)
 
-- Rename package `xarxa-driver-riscv` to `hazard3-net-driver` while retaining the Rust library name.
+### Breaking changes
+
+- **Breaking:** rename the Rust library `xarxa_driver` to `hazard3_net_driver`; update imports and macro paths.
+- Use matching new Hazard3 dependency versions where applicable.
+
+### Other changes
+
+- Rename package `xarxa-driver-riscv` to `hazard3-net-driver`.
 
 ## 0.1.0
 

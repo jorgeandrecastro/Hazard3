@@ -11,7 +11,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 /// resolve too.
 pub const HANDLES: usize = 4;
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait passing opaque values around inside composites.
     pub trait NestedDriver {
         /// Opaque state with drop glue, smaller and less aligned than declared.

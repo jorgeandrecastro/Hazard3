@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[symbol = "_ui_self_ref_mut"]
         fn foo(&mut self) -> u32;

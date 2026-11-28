@@ -12,8 +12,8 @@
 //! [`Iface::dhcpv4_lease`]: super::Iface::dhcpv4_lease
 //! [`Iface::config_generation`]: super::Iface::config_generation
 
-use embassy_time::Duration;
-pub use xarxa::iface::dhcpv4::*;
+use hazard3_time::Duration;
+pub use hazard3_net::iface::dhcpv4::*;
 
 use crate::time::duration_to_xarxa;
 use crate::wire::DhcpOption;
@@ -57,8 +57,8 @@ impl Default for DhcpConfig {
 }
 
 impl DhcpConfig {
-    pub(crate) fn to_xarxa(&self) -> xarxa::iface::dhcpv4::DhcpConfig {
-        let mut config = xarxa::iface::dhcpv4::DhcpConfig::default();
+    pub(crate) fn to_xarxa(&self) -> hazard3_net::iface::dhcpv4::DhcpConfig {
+        let mut config = hazard3_net::iface::dhcpv4::DhcpConfig::default();
         config.outgoing_options = self.outgoing_options;
         config.parameter_request_list = self.parameter_request_list;
         config.max_lease_duration = self.max_lease_duration.map(duration_to_xarxa);

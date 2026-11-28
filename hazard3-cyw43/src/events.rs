@@ -3,8 +3,8 @@
 
 use core::cell::RefCell;
 
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::pubsub::{PubSubChannel, Subscriber};
+use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
+use hazard3_sync::pubsub::{PubSubChannel, Subscriber};
 
 use crate::structs::BssInfo;
 #[cfg(feature = "action-frames")]

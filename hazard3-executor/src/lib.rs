@@ -29,7 +29,7 @@ pub(crate) mod fmt;
 #[macro_use]
 pub mod pender;
 
-pub use embassy_executor_macros::task;
+pub use hazard3_executor_macros::task;
 
 macro_rules! check_at_most_one {
     (@amo [$($feats:literal)*] [] [$($res:tt)*]) => {
@@ -66,7 +66,7 @@ check_at_most_one!(
 mod platform;
 
 #[cfg(not(feature = "_platform"))]
-pub use embassy_executor_macros::main_unspecified as main;
+pub use hazard3_executor_macros::main_unspecified as main;
 #[cfg(feature = "_platform")]
 #[allow(unused_imports)] // don't warn if the module is empty.
 pub use platform::*;

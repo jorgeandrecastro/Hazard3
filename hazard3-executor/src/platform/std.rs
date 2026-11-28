@@ -8,7 +8,7 @@ mod thread {
     use std::marker::PhantomData;
     use std::sync::{Condvar, Mutex};
 
-    pub use embassy_executor_macros::main_std as main;
+    pub use hazard3_executor_macros::main_std as main;
 
     use crate::{Spawner, raw};
 

@@ -719,7 +719,7 @@ impl<'d> Iface<'_, 'd> {
 /// not an [`Iterator`] and cannot be used in a `for` loop. Use `while let`:
 ///
 /// ```no_run
-/// # use xarxa::Stack;
+/// # use hazard3_net::Stack;
 /// # fn f(stack: &mut Stack) {
 /// let mut iter = stack.ifaces();
 /// while let Some((handle, item)) = iter.next() {

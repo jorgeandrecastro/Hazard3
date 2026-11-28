@@ -4,7 +4,7 @@ use core::cmp::min;
 use core::ptr::NonNull;
 use core::task::Waker;
 
-use embassy_executor_timer_queue::TimerQueueItem;
+use hazard3_executor_timer_queue::TimerQueueItem;
 
 /// An item in the timer queue.
 #[derive(Default)]
@@ -59,7 +59,7 @@ impl Queue {
         let item = unsafe {
             // Safety: the `&mut self`, along with the Safety note of the Queue, are sufficient to
             // ensure that this function creates the only mutable reference to the queue item.
-            TimerQueueItem::from_embassy_waker(waker)
+            TimerQueueItem::from_hazard3_waker(waker)
         };
         self.schedule_wake_queue_item(at, item, waker)
     }
@@ -70,7 +70,7 @@ impl Queue {
     /// a new alarm for that time.
     ///
     /// This function assumes that the timer queue item is associated with the provided waker.
-    /// It can be used to support cases where there may not be an embassy task behind the waker.
+    /// It can be used to support cases where there may not be a Hazard3 task behind the waker.
     /// One such case is integration with other async runtimes, be it a simple `block_on`
     /// implementation or something more complex.
     pub fn schedule_wake_queue_item(&mut self, at: u64, item: &mut TimerQueueItem, waker: &Waker) -> bool {

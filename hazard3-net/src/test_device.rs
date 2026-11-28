@@ -17,17 +17,17 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 use std::vec::Vec;
 
-use xarxa::Stack;
-use xarxa::driver::Capabilities;
-use xarxa::driver::PacketBuf;
+use hazard3_net::Stack;
+use hazard3_net::driver::Capabilities;
+use hazard3_net::driver::PacketBuf;
 #[cfg(feature = "packetmeta-id")]
-use xarxa::driver::PacketMeta;
-use xarxa::driver::{ChecksumCapabilities, Driver, LinkState};
+use hazard3_net::driver::PacketMeta;
+use hazard3_net::driver::{ChecksumCapabilities, Driver, LinkState};
 #[cfg(feature = "packetmeta-timestamp")]
-use xarxa::driver::{Timestamp, TxTimestamp};
-use xarxa::iface::IfaceHandle;
-use xarxa::iface::Medium;
-use xarxa::wire::HardwareAddress;
+use hazard3_net::driver::{Timestamp, TxTimestamp};
+use hazard3_net::iface::IfaceHandle;
+use hazard3_net::iface::Medium;
+use hazard3_net::wire::HardwareAddress;
 
 /// Frames waiting to be received, oldest first.
 pub type Queue = Rc<RefCell<VecDeque<Vec<u8>>>>;
@@ -115,12 +115,12 @@ impl TestDevice {
             hardware_addr: match medium {
                 #[cfg(feature = "medium-ethernet")]
                 Medium::Ethernet => {
-                    HardwareAddress::Ethernet(xarxa::wire::EthernetAddress([0x02, 0x00, 0x00, 0x00, 0x00, 0x01]))
+                    HardwareAddress::Ethernet(hazard3_net::wire::EthernetAddress([0x02, 0x00, 0x00, 0x00, 0x00, 0x01]))
                 }
                 #[cfg(feature = "medium-ip")]
                 Medium::Ip => HardwareAddress::Ip,
                 #[cfg(feature = "medium-ieee802154")]
-                Medium::Ieee802154 => HardwareAddress::Ieee802154(xarxa::wire::Ieee802154Address::Extended([
+                Medium::Ieee802154 => HardwareAddress::Ieee802154(hazard3_net::wire::Ieee802154Address::Extended([
                     0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
                 ])),
             },
@@ -188,7 +188,7 @@ impl Driver for TestDevice {
         caps
     }
 
-    fn hardware_address(&self) -> xarxa::driver::HardwareAddress {
+    fn hardware_address(&self) -> hazard3_net::driver::HardwareAddress {
         self.hardware_addr.to_driver().unwrap()
     }
 

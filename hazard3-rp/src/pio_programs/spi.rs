@@ -3,7 +3,7 @@
 use core::marker::PhantomData;
 
 use embassy_futures::join::join;
-use embassy_hal_internal::Peri;
+use hazard3_hal_internal::Peri;
 use embedded_hal_02::spi::{Phase, Polarity};
 
 use crate::clocks::clk_sys_freq;

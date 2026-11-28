@@ -2,7 +2,7 @@
 
 use std::sync::atomic::{AtomicU32, Ordering};
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait declaring opaque types with various marker bounds.
     pub trait MarkedDriver {
         /// No bounds: the opaque type implements no auto trait.

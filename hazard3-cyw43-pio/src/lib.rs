@@ -5,14 +5,14 @@
 
 use core::slice;
 
-use cyw43::SpiBusCyw43;
-use embassy_rp::Peri;
-use embassy_rp::clocks::clk_sys_freq;
-use embassy_rp::dma::Channel;
-use embassy_rp::gpio::{Drive, Level, Output, Pull, SlewRate};
-use embassy_rp::mode::Async;
-use embassy_rp::pio::program::pio_asm;
-use embassy_rp::pio::{Common, Config, Direction, Instance, Irq, PioPin, ShiftDirection, StateMachine};
+use hazard3_cyw43::SpiBusCyw43;
+use hazard3_rp::Peri;
+use hazard3_rp::clocks::clk_sys_freq;
+use hazard3_rp::dma::Channel;
+use hazard3_rp::gpio::{Drive, Level, Output, Pull, SlewRate};
+use hazard3_rp::mode::Async;
+use hazard3_rp::pio::program::pio_asm;
+use hazard3_rp::pio::{Common, Config, Direction, Instance, Irq, PioPin, ShiftDirection, StateMachine};
 
 /// SPI comms driven by PIO.
 pub struct PioSpi<'d, PIO: Instance, const SM: usize> {
@@ -22,7 +22,7 @@ pub struct PioSpi<'d, PIO: Instance, const SM: usize> {
     dma_tx: Channel<'d, Async>,
     dma_rx: Channel<'d, Async>,
     wrap_target: u8,
-    pin_io: embassy_rp::pio::Pin<'d, PIO>,
+    pin_io: hazard3_rp::pio::Pin<'d, PIO>,
 }
 
 /// Clock divider used for most applications
@@ -187,7 +187,7 @@ where
             common.load_program(&low_speed_program.program)
         };
 
-        let mut pin_io: embassy_rp::pio::Pin<PIO> = common.make_pio_pin(dio);
+        let mut pin_io: hazard3_rp::pio::Pin<PIO> = common.make_pio_pin(dio);
         pin_io.set_pull(Pull::None);
         pin_io.set_schmitt(true);
         pin_io.set_drive_strength(Drive::_12mA);

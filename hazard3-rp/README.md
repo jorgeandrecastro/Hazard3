@@ -2,7 +2,8 @@
 
 > **Published replacement:** `hazard3-rp` replaces the formerly published `embassy-rp-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained. The new Rust library name
+> applies to future releases.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-rp.svg)](https://crates.io/crates/hazard3-rp)
 [![docs.rs](https://docs.rs/hazard3-rp/badge.svg)](https://docs.rs/hazard3-rp)
@@ -27,6 +28,17 @@ complete operations in low power mode and handling interrupts, so that applicati
 * [Examples](https://github.com/jorgeandrecastro/Hazard3/tree/main/examples/rp/src/bin)
 * [Changelog](./CHANGELOG.md)
 
+## Migration to 0.3.0
+
+The Rust library is now `hazard3_rp` instead of `embassy_rp`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-rp = "0.3"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+
 ## RISC-V support (RP2350 Hazard3)
 
 The RP2350 has two Arm Cortex-M33 cores **and** two Hazard3 RISC-V cores (you pick one pair at boot). Upstream `embassy-rp` only
@@ -38,7 +50,7 @@ supports the Arm cores. This fork targets **only** the Hazard3 cores; use upstre
 * `riscv` Cargo feature, enabled by default.
 * `cpu.rs`: Hazard3 CPU primitives (`nop`, `delay`, `sev`, `wfe`, interrupt enable/disable...).
 * `arch.rs`: Hazard3 startup code. `install_core0_stack_guard()` is a no-op returning `Ok(())` (no MPU/MSPLIM).
-* Interrupts through the Hazard3 `Xh3irq` extension (custom CSRs `meiea`, `meipa`, `meifa`, `meipra`, `meinext`), provided by [`hazard3-hal-internal`](https://crates.io/crates/hazard3-hal-internal). `embassy_rp::init()` enables machine external interrupts.
+* Interrupts through the Hazard3 `Xh3irq` extension (custom CSRs `meiea`, `meipa`, `meifa`, `meipra`, `meinext`), provided by [`hazard3-hal-internal`](https://crates.io/crates/hazard3-hal-internal). `hazard3_rp::init()` enables machine external interrupts.
 * Time driver ported to RISC-V.
 * Multicore ported to RISC-V: `spawn_core1`, `pause_core1` and `resume_core1` rely on the inter-core FIFO, which uses the RISC-V `SIO_IRQ_FIFO` interrupt (the Arm-only `SIO_IRQ_PROC1` reference was removed in 0.2.0).
 
@@ -64,7 +76,7 @@ Select the chip:
 
 ```toml
 [dependencies]
-embassy-rp = { package = "hazard3-rp", version = "0.2", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+hazard3-rp = { version = "0.3", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
 rp2350-riscv-linker = "0.2"
 ```
 
@@ -134,22 +146,23 @@ Building for a non-RISC-V target (or for the RP2040) is rejected on purpose.
 
 Upstream `embassy-rp` uses a git revision of `rp-pac` that is newer than the one on crates.io, and crates.io does not accept git dependencies.
 To make `hazard3-rp` publishable, that revision is packaged as [`hazard3-rp-pac`](https://crates.io/crates/hazard3-rp-pac)
-(same `rp_pac` library name). Its register definitions are unchanged, but Cortex-M dependencies and the interrupt vector table have been removed
+(Rust library name `hazard3_rp_pac`). Its register definitions are unchanged, but Cortex-M dependencies and the interrupt vector table have been removed
 (since `rp-pac-riscv` 0.2). It is a dependency of this crate; you do not need to add it yourself.
 
 ### Companion Hazard3 crates
 
-Upstream `embassy-rp` at this commit needs unreleased changes of several Embassy crates (the versions on crates.io are older), so unmodified copies
-of them are packaged under the `hazard3-` prefix. Their library names are unchanged (`embassy_time`, `embassy_executor`, ...). Use **all** of them
-together in your application, with `package = "..."`, to avoid duplicate or incompatible copies of the same crate:
+Upstream `embassy-rp` at this commit needs changes from several companion crates, which
+are maintained under the `hazard3-` prefix. Their library names use underscores
+(`hazard3_time`, `hazard3_executor`, ...). Use **all** of them together in your
+application to avoid duplicate or incompatible copies of the same crate:
 
 `hazard3-sync`, `hazard3-time`, `hazard3-time-driver`, `hazard3-executor`, `hazard3-executor-macros`,
 `hazard3-embedded-hal`, `hazard3-usb-driver`, `hazard3-hal-internal`, `hazard3-rp-pac`.
 
 ```toml
-embassy-time = { package = "hazard3-time", version = "0.1" }
-embassy-executor = { package = "hazard3-executor", version = "0.1", features = ["platform-riscv32", "executor-thread"] }
-embassy-sync = { package = "hazard3-sync", version = "0.1" }
+hazard3-time = { version = "0.2" }
+hazard3-executor = { version = "0.2", features = ["platform-riscv32", "executor-thread"] }
+hazard3-sync = { version = "0.2" }
 ```
 
 ### Status and limitations

@@ -5,7 +5,7 @@
 //! ## WARNING: here be dragons!
 //!
 //! Using this module requires respecting subtle safety contracts. If you can, prefer using the safe
-//! [executor wrappers](crate::Executor) and the [`embassy_executor::task`](embassy_executor_macros::task) macro, which are fully safe.
+//! [executor wrappers](crate::Executor) and the [`hazard3_executor::task`](hazard3_executor_macros::task) macro, which are fully safe.
 
 mod run_queue;
 
@@ -41,7 +41,7 @@ use core::task::{Context, Poll, Waker};
 
 #[cfg(feature = "scheduler-deadline")]
 pub(crate) use deadline::Deadline;
-use embassy_executor_timer_queue::TimerQueueItem;
+use hazard3_executor_timer_queue::TimerQueueItem;
 #[cfg(feature = "portable-atomic")]
 use portable_atomic::AtomicPtr;
 
@@ -55,7 +55,7 @@ use crate::{ExecutorId, Metadata, MetadataRef, SpawnError, TaskId};
 
 struct TimerQueueItemProviderImpl;
 
-impl embassy_executor_timer_queue::TimerQueueItemProvider for TimerQueueItemProviderImpl {
+impl hazard3_executor_timer_queue::TimerQueueItemProvider for TimerQueueItemProviderImpl {
     unsafe fn item_from_waker(waker: &Waker) -> &'static mut TimerQueueItem {
         unsafe { task_from_waker(waker).timer_queue_item() }
     }
@@ -65,7 +65,7 @@ impl embassy_executor_timer_queue::TimerQueueItemProvider for TimerQueueItemProv
     }
 }
 
-embassy_executor_timer_queue::timer_queue_item_provider_impl!(TimerQueueItemProviderImpl);
+hazard3_executor_timer_queue::timer_queue_item_provider_impl!(TimerQueueItemProviderImpl);
 
 /// Raw task header for use in task pointers.
 ///
@@ -211,7 +211,7 @@ impl TaskRef {
 /// A `TaskStorage` must live forever, it may not be deallocated even after the task has finished
 /// running. Hence the relevant methods require `&'static self`. It may be reused, however.
 ///
-/// Internally, the [embassy_executor::task](embassy_executor_macros::task) macro allocates an array of `TaskStorage`s
+/// Internally, the [hazard3_executor::task](hazard3_executor_macros::task) macro allocates an array of `TaskStorage`s
 /// in a `static`. The most common reason to use the raw `Task` is to have control of where
 /// the memory for the task is allocated: on the stack, or on the heap with e.g. `Box::leak`, etc.
 
@@ -561,13 +561,13 @@ impl SyncExecutor {
 /// ```rust
 /// struct MyPender;
 ///
-/// impl embassy_executor::pender::Pender for MyPender {
+/// impl hazard3_executor::pender::Pender for MyPender {
 ///     fn pend(context: *mut ()) {
 ///         // schedule `poll()` to be called
 ///     }
 /// }
 ///
-/// embassy_executor::pender_impl!(MyPender);
+/// hazard3_executor::pender_impl!(MyPender);
 /// ```
 ///
 /// The `context` argument is a piece of arbitrary data the executor will pass to the pender.

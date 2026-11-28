@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[drop_symbol = "_ui_opaque_missing_attr_drop"]
         pub type Context: Drop;

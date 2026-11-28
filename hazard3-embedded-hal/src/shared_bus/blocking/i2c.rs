@@ -3,8 +3,8 @@
 //! # Example (nrf52)
 //!
 //! ```rust,ignore
-//! use embassy_embedded_hal::shared_bus::blocking::i2c::I2cDevice;
-//! use embassy_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
+//! use hazard3_embedded_hal::shared_bus::blocking::i2c::I2cDevice;
+//! use hazard3_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
 //!
 //! static I2C_BUS: StaticCell<NoopMutex<RefCell<Twim<TWISPI0>>>> = StaticCell::new();
 //! let i2c = Twim::new(p.TWISPI0, Irqs, p.P0_03, p.P0_04, Config::default());
@@ -17,8 +17,8 @@
 
 use core::cell::RefCell;
 
-use embassy_sync::blocking_mutex::Mutex;
-use embassy_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::blocking_mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal_1::i2c::{ErrorType, I2c, Operation};
 
 use crate::SetConfig;

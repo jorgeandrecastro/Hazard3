@@ -3,10 +3,10 @@
 //! xarxa instants are the low 32 bits of the millisecond count, so they wrap around
 //! every ~49.7 days and only compare correctly when they are close to each other.
 //! Conversions therefore go through an offset from the current time, which saturates
-//! at `xarxa::time::Duration::MAX`.
+//! at `hazard3_net::time::Duration::MAX`.
 
-use embassy_time::{Duration, Instant};
-use xarxa::time::{Duration as XarxaDuration, Instant as XarxaInstant};
+use hazard3_time::{Duration, Instant};
+use hazard3_net::time::{Duration as XarxaDuration, Instant as XarxaInstant};
 
 /// The xarxa instant for `now`.
 #[inline]
@@ -16,7 +16,7 @@ pub(crate) fn now_to_xarxa(now: Instant) -> XarxaInstant {
 
 /// Convert an instant, going through its offset from the current time.
 ///
-/// Offsets saturate at `xarxa::time::Duration::MAX` in either direction.
+/// Offsets saturate at `hazard3_net::time::Duration::MAX` in either direction.
 pub(crate) fn instant_to_xarxa(instant: Instant) -> XarxaInstant {
     instant_to_xarxa_at(Instant::now(), instant)
 }
@@ -59,7 +59,7 @@ fn millis_to_xarxa(millis: u64) -> XarxaDuration {
 }
 
 /// Convert a duration, rounding up to the next millisecond and saturating at
-/// `xarxa::time::Duration::MAX`.
+/// `hazard3_net::time::Duration::MAX`.
 // Only some features use it (for example TCP timeouts), so a build without them
 // would warn.
 #[allow(dead_code)]

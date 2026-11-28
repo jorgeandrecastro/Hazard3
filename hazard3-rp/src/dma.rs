@@ -6,8 +6,8 @@ use core::sync::atomic::{Ordering, compiler_fence};
 use core::task::{Context, Poll};
 
 use crate::interrupt::InterruptExt;
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
 use pac::dma::vals::DataSize;
 
 use crate::interrupt::typelevel::Interrupt;

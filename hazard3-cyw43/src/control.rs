@@ -6,9 +6,9 @@ use core::sync::atomic::AtomicBool;
 use core::sync::atomic::AtomicU32;
 use core::sync::atomic::Ordering::Relaxed;
 
-use embassy_net_driver_channel as ch;
-use embassy_net_driver_channel::driver::HardwareAddress;
-use embassy_time::{Duration, Timer};
+use hazard3_net_driver_channel as ch;
+use hazard3_net_driver_channel::driver::HardwareAddress;
+use hazard3_time::{Duration, Timer};
 
 use crate::consts::*;
 use crate::events::{Event, EventSubscriber, Events};

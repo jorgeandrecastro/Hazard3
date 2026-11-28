@@ -1,8 +1,8 @@
 #![cfg_attr(feature = "nightly", feature(impl_trait_in_assoc_type))]
 
-use embassy_executor::SendSpawner;
+use hazard3_executor::SendSpawner;
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async fn task(non_send: *mut ()) {
     println!("{}", non_send as usize);
 }

@@ -2,7 +2,7 @@
 
 > **Published replacement:** `hazard3-hal-internal` replaces the formerly published `embassy-hal-internal-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-hal-internal.svg)](https://crates.io/crates/hazard3-hal-internal)
 [![docs.rs](https://docs.rs/hazard3-hal-internal/badge.svg)](https://docs.rs/hazard3-hal-internal)
@@ -18,6 +18,17 @@ An [Embassy](https://embassy.dev) project.
 Internal implementation details for Embassy HALs. DO NOT USE DIRECTLY. Embassy HALs (`embassy-nrf`, `embassy-stm32`, `embassy-rp`) already reexport
 everything you need to use them effectively.
 
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_hal_internal` instead of `embassy_hal_internal`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-hal-internal = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+
 ## RISC-V support
 
 This fork adds a `riscv` feature providing interrupt handling for the RP2350 Hazard3 RISC-V cores (`Xh3irq` extension), as a
@@ -32,7 +43,7 @@ counterpart of the Cortex-M NVIC code (`cortex-m` feature).
   symbol. It is only generated when the HAL crate enables its `riscv` feature.
 
 Use it through a HAL such as [`hazard3-rp`](https://crates.io/crates/hazard3-rp) rather than directly. The crate is imported as
-`embassy_hal_internal` (same library name as upstream), so it can replace upstream in a dependency declaration with `package = "hazard3-hal-internal"`.
+`hazard3_hal_internal` and its package is `hazard3-hal-internal`.
 
 To build and flash firmware for the RP2350 RISC-V cores, see [`rp2350-riscv-linker`](https://crates.io/crates/rp2350-riscv-linker)
 (version 0.2 or later): zero-config `memory.x`, RP2350 RISC-V image definition, `.cargo/config.toml` and flashing instructions.

@@ -1,6 +1,6 @@
 //! `Copy` opaque types have no drop glue and can be duplicated freely.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait handing out copyable opaque tokens.
     pub trait TokensDriver {
         /// An opaque token. `Copy`, so it can't have a `Drop` bound and is never dropped.

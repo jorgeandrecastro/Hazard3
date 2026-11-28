@@ -9,8 +9,8 @@ use core::mem::MaybeUninit;
 use core::net::IpAddr;
 use core::ptr::NonNull;
 
-use embassy_time::Duration;
-use xarxa::error::Full;
+use hazard3_time::Duration;
+use hazard3_net::error::Full;
 
 use super::{Error, TcpSocket};
 use crate::Stack;

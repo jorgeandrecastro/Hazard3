@@ -12,17 +12,17 @@
 //! which will prevent users from needing to configure it themselves (or selecting an incorrect configuration).
 //!
 //! If your driver supports a small number of set tick rates, expose your own cargo features and have each one
-//! enable the corresponding `embassy-time-driver/tick-*`.
+//! enable the corresponding `hazard3-time-driver/tick-*`.
 //!
 //! Otherwise, don’t enable any `tick-hz-*` feature to let the user configure the tick rate themselves by
-//! enabling a feature on `embassy-time`.
+//! enabling a feature on `hazard3-time`.
 //!
 //! ### Example
 //!
 //! ```
 //! use core::task::Waker;
 //!
-//! use embassy_time_driver::Driver;
+//! use hazard3_time_driver::Driver;
 //!
 //! struct MyDriver{} // not public!
 //!
@@ -36,7 +36,7 @@
 //!     }
 //! }
 //!
-//! embassy_time_driver::time_driver_impl!(static DRIVER: MyDriver = MyDriver{});
+//! hazard3_time_driver::time_driver_impl!(static DRIVER: MyDriver = MyDriver{});
 //! ```
 //!
 //! ## Implementing the timer queue
@@ -54,8 +54,8 @@
 //! use core::task::Waker;
 //!
 //! use critical_section::{CriticalSection, Mutex};
-//! use embassy_time_queue_utils::Queue;
-//! use embassy_time_driver::Driver;
+//! use hazard3_time_queue_utils::Queue;
+//! use hazard3_time_driver::Driver;
 //!
 //! struct MyDriver {
 //!     queue: Mutex<RefCell<Queue>>,

@@ -35,7 +35,7 @@ use syn::{
 /// ```
 /// pub struct Item(pub u64);
 ///
-/// unitrait::unitrait! {
+/// hazard3_unitrait::unitrait! {
 ///     /// A driver for the frobnicator.
 ///     pub trait Driver {
 ///         /// Returns the current frobnication level.
@@ -96,7 +96,7 @@ use syn::{
 /// from a single `#[symbol_prefix = "..."]` attribute on the trait:
 ///
 /// ```
-/// unitrait::unitrait! {
+/// hazard3_unitrait::unitrait! {
 ///     /// A driver for the frobnicator.
 ///     #[symbol_prefix = "_frob_v1"]
 ///     pub trait Driver {
@@ -151,7 +151,7 @@ use syn::{
 /// opaque types of a fixed maximum size and alignment:
 ///
 /// ```
-/// unitrait::unitrait! {
+/// hazard3_unitrait::unitrait! {
 ///     /// A rolling checksum.
 ///     pub trait ChecksumDriver {
 ///         /// Opaque storage for the implementation's checksum state.
@@ -222,7 +222,7 @@ use syn::{
 /// `#[opaque]` in `#[cfg_attr(...)]`:
 ///
 /// ```
-/// unitrait::unitrait! {
+/// hazard3_unitrait::unitrait! {
 ///     /// A rolling checksum.
 ///     pub trait ChecksumDriver {
 ///         /// Opaque storage for the implementation's checksum state.
@@ -330,7 +330,7 @@ use syn::{
 /// default, and each one is opted into by declaring it as a bound on the associated type:
 ///
 /// ```
-/// unitrait::unitrait! {
+/// hazard3_unitrait::unitrait! {
 ///     pub trait SessionDriver {
 ///         /// Can be moved between threads, but not shared, and must not be moved once
 ///         /// it has been pinned. Duplicating one duplicates the implementation's state.

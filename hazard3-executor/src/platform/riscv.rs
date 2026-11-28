@@ -8,7 +8,7 @@ mod thread {
     use core::marker::PhantomData;
     use core::sync::atomic::{AtomicBool, Ordering};
 
-    pub use embassy_executor_macros::main_riscv as main;
+    pub use hazard3_executor_macros::main_riscv as main;
 
     use crate::{Spawner, raw};
 

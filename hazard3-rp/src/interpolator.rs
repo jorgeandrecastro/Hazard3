@@ -4,8 +4,8 @@
 
 use core::marker::PhantomData;
 
-use embassy_hal_internal::{Peri, PeripheralType};
-use rp_pac::sio::regs::{Interp1CtrlLane0, Interp1CtrlLane1};
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_rp_pac::sio::regs::{Interp1CtrlLane0, Interp1CtrlLane1};
 
 use crate::pac;
 

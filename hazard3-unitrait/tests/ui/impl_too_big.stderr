@@ -1,7 +1,7 @@
 error[E0080]: evaluation panicked: unitrait: the implementation's associated type is larger than its declared opaque size
   --> tests/ui/impl_too_big.rs:1:1
    |
- 1 | / unitrait::unitrait! {
+ 1 | / hazard3_unitrait::unitrait! {
  2 | |     pub trait FooDriver {
  3 | |         #[opaque(size = 8, align = 4)]
  4 | |         #[drop_symbol = "_ui_impl_too_big_drop"]
@@ -18,7 +18,7 @@ error[E0080]: evaluation panicked: unitrait: the implementation's associated typ
 note: erroneous constant encountered
   --> tests/ui/impl_too_big.rs:1:1
    |
- 1 | / unitrait::unitrait! {
+ 1 | / hazard3_unitrait::unitrait! {
  2 | |     pub trait FooDriver {
  3 | |         #[opaque(size = 8, align = 4)]
  4 | |         #[drop_symbol = "_ui_impl_too_big_drop"]
@@ -29,5 +29,3 @@ note: erroneous constant encountered
 ...
 26 |   foo_impl!(MyImpl);
    |   ----------------- in this macro invocation
-   |
-   = note: this note originates in the macro `foo_impl` (in Nightly builds, run with -Z macro-backtrace for more info)

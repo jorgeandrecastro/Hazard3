@@ -7,12 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 
-## Unreleased
+## Unreleased (0.2.0)
+
+### Breaking changes
+
+- **Breaking:** rename the Rust library `embassy_time_driver` to `hazard3_time_driver`; update imports and macro paths.
+- Use matching new Hazard3 dependency versions where applicable.
+
+### Other changes
 
 - Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
 - Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
 
-- Rename package `embassy-time-driver-riscv` to `hazard3-time-driver` while retaining the Rust library name.
+- Rename package `embassy-time-driver-riscv` to `hazard3-time-driver`.
 
 ## 0.1.1 - 2026-11-18
 

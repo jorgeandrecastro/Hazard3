@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[opaque(size = 8, align = 4)]
         #[clone_symbol = "_ui_copy_with_clone_bound_clone"]

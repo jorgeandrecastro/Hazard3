@@ -6,8 +6,8 @@ use core::mem::DropGuard;
 use core::ops::Not;
 use core::task::Poll;
 
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
 
 use crate::interrupt::InterruptExt;
 use crate::interrupt::typelevel::{Binding, Interrupt};
@@ -151,19 +151,19 @@ impl Default for Config {
 ///
 /// Usage example:
 /// ```no_run
-/// use embassy_executor::Spawner;
-/// use embassy_rp::trng::Trng;
-/// use embassy_rp::peripherals::TRNG;
-/// use embassy_rp::bind_interrupts;
+/// use hazard3_executor::Spawner;
+/// use hazard3_rp::trng::Trng;
+/// use hazard3_rp::peripherals::TRNG;
+/// use hazard3_rp::bind_interrupts;
 ///
 /// bind_interrupts!(struct Irqs {
-///     TRNG_IRQ => embassy_rp::trng::InterruptHandler<TRNG>;
+///     TRNG_IRQ => hazard3_rp::trng::InterruptHandler<TRNG>;
 /// });
 ///
-/// #[embassy_executor::main]
+/// #[hazard3_executor::main]
 /// async fn main(spawner: Spawner) {
-///     let peripherals = embassy_rp::init(Default::default());
-///     let mut trng = Trng::new(peripherals.TRNG, Irqs, embassy_rp::trng::Config::default());
+///     let peripherals = hazard3_rp::init(Default::default());
+///     let mut trng = Trng::new(peripherals.TRNG, Irqs, hazard3_rp::trng::Config::default());
 ///
 ///     let mut randomness = [0u8; 58];
 ///     loop {

@@ -10,3 +10,8 @@ if [[ -z "${CARGO_TARGET_DIR}" ]]; then
 fi
 
 cargo embassy-devtool build --group xtensa
+
+for features in "" "generic-queue-8"; do
+    cargo check --release --manifest-path hazard3-time-queue-utils/Cargo.toml \
+        --target xtensa-esp32s2-none-elf -Z build-std=core,alloc --features "$features"
+done

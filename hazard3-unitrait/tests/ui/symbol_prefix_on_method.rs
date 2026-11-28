@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[symbol_prefix = "_ui_prefix_on_method"]
         fn foo() -> u32;

@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test accumulator with caller-allocated state.
     pub trait AccumulatorDriver {
         /// Opaque storage for the accumulator state.

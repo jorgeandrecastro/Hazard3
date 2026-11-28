@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[opaque(size = 8, align = 4)]
         #[cfg_attr(all(), drop_symbol = "_ui_cfg_attr_not_opaque_drop")]

@@ -1,9 +1,9 @@
 //! Serial Peripheral Interface
 use core::marker::PhantomData;
 
-use embassy_embedded_hal::SetConfig;
+use hazard3_embedded_hal::SetConfig;
 use embassy_futures::join::join;
-use embassy_hal_internal::{Peri, PeripheralType};
+use hazard3_hal_internal::{Peri, PeripheralType};
 pub use embedded_hal_02::spi::{Phase, Polarity};
 
 use crate::dma::{Channel, ChannelInstance};

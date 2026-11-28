@@ -8,7 +8,7 @@
 
 use core::marker::PhantomData;
 
-use embassy_time::Duration;
+use hazard3_time::Duration;
 
 use crate::peripherals::WATCHDOG;
 use crate::{Peri, pac};

@@ -4,8 +4,8 @@ use core::marker::PhantomData;
 use core::slice;
 use core::sync::atomic::{Ordering, compiler_fence};
 
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_usb_driver::Direction;
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_usb_driver::Direction;
 
 use crate::{interrupt, pac, peripherals};
 

@@ -24,8 +24,8 @@ use crate::blocking_mutex::raw::RawMutex;
 /// Signals are generally declared as `static`s and then borrowed as required.
 ///
 /// ```
-/// use embassy_sync::signal::Signal;
-/// use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+/// use hazard3_sync::signal::Signal;
+/// use hazard3_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 ///
 /// enum SomeCommand {
 ///   On,

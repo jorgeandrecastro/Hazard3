@@ -103,9 +103,9 @@ impl MetadataRef {
     /// this future is polled. This deadline is saturated to the max tick value.
     ///
     /// Analogous to `Timer::after`.
-    #[cfg(all(feature = "scheduler-deadline", feature = "embassy-time-driver"))]
+    #[cfg(all(feature = "scheduler-deadline", feature = "hazard3-time-driver"))]
     pub fn set_deadline_after(&self, duration_ticks: u64) {
-        let now = embassy_time_driver::now();
+        let now = hazard3_time_driver::now();
 
         // Since ticks is a u64, saturating add is PROBABLY overly cautious, leave
         // it for now, we can probably make this wrapping_add for performance

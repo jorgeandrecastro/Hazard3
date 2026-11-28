@@ -18,8 +18,8 @@ use core::sync::atomic::{AtomicU32, Ordering};
 #[cfg(feature = "cortex-m")]
 use cortex_m::interrupt::InterruptNumber;
 use critical_section::{CriticalSection, Mutex};
-use embassy_time_driver::{Driver, TICK_HZ, time_driver_impl};
-use embassy_time_queue_utils::Queue;
+use hazard3_time_driver::{Driver, TICK_HZ, time_driver_impl};
+use hazard3_time_queue_utils::Queue;
 use regs::{Control, Interrupt};
 
 time_driver_impl!(

@@ -1,13 +1,13 @@
-//! Timer queue item for embassy-executor integrated timer queues
+//! Timer queue item for hazard3-executor integrated timer queues
 //!
-//! `embassy-executor` provides the memory needed to implement integrated timer queues. This crate
-//! exists to separate that memory from `embassy-executor` itself, to decouple the timer queue's
-//! release cycle from `embassy-executor`.
+//! `hazard3-executor` provides the memory needed to implement integrated timer queues. This crate
+//! exists to separate that memory from `hazard3-executor` itself, to decouple the timer queue's
+//! release cycle from `hazard3-executor`.
 //!
 //! This crate contains two things:
 //! - [`TimerQueueItem`]: The item type that can be requested from the executor. The size of this
 //!   type can be configured using the `timer-item-size-N-words` Cargo features.
-//! - The [`TimerQueueItemProvider`] trait, which must be implemented (by `embassy-executor`,
+//! - The [`TimerQueueItemProvider`] trait, which must be implemented (by `hazard3-executor`,
 //!   most likely) to return the `TimerQueueItem` associated with a given waker. It is a
 //!   [unitrait]: the implementation is registered globally with
 //!   [`timer_queue_item_provider_impl`] and resolved at link time.
@@ -16,23 +16,23 @@
 //! select a queue item size. You can then define your own item type, which must be
 //! `#[repr(align(8))]` (or less) and must fit into the size you selected.
 //!
-//! You can access the `TimerQueueItem` from a `Waker` using the [`from_embassy_waker`](TimerQueueItem::from_embassy_waker)
+//! You can access the `TimerQueueItem` from a `Waker` using the [`from_hazard3_waker`](TimerQueueItem::from_hazard3_waker)
 //! method. You can then use the [`as_ref`](TimerQueueItem::as_ref) and [`as_mut`](TimerQueueItem::as_mut)
 //! methods to reinterpret the data stored in the item as your custom item type.
 #![no_std]
 
 use core::task::Waker;
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// Provider of the [`TimerQueueItem`] associated with a waker.
     ///
-    /// This trait is implemented by the executor (`embassy-executor`, most likely), which owns
+    /// This trait is implemented by the executor (`hazard3-executor`, most likely), which owns
     /// the storage for timer queue items.
     #[symbol_prefix = "__embassy_time_queue"]
     pub trait TimerQueueItemProvider {
         /// Retrieves the `TimerQueueItem` reference that belongs to the task of the waker.
         ///
-        /// Panics if called with a non-embassy waker.
+        /// Panics if called with a non-Hazard3 waker.
         ///
         /// # Safety
         ///
@@ -44,7 +44,7 @@ unitrait::unitrait! {
         unsafe fn item_from_waker(waker: &core::task::Waker) -> &'static mut TimerQueueItem;
 
         /// Like [`item_from_waker`](TimerQueueItemProvider::item_from_waker), but returns `None`
-        /// instead of panicking if the waker is not an embassy waker.
+        /// instead of panicking if the waker is not a Hazard3 waker.
         ///
         /// # Safety
         ///
@@ -90,7 +90,7 @@ impl TimerQueueItem {
 
     /// Retrieves the `TimerQueueItem` reference that belongs to the task of the waker.
     ///
-    /// Panics if called with a non-embassy waker.
+    /// Panics if called with a non-Hazard3 waker.
     ///
     /// # Safety
     ///
@@ -99,7 +99,7 @@ impl TimerQueueItem {
     /// the same time.
     ///
     /// This function must only be called in the context of a timer queue implementation.
-    pub unsafe fn from_embassy_waker(waker: &Waker) -> &'static mut Self {
+    pub unsafe fn from_hazard3_waker(waker: &Waker) -> &'static mut Self {
         unsafe { TimerQueueItemProviderImpl::item_from_waker(waker) }
     }
 
@@ -130,7 +130,7 @@ const fn validate<T>() {
     const {
         assert!(
             core::mem::size_of::<TimerQueueItem>() >= core::mem::size_of::<T>(),
-            "embassy-executor-timer-queue item size is smaller than the requested type. Select a larger timer-item-size-N-words feature."
+            "hazard3-executor-timer-queue item size is smaller than the requested type. Select a larger timer-item-size-N-words feature."
         );
         assert!(
             core::mem::align_of::<TimerQueueItem>() >= core::mem::align_of::<T>(),

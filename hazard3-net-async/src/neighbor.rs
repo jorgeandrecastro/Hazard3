@@ -1,8 +1,8 @@
 //! Neighbor cache.
 
-use embassy_time::Instant;
-use xarxa::error::NotUnicast;
-use xarxa::wire::{HardwareAddress, IpAddr};
+use hazard3_time::Instant;
+use hazard3_net::error::NotUnicast;
+use hazard3_net::wire::{HardwareAddress, IpAddr};
 
 use crate::iface::IfaceHandle;
 use crate::time::{instant_from_xarxa, instant_to_xarxa};
@@ -21,20 +21,20 @@ pub struct Neighbor {
 }
 
 impl Neighbor {
-    fn from_xarxa(neighbor: xarxa::Neighbor) -> Self {
+    fn from_xarxa(neighbor: hazard3_net::Neighbor) -> Self {
         Self {
             iface: neighbor.iface,
             addr: neighbor.addr,
             state: match neighbor.state {
-                xarxa::NeighborState::Incomplete => NeighborState::Incomplete,
-                xarxa::NeighborState::Reachable {
+                hazard3_net::NeighborState::Incomplete => NeighborState::Incomplete,
+                hazard3_net::NeighborState::Reachable {
                     hardware_addr,
                     expires_at,
                 } => NeighborState::Reachable {
                     hardware_addr,
                     expires_at: instant_from_xarxa(expires_at),
                 },
-                xarxa::NeighborState::Stale { hardware_addr } => NeighborState::Stale { hardware_addr },
+                hazard3_net::NeighborState::Stale { hardware_addr } => NeighborState::Stale { hardware_addr },
             },
         }
     }

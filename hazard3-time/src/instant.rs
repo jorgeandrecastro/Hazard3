@@ -20,7 +20,7 @@ impl Instant {
     #[inline]
     pub fn now() -> Instant {
         Instant {
-            ticks: embassy_time_driver::now(),
+            ticks: hazard3_time_driver::now(),
         }
     }
 

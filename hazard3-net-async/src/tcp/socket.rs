@@ -10,10 +10,10 @@ use core::marker::PhantomData;
 use core::mem;
 use core::task::Poll;
 
-use embassy_time::Duration;
-use xarxa::error::{Full, InvalidHopLimit};
-use xarxa::tcp;
-use xarxa::wire::{ListenSocketAddr, SocketAddr};
+use hazard3_time::Duration;
+use hazard3_net::error::{Full, InvalidHopLimit};
+use hazard3_net::tcp;
+use hazard3_net::wire::{ListenSocketAddr, SocketAddr};
 
 #[cfg(feature = "iface-bind")]
 use super::IfaceHandle;

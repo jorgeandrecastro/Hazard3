@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[cfg_attr(all(), opaque(size = 8, align = 4), opaque(size = 16, align = 8))]
         #[opaque(size = 8, align = 4)]

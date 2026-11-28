@@ -260,8 +260,8 @@ where
     /// Establish a new bounded pipe. For example, to create one with a NoopMutex:
     ///
     /// ```
-    /// use embassy_sync::pipe::Pipe;
-    /// use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+    /// use hazard3_sync::pipe::Pipe;
+    /// use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
     ///
     /// // Declare a bounded pipe, with a buffer of 256 bytes.
     /// let mut pipe = Pipe::<NoopRawMutex, 256>::new();

@@ -6,6 +6,16 @@ use syn::meta::ParseNestedMeta;
 use syn::parse::{Parse, ParseStream};
 use syn::{AttrStyle, Attribute, Expr, ExprLit, Lit, LitStr, Signature, Token, Visibility, braced, bracketed, token};
 
+pub fn executor_path() -> syn::Result<TokenStream> {
+    let name = match proc_macro_crate::crate_name("hazard3-executor") {
+        Ok(proc_macro_crate::FoundCrate::Itself) => "hazard3_executor".to_owned(),
+        Ok(proc_macro_crate::FoundCrate::Name(name)) => name,
+        Err(e) => return Err(syn::Error::new(proc_macro2::Span::call_site(), e)),
+    };
+    let ident = syn::Ident::new(&name, proc_macro2::Span::call_site());
+    Ok(quote::quote!(::#ident))
+}
+
 pub fn token_stream_with_error(mut tokens: TokenStream, error: syn::Error) -> TokenStream {
     tokens.extend(error.into_compile_error());
     tokens

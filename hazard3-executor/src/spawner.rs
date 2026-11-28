@@ -9,7 +9,7 @@ use crate::{ExecutorId, MetadataRef, TaskId};
 
 /// Token to spawn a newly-created task in an executor.
 ///
-/// When calling a task function (like `#[embassy_executor::task] async fn my_task() { ... }`), the returned
+/// When calling a task function (like `#[hazard3_executor::task] async fn my_task() { ... }`), the returned
 /// value is a `SpawnToken` that represents an instance of the task, ready to spawn. You must
 /// then spawn it into an executor, typically with [`Spawner::spawn()`].
 ///
@@ -60,9 +60,9 @@ impl<S> Drop for SpawnToken<S> {
 pub enum SpawnError {
     /// Too many instances of this task are already running.
     ///
-    /// By default, a task marked with `#[embassy_executor::task]` can only have one instance
+    /// By default, a task marked with `#[hazard3_executor::task]` can only have one instance
     /// running at a time. You may allow multiple instances to run in parallel with
-    /// `#[embassy_executor::task(pool_size = 4)]`, at the cost of higher RAM usage.
+    /// `#[hazard3_executor::task(pool_size = 4)]`, at the cost of higher RAM usage.
     Busy,
 }
 
@@ -158,7 +158,7 @@ impl Spawner {
 
     /// Spawn a task into an executor.
     ///
-    /// You obtain the `token` by calling a task function (i.e. one marked with `#[embassy_executor::task]`).
+    /// You obtain the `token` by calling a task function (i.e. one marked with `#[hazard3_executor::task]`).
     pub fn spawn<S>(&self, token: SpawnToken<S>) {
         let task = token.raw_task;
         mem::forget(token);
@@ -219,7 +219,7 @@ impl SendSpawner {
 
     /// Spawn a task into an executor.
     ///
-    /// You obtain the `token` by calling a task function (i.e. one marked with `#[embassy_executor::task]`).
+    /// You obtain the `token` by calling a task function (i.e. one marked with `#[hazard3_executor::task]`).
     pub fn spawn<S: Send>(&self, token: SpawnToken<S>) {
         let header = token.raw_task;
         mem::forget(token);

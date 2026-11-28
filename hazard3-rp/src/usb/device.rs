@@ -6,9 +6,9 @@ use core::sync::atomic::{Ordering, compiler_fence};
 use core::task::Poll;
 
 use critical_section::Mutex;
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_usb_driver as driver;
-use embassy_usb_driver::{
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_usb_driver as driver;
+use hazard3_usb_driver::{
     Direction, EndpointAddress, EndpointAllocError, EndpointConfig, EndpointDisabledError, EndpointError, EndpointInfo,
     EndpointInterval, EndpointType, Event, Speed, Unsupported,
 };

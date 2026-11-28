@@ -4,8 +4,8 @@
 //! Prefer using [`Stack::dns_query`](crate::Stack::dns_query) directly if you're
 //! not using `embedded-nal-async`.
 
-pub(crate) use xarxa::dns::{GetQueryResultError, StartQueryError};
-pub use xarxa::wire::{DnsType as DnsQueryType, IpAddr};
+pub(crate) use hazard3_net::dns::{GetQueryResultError, StartQueryError};
+pub use hazard3_net::wire::{DnsType as DnsQueryType, IpAddr};
 
 /// Errors returned by DnsClient.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -61,7 +61,7 @@ impl<'d> DnsClient<'d> {
         &self,
         name: &str,
         qtype: DnsQueryType,
-    ) -> Result<heapless::Vec<IpAddr, { xarxa::config::DNS_MAX_RESULT_COUNT }>, Error> {
+    ) -> Result<heapless::Vec<IpAddr, { hazard3_net::config::DNS_MAX_RESULT_COUNT }>, Error> {
         self.stack.dns_query(name, qtype).await
     }
 }

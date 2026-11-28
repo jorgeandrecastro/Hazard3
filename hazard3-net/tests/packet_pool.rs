@@ -1,11 +1,11 @@
 //! Packet pool exhaustion. The test has a pool of its own, so it can take every
 //! buffer in it.
 
-use xarxa::driver::PacketBuf;
-use xarxa::iface::Medium;
-use xarxa::udp::SendError;
-use xarxa::wire::{HardwareAddress, IpCidr, Ipv4Addr, ListenSocketAddr, SocketAddr};
-use xarxa::{Pool, Stack, StaticPool};
+use hazard3_net::driver::PacketBuf;
+use hazard3_net::iface::Medium;
+use hazard3_net::udp::SendError;
+use hazard3_net::wire::{HardwareAddress, IpCidr, Ipv4Addr, ListenSocketAddr, SocketAddr};
+use hazard3_net::{Pool, Stack, StaticPool};
 
 use test_device::TestDevice;
 
@@ -89,9 +89,9 @@ fn exhaustion() {
     // ask to be polled again right away.
     #[cfg(all(feature = "slaac", feature = "medium-ethernet"))]
     {
-        use xarxa::iface::slaac::SlaacConfig;
-        use xarxa::time::Instant;
-        use xarxa::wire::EthernetAddress;
+        use hazard3_net::iface::slaac::SlaacConfig;
+        use hazard3_net::time::Instant;
+        use hazard3_net::wire::EthernetAddress;
 
         let mut stack = Stack::new(&POOL, 0x1234_5678_dead_beef);
         let hw = HardwareAddress::Ethernet(EthernetAddress([0x02, 0, 0, 0, 0, 0x01]));
@@ -107,7 +107,7 @@ fn exhaustion() {
         use std::sync::Arc;
         use std::sync::atomic::{AtomicUsize, Ordering};
         use std::task::{Wake, Waker};
-        use xarxa::time::Instant;
+        use hazard3_net::time::Instant;
 
         #[derive(Default)]
         struct WakeCount(AtomicUsize);
@@ -133,7 +133,7 @@ fn exhaustion() {
     // polled again 1 ms later to retry it, since nothing signals a freed buffer.
     #[cfg(feature = "tcp")]
     {
-        use xarxa::time::{Duration, Instant};
+        use hazard3_net::time::{Duration, Instant};
 
         let mut stack = Stack::new(&POOL, 0x1234_5678_dead_beef);
         let device = TestDevice::new(Medium::Ip);
@@ -167,7 +167,7 @@ fn exhaustion() {
     // buffer, the datagram takes it and none is left for the fragments.
     #[cfg(feature = "ipv4-fragmentation")]
     {
-        use xarxa::time::{Duration, Instant};
+        use hazard3_net::time::{Duration, Instant};
 
         let mut stack = Stack::new(&POOL, 0x1234_5678_dead_beef);
         let device = TestDevice::new(Medium::Ip).with_mtu(600);
@@ -202,8 +202,8 @@ fn exhaustion() {
     // the same poll: the device never said no, so no wakeup would bring a poll.
     #[cfg(all(feature = "tcp", feature = "ipv4-fragmentation"))]
     {
-        use xarxa::driver::{Capabilities, Driver};
-        use xarxa::time::{Duration, Instant};
+        use hazard3_net::driver::{Capabilities, Driver};
+        use hazard3_net::time::{Duration, Instant};
 
         /// Hands the stack one junk frame, which it drops. That frees a buffer in
         /// the middle of a poll, as a driver reclaiming a sent frame would.
@@ -211,11 +211,11 @@ fn exhaustion() {
         impl Driver for Junk {
             fn capabilities(&self) -> Capabilities {
                 let mut caps = Capabilities::default();
-                caps.medium = xarxa::driver::Medium::Ip;
+                caps.medium = hazard3_net::driver::Medium::Ip;
                 caps
             }
-            fn hardware_address(&self) -> xarxa::driver::HardwareAddress {
-                xarxa::driver::HardwareAddress::Ip
+            fn hardware_address(&self) -> hazard3_net::driver::HardwareAddress {
+                hazard3_net::driver::HardwareAddress::Ip
             }
             // It has its one frame already, and wants no buffers.
             fn rx_wanted(&mut self) -> usize {
@@ -278,9 +278,9 @@ fn exhaustion() {
     // one free buffer is enough to receive a segment and answer it.
     #[cfg(feature = "tcp")]
     {
-        use xarxa::tcp::State;
-        use xarxa::time::{Duration, Instant};
-        use xarxa::wire::{IPV4_HEADER_LEN, IpProtocol, Ipv4Packet, TCP_HEADER_LEN, TcpPacket, TcpSeqNumber};
+        use hazard3_net::tcp::State;
+        use hazard3_net::time::{Duration, Instant};
+        use hazard3_net::wire::{IPV4_HEADER_LEN, IpProtocol, Ipv4Packet, TCP_HEADER_LEN, TcpPacket, TcpSeqNumber};
 
         let local = Ipv4Addr::new(192, 168, 1, 1);
         let remote = Ipv4Addr::new(192, 168, 1, 2);

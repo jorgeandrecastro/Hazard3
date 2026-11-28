@@ -5,9 +5,9 @@
 use core::future::{Future, poll_fn};
 use core::task::Poll;
 
-use xarxa::error::Full;
-use xarxa::tcp::{self, TcpListenerHandle};
-use xarxa::wire::ListenSocketAddr;
+use hazard3_net::error::Full;
+use hazard3_net::tcp::{self, TcpListenerHandle};
+use hazard3_net::wire::ListenSocketAddr;
 
 #[cfg(feature = "iface-bind")]
 use super::IfaceHandle;

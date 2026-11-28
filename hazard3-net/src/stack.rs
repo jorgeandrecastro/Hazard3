@@ -639,7 +639,7 @@ impl<'d> Stack<'d> {
     /// add an IP address to it.
     ///
     /// ```no_run
-    /// # use xarxa::{Stack, driver::Driver, wire::{IpCidr, Ipv4Addr}};
+    /// # use hazard3_net::{Stack, driver::Driver, wire::{IpCidr, Ipv4Addr}};
     /// # fn configure(stack: &mut Stack, driver: Box<dyn Driver>) {
     /// let handle = stack.add_iface(driver).unwrap();
     /// stack
@@ -948,7 +948,7 @@ impl<'d> Stack<'d> {
     /// this is [`add_tcp_socket`](Self::add_tcp_socket).
     ///
     /// ```no_run
-    /// # use xarxa::Stack;
+    /// # use hazard3_net::Stack;
     /// # fn add<'d>(stack: &mut Stack<'d>, rx: &'d mut [u8; 4096], tx: &'d mut [u8; 4096]) {
     /// let handle = stack.add_tcp_socket_with_bufs(rx, tx).unwrap();
     /// # }

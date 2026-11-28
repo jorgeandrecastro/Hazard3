@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 pub struct Item(pub u64);
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test driver.
     pub trait Driver {
         /// Returns the current level.

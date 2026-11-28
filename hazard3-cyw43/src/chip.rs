@@ -1,6 +1,6 @@
 //! Replicate `whd_chip.c` functionality
 
-use embassy_time::{Duration, Timer};
+use hazard3_time::{Duration, Timer};
 
 use crate::consts::*;
 use crate::runner::Bus;

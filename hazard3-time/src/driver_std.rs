@@ -2,8 +2,8 @@ use std::sync::{Condvar, LazyLock, Mutex};
 use std::thread;
 use std::time::{Duration as StdDuration, Instant as StdInstant};
 
-use embassy_time_driver::Driver;
-use embassy_time_queue_utils::Queue;
+use hazard3_time_driver::Driver;
+use hazard3_time_queue_utils::Queue;
 
 #[derive(Debug)]
 struct TimeDriver {
@@ -12,7 +12,7 @@ struct TimeDriver {
     zero_instant: LazyLock<StdInstant>,
 }
 
-embassy_time_driver::time_driver_impl!(static DRIVER: TimeDriver = TimeDriver {
+hazard3_time_driver::time_driver_impl!(static DRIVER: TimeDriver = TimeDriver {
     zero_instant: LazyLock::new(|| init()),
     queue: Mutex::new(Queue::new()),
     signaler: Signaler::new(),
@@ -119,7 +119,7 @@ mod tests {
     use std::task::Wake;
     use std::time::Duration as StdDuration;
 
-    use embassy_time_driver::Driver;
+    use hazard3_time_driver::Driver;
 
     use super::DRIVER;
 

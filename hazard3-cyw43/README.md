@@ -2,15 +2,26 @@
 
 > **Published replacement:** `hazard3-cyw43` replaces the formerly published `cyw43-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 RISC-V fork of the Embassy CYW43 WiFi and Bluetooth driver, based on [Embassy's `cyw43`](https://github.com/embassy-rs/embassy/tree/main/cyw43).
 
-The package is named `hazard3-cyw43`, while the Rust library name remains `cyw43`.
+The package is named `hazard3-cyw43`, and the Rust library is `hazard3_cyw43`.
 
 This fork targets RISC-V and uses forked time, synchronization, and network channel crates. The RP2350 PIO transport is provided by [`hazard3-cyw43-pio`](../hazard3-cyw43-pio).
 
 Licensed under MIT OR Apache-2.0.
+
+## Migration to 0.3.0
+
+The Rust library is now `hazard3_cyw43` instead of `cyw43`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-cyw43 = "0.3"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## ESP-NOW RISC-V validation
 

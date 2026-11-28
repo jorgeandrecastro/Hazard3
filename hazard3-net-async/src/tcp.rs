@@ -13,11 +13,11 @@ use core::future::{Future, poll_fn};
 use core::task::{Context, Poll};
 
 #[cfg(feature = "iface-bind")]
-pub use xarxa::iface::IfaceHandle;
+pub use hazard3_net::iface::IfaceHandle;
 #[cfg(feature = "tcp-listener")]
-pub use xarxa::tcp::AcceptToken;
-pub use xarxa::tcp::State;
-use xarxa::tcp::{self, TcpHandle};
+pub use hazard3_net::tcp::AcceptToken;
+pub use hazard3_net::tcp::State;
+use hazard3_net::tcp::{self, TcpHandle};
 
 use crate::{NoWake, Stack, TryError, Wake, WakeRunner};
 

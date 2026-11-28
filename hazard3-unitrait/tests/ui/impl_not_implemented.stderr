@@ -12,7 +12,7 @@ help: the trait `FooDriver` is not implemented for `MyImpl`
 help: the trait `FooDriver` is implemented for `Foo`
   --> tests/ui/impl_not_implemented.rs:1:1
    |
- 1 | / unitrait::unitrait! {
+ 1 | / hazard3_unitrait::unitrait! {
  2 | |     pub trait FooDriver {
  3 | |         #[symbol = "_ui_impl_not_implemented"]
  4 | |         fn foo() -> u32;
@@ -22,6 +22,15 @@ help: the trait `FooDriver` is implemented for `Foo`
 note: required by a bound in `__FooImplementation::Type`
   --> tests/ui/impl_not_implemented.rs:2:15
    |
+ 1 | hazard3_unitrait::unitrait! {
  2 |     pub trait FooDriver {
    |               ^^^^^^^^^ required by this bound in `__FooImplementation::Type`
-   = note: this error originates in the macro `unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
+ 3 |         #[symbol = "_ui_impl_not_implemented"]
+ 4 |         fn foo() -> u32;
+ 5 |     }
+ 6 |
+ 7 |     pub struct Foo;
+ 8 |
+ 9 |     macro foo_impl(path = $crate);
+10 | }
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)

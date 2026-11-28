@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[symbol = "_ui_dup_symbol_a"]
         #[symbol = "_ui_dup_symbol_b"]

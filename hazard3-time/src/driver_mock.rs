@@ -2,8 +2,8 @@ use core::cell::RefCell;
 use core::task::Waker;
 
 use critical_section::Mutex as CsMutex;
-use embassy_time_driver::Driver;
-use embassy_time_queue_utils::Queue;
+use hazard3_time_driver::Driver;
+use hazard3_time_queue_utils::Queue;
 
 use crate::{Duration, Instant};
 
@@ -21,7 +21,7 @@ use crate::{Duration, Instant};
 /// }
 ///
 /// fn test_second_passed() {
-///     let driver = embassy_time::MockDriver::get();
+///     let driver = hazard3_time::MockDriver::get();
 ///     let reference = Instant::now();
 ///     assert_eq!(false, has_a_second_passed(reference));
 ///     driver.advance(Duration::from_secs(1));
@@ -31,7 +31,7 @@ use crate::{Duration, Instant};
 #[derive(Debug)]
 pub struct MockDriver(CsMutex<RefCell<InnerMockDriver>>);
 
-embassy_time_driver::time_driver_impl!(static DRIVER: MockDriver = MockDriver::new());
+hazard3_time_driver::time_driver_impl!(static DRIVER: MockDriver = MockDriver::new());
 
 impl MockDriver {
     /// Creates a new mock driver.

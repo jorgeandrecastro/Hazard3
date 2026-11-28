@@ -12,13 +12,13 @@
 //!
 //! [`Stack::routes`]: crate::Stack::routes
 
-use embassy_time::Instant;
-pub use xarxa::route::{RouteError, RouteOrigin};
-use xarxa::wire::{IpAddr, IpCidr};
+use hazard3_time::Instant;
+pub use hazard3_net::route::{RouteError, RouteOrigin};
+use hazard3_net::wire::{IpAddr, IpCidr};
 #[cfg(feature = "ipv4")]
-use xarxa::wire::{Ipv4Addr, Ipv4Cidr};
+use hazard3_net::wire::{Ipv4Addr, Ipv4Cidr};
 #[cfg(feature = "ipv6")]
-use xarxa::wire::{Ipv6Addr, Ipv6Cidr};
+use hazard3_net::wire::{Ipv6Addr, Ipv6Cidr};
 
 use crate::iface::IfaceHandle;
 use crate::time::{instant_from_xarxa, instant_to_xarxa};
@@ -86,7 +86,7 @@ impl Route {
         self.cidr == IPV6_DEFAULT
     }
 
-    pub(crate) fn from_xarxa(route: xarxa::route::Route) -> Self {
+    pub(crate) fn from_xarxa(route: hazard3_net::route::Route) -> Self {
         Self {
             cidr: route.cidr,
             via_router: route.via_router,
@@ -97,8 +97,8 @@ impl Route {
         }
     }
 
-    pub(crate) fn to_xarxa(self) -> xarxa::route::Route {
-        xarxa::route::Route {
+    pub(crate) fn to_xarxa(self) -> hazard3_net::route::Route {
+        hazard3_net::route::Route {
             cidr: self.cidr,
             via_router: self.via_router,
             iface: self.iface,

@@ -24,7 +24,7 @@ use portable_atomic::{AtomicBool, Ordering};
 /// # Example
 /// ```
 /// use futures_executor::block_on;
-/// use embassy_sync::once_lock::OnceLock;
+/// use hazard3_sync::once_lock::OnceLock;
 ///
 /// // Define a static value that will be lazily initialized
 /// static VALUE: OnceLock<u32> = OnceLock::new();

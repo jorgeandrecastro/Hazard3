@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
-use embassy_time_driver::Driver;
-use embassy_time_queue_utils::Queue;
+use hazard3_time_driver::Driver;
+use hazard3_time_queue_utils::Queue;
 use wasm_bindgen::prelude::*;
 use web_time::Instant as StdInstant;
 
@@ -40,7 +40,7 @@ struct Inner {
 
 unsafe impl Send for Inner {}
 
-embassy_time_driver::time_driver_impl!(static DRIVER: TimeDriver = TimeDriver {
+hazard3_time_driver::time_driver_impl!(static DRIVER: TimeDriver = TimeDriver {
     inner: Mutex::new(Inner{
         zero_instant: None,
         queue: Queue::new(),

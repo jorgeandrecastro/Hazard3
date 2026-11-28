@@ -58,7 +58,7 @@ mod thread {
     use core::arch::asm;
     use core::marker::PhantomData;
 
-    pub use embassy_executor_macros::main_cortex_m as main;
+    pub use hazard3_executor_macros::main_cortex_m as main;
 
     use crate::{Spawner, raw};
 

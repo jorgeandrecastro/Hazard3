@@ -153,7 +153,7 @@ impl ChecksumCapabilities {
 /// they start from [`Default`] and overwrite the fields they care about:
 ///
 /// ```
-/// # use xarxa_driver::Capabilities;
+/// # use hazard3_net_driver::Capabilities;
 /// let mut caps = Capabilities::default();
 /// caps.max_transmission_unit = 1514;
 /// // caps.medium = Medium::Ethernet; is the default

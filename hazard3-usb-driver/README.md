@@ -2,17 +2,17 @@
 
 > **Published replacement:** `hazard3-usb-driver` replaces the formerly published `embassy-usb-driver-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-usb-driver.svg)](https://crates.io/crates/hazard3-usb-driver)
 [![docs.rs](https://docs.rs/hazard3-usb-driver/badge.svg)](https://docs.rs/hazard3-usb-driver)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
-> **Fork of Embassy for RISC-V.** `hazard3-usb-driver` is an independent, **unmodified copy** of [`embassy-usb-driver`](https://github.com/embassy-rs/embassy/tree/main/embassy-usb-driver)
+> **Fork of Embassy for RISC-V.** `hazard3-usb-driver` is an independent, fork of [`embassy-usb-driver`](https://github.com/embassy-rs/embassy/tree/main/embassy-usb-driver)
 > taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/Hazard3>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
 > needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
-> The library name is still `embassy_usb_driver`; use it with `package = "hazard3-usb-driver"` in your `Cargo.toml`.
+> Add `hazard3-usb-driver` directly in Cargo.toml and import it as `hazard3_usb_driver`.
 > **Use the `hazard3-*` versions of the forked crates together** (`hazard3-time`, `hazard3-executor`, `hazard3-sync`, ...) to avoid duplicate/incompatible copies in your build.
 
 This crate contains the driver traits for [`embassy-usb`]. HAL/BSP crates can implement these
@@ -26,6 +26,17 @@ If you're writing an application using USB, you should depend on the main [`emba
 instead of this one.
 
 [`embassy-usb`]: https://crates.io/crates/embassy-usb
+
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_usb_driver` instead of `embassy_usb_driver`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-usb-driver = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## Interoperability
 

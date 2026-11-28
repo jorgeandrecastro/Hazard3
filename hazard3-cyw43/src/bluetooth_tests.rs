@@ -12,8 +12,8 @@ use std::sync::Arc;
 use std::task::Wake;
 use std::vec::Vec;
 
-use embassy_net_driver_channel as ch;
-use embassy_net_driver_channel::driver::{Driver, PacketBuf, RawPacketBuf};
+use hazard3_net_driver_channel as ch;
+use hazard3_net_driver_channel::driver::{Driver, PacketBuf, RawPacketBuf};
 
 use super::*;
 use crate::runner::{BusType, Runner, SealedBus};

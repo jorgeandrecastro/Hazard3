@@ -3,7 +3,7 @@
 use core::pin::{Pin, pin};
 use std::sync::atomic::{AtomicU32, Ordering};
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait whose state must not move once started.
     pub trait AnchoredDriver {
         /// Opaque storage for the implementation's state.

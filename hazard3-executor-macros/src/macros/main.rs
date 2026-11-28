@@ -91,6 +91,11 @@ impl Args {
 pub fn run(args: TokenStream, item: TokenStream, arch: &Arch) -> TokenStream {
     let mut errors = TokenStream::new();
 
+    let executor_crate = match executor_path() {
+        Ok(path) => path,
+        Err(e) => return token_stream_with_error(item, e),
+    };
+
     // If any of the steps for this macro fail, we still want to expand to an item that is as close
     // to the expected output as possible. This helps out IDEs such that completions and other
     // related features keep working.
@@ -153,21 +158,22 @@ pub fn run(args: TokenStream, item: TokenStream, arch: &Arch) -> TokenStream {
         },
     };
 
+    let default_executor = format!("{executor_crate}::Executor");
     let executor = match (args.executor.as_deref(), arch.executor_required) {
         (None, true) => {
             error(
                 &mut errors,
                 &f.sig,
                 "\
-No platform selected for embassy-executor. Make sure you've enabled one of the `platform-*` features in your Cargo.toml.
+No platform selected for hazard3-executor. Make sure you've enabled one of the `platform-*` features in your Cargo.toml.
 
 Alternatively, if you would like to use a custom executor implementation, specify it with the `executor` argument.
-For example: `#[embassy_executor::main(entry = ..., executor = \"some_crate::Executor\")]",
+For example: `#[hazard3_executor::main(entry = ..., executor = \"some_crate::Executor\")]",
             );
             ""
         }
         (Some(x), _) => x,
-        (None, _) => "::embassy_executor::Executor",
+        (None, _) => &default_executor,
     };
 
     let executor = TokenStream::from_str(executor).unwrap_or_else(|e| {
@@ -195,7 +201,7 @@ For example: `#[embassy_executor::main(entry = ..., executor = \"some_crate::Exe
                 struct __AbortOnUnwind;
                 impl ::core::ops::Drop for __AbortOnUnwind {
                     fn drop(&mut self) {
-                        ::core::panic!("embassy_executor::main must not unwind, aborting");
+                        ::core::panic!("hazard3_executor::main must not unwind, aborting");
                     }
                 }
 
@@ -231,7 +237,7 @@ For example: `#[embassy_executor::main(entry = ..., executor = \"some_crate::Exe
     }
 
     let result = quote! {
-        #[::embassy_executor::task(name = "main")]
+        #[#executor_crate::task(name = "main")]
         #[allow(clippy::future_not_send)]
         async fn __embassy_main(#fargs) #out {
             #f_body

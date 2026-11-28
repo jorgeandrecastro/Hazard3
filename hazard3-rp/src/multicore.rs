@@ -11,9 +11,9 @@
 //! # Usage
 //!
 //! ```no_run
-//! use embassy_rp::multicore::Stack;
+//! use hazard3_rp::multicore::Stack;
 //! use static_cell::StaticCell;
-//! use embassy_executor::Executor;
+//! use hazard3_executor::Executor;
 //! use core::ptr::addr_of_mut;
 //!
 //! static mut CORE1_STACK: Stack<4096> = Stack::new();
@@ -23,21 +23,21 @@
 //! # // workaround weird error: `main` function not found in crate `rust_out`
 //! # let _ = ();
 //!
-//! #[embassy_executor::task]
+//! #[hazard3_executor::task]
 //! async fn core0_task() {
 //!     // ...
 //! }
 //!
-//! #[embassy_executor::task]
+//! #[hazard3_executor::task]
 //! async fn core1_task() {
 //!     // ...
 //! }
 //!
 //! #[riscv_rt::entry]
 //! fn main() -> ! {
-//!     let p = embassy_rp::init(Default::default());
+//!     let p = hazard3_rp::init(Default::default());
 //!
-//!     embassy_rp::multicore::spawn_core1(p.CORE1, unsafe { &mut *addr_of_mut!(CORE1_STACK) }, move || {
+//!     hazard3_rp::multicore::spawn_core1(p.CORE1, unsafe { &mut *addr_of_mut!(CORE1_STACK) }, move || {
 //!         let executor1 = EXECUTOR1.init(Executor::new());
 //!         executor1.run(|spawner| spawner.spawn(core1_task().unwrap()));
 //!     });
@@ -115,7 +115,7 @@ impl<const SIZE: usize> Stack<SIZE> {
 #[cfg(all(feature = "rt", feature = "_rp235x"))]
 #[inline(always)]
 pub(crate) unsafe fn pend_irq(n: u16) {
-    embassy_hal_internal::interrupt::irq_pend(n);
+    hazard3_hal_internal::interrupt::irq_pend(n);
 }
 
 /// Body of the SIO FIFO interrupt, shared by all chips/architectures.

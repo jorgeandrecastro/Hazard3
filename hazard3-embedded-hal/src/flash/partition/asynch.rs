@@ -1,5 +1,5 @@
-use embassy_sync::blocking_mutex::raw::RawMutex;
-use embassy_sync::mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::mutex::Mutex;
 use embedded_storage::nor_flash::ErrorType;
 use embedded_storage_async::nor_flash::{MultiwriteNorFlash, NorFlash, ReadNorFlash};
 
@@ -103,7 +103,7 @@ impl<M: RawMutex, T: MultiwriteNorFlash> MultiwriteNorFlash for Partition<'_, M,
 
 #[cfg(test)]
 mod tests {
-    use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+    use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
 
     use super::*;
     use crate::flash::mem_flash::MemFlash;

@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-net-driver"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 description = "Driver trait for the `xarxa` network stack."
 documentation = "https://docs.rs/hazard3-net-driver/"
@@ -12,7 +12,6 @@ license = "0BSD"
 exclude = ["target/", "Cargo.lock"]
 
 [lib]
-name = "xarxa_driver"
 
 [package.metadata.embassy_docs]
 src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-net/hazard3-net-driver/src/"

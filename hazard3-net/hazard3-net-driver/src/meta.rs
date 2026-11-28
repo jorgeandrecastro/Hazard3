@@ -57,7 +57,7 @@ impl Timestamp {
 /// care about:
 ///
 /// ```
-/// let mut meta = xarxa_driver::PacketMeta::default();
+/// let mut meta = hazard3_net_driver::PacketMeta::default();
 /// # #[cfg(feature = "packetmeta-id")] {
 /// meta.id = 15;
 /// # }

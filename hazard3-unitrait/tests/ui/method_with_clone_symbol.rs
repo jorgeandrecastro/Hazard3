@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[clone_symbol = "_ui_method_with_clone_symbol"]
         fn foo() -> u32;

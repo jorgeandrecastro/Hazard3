@@ -181,7 +181,7 @@ impl<'d, PIO: Instance, const SM: usize> PioOneWire<'d, PIO, SM> {
     }
 
     /// Write bytes to the onewire bus, then apply a strong pullup
-    pub async fn write_bytes_pullup(&mut self, data: &[u8], pullup_time: embassy_time::Duration) {
+    pub async fn write_bytes_pullup(&mut self, data: &[u8], pullup_time: hazard3_time::Duration) {
         unsafe {
             self.sm.set_enable(false);
             self.sm.set_y(data.len() as u32 * 8 - 1);
@@ -196,7 +196,7 @@ impl<'d, PIO: Instance, const SM: usize> PioOneWire<'d, PIO, SM> {
         }
 
         // Perform the delay, usually hundreds of ms.
-        embassy_time::Timer::after(pullup_time).await;
+        hazard3_time::Timer::after(pullup_time).await;
 
         // Signal that delay has completed
         tx.wait_push(0_u32).await;

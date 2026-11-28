@@ -2,17 +2,17 @@
 
 > **Published replacement:** `hazard3-time` replaces the formerly published `embassy-time-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-time.svg)](https://crates.io/crates/hazard3-time)
 [![docs.rs](https://docs.rs/hazard3-time/badge.svg)](https://docs.rs/hazard3-time)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
-> **Fork of Embassy for RISC-V.** `hazard3-time` is an independent, **unmodified copy** of [`embassy-time`](https://github.com/embassy-rs/embassy/tree/main/embassy-time)
+> **Fork of Embassy for RISC-V.** `hazard3-time` is an independent, fork of [`embassy-time`](https://github.com/embassy-rs/embassy/tree/main/embassy-time)
 > taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/Hazard3>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
 > needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
-> The library name is still `embassy_time`; use it with `package = "hazard3-time"` in your `Cargo.toml`.
+> Add `hazard3-time` directly in Cargo.toml and import it as `hazard3_time`.
 > **Use the `hazard3-*` versions of the forked crates together** (`hazard3-time`, `hazard3-executor`, `hazard3-sync`, ...) to avoid duplicate/incompatible copies in your build.
 
 Timekeeping, delays and timeouts.
@@ -20,23 +20,34 @@ Timekeeping, delays and timeouts.
 Timekeeping is done with elapsed time since system boot. Time is represented in
 ticks, where the tick rate is defined either by the driver (in the case of a fixed-rate
 tick) or chosen by the user with a [tick rate](#tick-rate) feature. The chosen
-tick rate applies to everything in `embassy-time` and thus determines the maximum
+tick rate applies to everything in `hazard3-time` and thus determines the maximum
 timing resolution of <code>(1 / tick_rate) seconds</code>.
 
 Tick counts are 64 bits. The default tick rate of 1Mhz supports
 representing time spans of up to ~584558 years, which is big enough for all practical
 purposes and allows not having to worry about overflows.
 
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_time` instead of `embassy_time`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-time = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+
 ## Global time driver
 
-The `embassy-time` crate is backed by a global "time driver" specified at build time.
+The `hazard3-time` crate is backed by a global "time driver" specified at build time.
 Only one driver can be active in a program.
 
 All methods and structs transparently call into the active driver. This makes it
-possible for libraries to use `embassy_time` in a driver-agnostic way without
+possible for libraries to use `hazard3_time` in a driver-agnostic way without
 requiring generic parameters.
 
-For more details, check the [`embassy_time_driver`](https://crates.io/crates/embassy-time-driver) crate.
+For more details, check the [`hazard3_time_driver`](https://crates.io/crates/hazard3-time-driver) crate.
 
 ## Instants and Durations
 

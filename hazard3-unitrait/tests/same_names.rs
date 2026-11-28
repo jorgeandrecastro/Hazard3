@@ -1,7 +1,7 @@
 //! Two unitraits in the same module may use the same method and associated type names,
 //! since callers reach them through their dispatch types.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A 32-bit checksum.
     #[symbol_prefix = "_unitrait_test_same_names_sum32"]
     pub trait Sum32Driver {
@@ -25,7 +25,7 @@ unitrait::unitrait! {
     macro test_sum32_impl(path = $crate);
 }
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A 64-bit checksum.
     #[symbol_prefix = "_unitrait_test_same_names_sum64"]
     pub trait Sum64Driver {

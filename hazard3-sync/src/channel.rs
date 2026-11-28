@@ -20,8 +20,8 @@
 //! # Example: Message passing between task and interrupt handler
 //!
 //! ```rust
-//! use embassy_sync::channel::Channel;
-//! use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+//! use hazard3_sync::channel::Channel;
+//! use hazard3_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 //!
 //! static SHARED_CHANNEL: Channel<CriticalSectionRawMutex, u32, 8> = Channel::new();
 //!
@@ -838,8 +838,8 @@ where
     /// Establish a new bounded channel. For example, to create one with a NoopMutex:
     ///
     /// ```
-    /// use embassy_sync::channel::Channel;
-    /// use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+    /// use hazard3_sync::channel::Channel;
+    /// use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
     ///
     /// // Declare a bounded channel of 3 u32s.
     /// let mut channel = Channel::<NoopRawMutex, u32, 3>::new();

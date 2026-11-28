@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-unitrait-macros"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 description = "Implementation detail of the `unitrait` crate"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -10,7 +10,6 @@ readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
 
 [lib]
-name = "unitrait_macros"
 proc-macro = true
 
 [dependencies]
@@ -19,4 +18,4 @@ quote = "1"
 syn = { version = "2", features = ["full"] }
 
 [dev-dependencies]
-unitrait = { package = "hazard3-unitrait", path = "../hazard3-unitrait" }
+hazard3-unitrait = { path = "../hazard3-unitrait" }

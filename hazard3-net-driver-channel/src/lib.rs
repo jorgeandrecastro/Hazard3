@@ -8,12 +8,12 @@ mod fmt;
 use core::cell::RefCell;
 use core::task::{Context, Poll, Waker};
 
-use embassy_sync::blocking_mutex::Mutex;
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::channel::{Channel, DynamicReceiver, DynamicSender, TrySendError};
-use embassy_sync::waitqueue::WakerRegistration;
-pub use xarxa_driver as driver;
-use xarxa_driver::{Capabilities, HardwareAddress, LinkState, NotSupported, PacketBuf};
+use hazard3_sync::blocking_mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
+use hazard3_sync::channel::{Channel, DynamicReceiver, DynamicSender, TrySendError};
+use hazard3_sync::waitqueue::WakerRegistration;
+pub use hazard3_net_driver as driver;
+use hazard3_net_driver::{Capabilities, HardwareAddress, LinkState, NotSupported, PacketBuf};
 
 /// Max multicast hardware addresses the multicast filter list holds.
 pub const MULTICAST_FILTER_SIZE: usize = 10;

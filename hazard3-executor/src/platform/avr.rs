@@ -8,7 +8,7 @@ mod thread {
     use core::arch::asm;
     use core::marker::PhantomData;
 
-    pub use embassy_executor_macros::main_avr as main;
+    pub use hazard3_executor_macros::main_avr as main;
     use portable_atomic::{AtomicBool, Ordering};
 
     use crate::{Spawner, raw};

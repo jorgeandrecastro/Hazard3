@@ -4,7 +4,7 @@ use core::marker::PhantomData;
 use core::pin::Pin;
 use core::task::{Context, Poll};
 
-use embassy_hal_internal::{Peri, PeripheralType};
+use hazard3_hal_internal::{Peri, PeripheralType};
 use embedded_storage::nor_flash::{
     ErrorType, MultiwriteNorFlash, NorFlash, NorFlashError, NorFlashErrorKind, ReadNorFlash, check_erase, check_read,
     check_write,

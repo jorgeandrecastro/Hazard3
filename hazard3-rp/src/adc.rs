@@ -5,7 +5,7 @@ use core::mem;
 use core::sync::atomic::{Ordering, compiler_fence};
 use core::task::Poll;
 
-use embassy_sync::waitqueue::AtomicWaker;
+use hazard3_sync::waitqueue::AtomicWaker;
 
 use crate::gpio::{self, Flex, Pull};
 use crate::interrupt::InterruptExt;

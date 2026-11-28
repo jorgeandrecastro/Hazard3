@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote};
 use syn::visit::{self, Visit};
@@ -12,7 +10,7 @@ struct Args {
     pool_size: Option<syn::Expr>,
     /// Task name with the `metadata-name` feature. Defaults to the function name.
     name: Option<String>,
-    /// Use this to override the `embassy_executor` crate path. Defaults to `::embassy_executor`.
+    /// Override the executor crate path.
     embassy_executor: Option<syn::Expr>,
 }
 
@@ -22,7 +20,7 @@ impl Args {
         let parser = syn::meta::parser(|meta| {
             if meta.path.is_ident("pool_size") {
                 set_arg(&meta, &mut res.pool_size, parse_expr_arg(&meta)?)
-            } else if meta.path.is_ident("embassy_executor") {
+            } else if meta.path.is_ident("hazard3_executor") || meta.path.is_ident("embassy_executor") {
                 set_arg(&meta, &mut res.embassy_executor, parse_expr_arg(&meta)?)
             } else if meta.path.is_ident("name") {
                 set_arg(&meta, &mut res.name, parse_str_arg(&meta)?)
@@ -59,9 +57,13 @@ pub fn run(args: TokenStream, item: TokenStream) -> TokenStream {
         lit: Lit::Int(LitInt::new("1", Span::call_site())),
     }));
 
-    let embassy_executor = args
-        .embassy_executor
-        .unwrap_or(Expr::Verbatim(TokenStream::from_str("::embassy_executor").unwrap()));
+    let embassy_executor = match args.embassy_executor {
+        Some(path) => path,
+        None => match executor_path() {
+            Ok(path) => Expr::Verbatim(path),
+            Err(e) => return token_stream_with_error(item, e),
+        },
+    };
 
     // Taken out before `args` is shadowed by the function arguments below.
     let task_name = args.name;

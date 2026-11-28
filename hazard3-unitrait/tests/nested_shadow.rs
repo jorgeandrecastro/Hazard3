@@ -16,7 +16,7 @@ pub mod core {}
 pub mod option {}
 pub mod result {}
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait defined with `Option` and `Result` shadowed.
     pub trait ShadowedDriver {
         #[opaque(size = 16, align = 8)]

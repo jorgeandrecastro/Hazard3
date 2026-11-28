@@ -22,12 +22,12 @@
 
 use std::os::unix::io::AsRawFd;
 
-use xarxa::dns::{DnsClient, GetQueryResultError};
-use xarxa::driver_impls::{TunTapDriver, wait};
-use xarxa::time::Instant;
-use xarxa::wire::DnsType as Type;
-use xarxa::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr};
-use xarxa::{Stack, StaticPool};
+use hazard3_net::dns::{DnsClient, GetQueryResultError};
+use hazard3_net::driver_impls::{TunTapDriver, wait};
+use hazard3_net::time::Instant;
+use hazard3_net::wire::DnsType as Type;
+use hazard3_net::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr};
+use hazard3_net::{Stack, StaticPool};
 
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();

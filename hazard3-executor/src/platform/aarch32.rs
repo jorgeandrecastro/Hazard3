@@ -38,7 +38,7 @@ mod thread {
     use core::ptr;
 
     use aarch32_cpu::asm::wfe;
-    pub use embassy_executor_macros::main_aarch32 as main;
+    pub use hazard3_executor_macros::main_aarch32 as main;
 
     use crate::{Spawner, raw};
 

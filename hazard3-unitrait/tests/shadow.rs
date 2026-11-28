@@ -31,7 +31,7 @@ pub mod cell {}
 pub mod clone {}
 pub mod core {}
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait defined with every relevant name shadowed.
     pub trait ShadowedDriver {
         /// An opaque type with every marker bound, in a scope where they're all shadowed.

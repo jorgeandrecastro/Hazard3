@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased (0.3.0)
+
+### Breaking changes
+
+- **Breaking:** rename the Rust library `xarxa` to `hazard3_net`; update imports and macro paths.
+- Use matching new Hazard3 dependency versions where applicable.
+
 ## 0.2.0 - 2026-11-27
 
 ### Breaking changes

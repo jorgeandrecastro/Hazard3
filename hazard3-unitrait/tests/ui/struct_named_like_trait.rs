@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait Foo {
         #[symbol = "_ui_struct_named_like_trait"]
         fn foo() -> u32;

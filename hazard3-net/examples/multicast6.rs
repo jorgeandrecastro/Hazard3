@@ -21,10 +21,10 @@
 
 use std::os::unix::io::AsRawFd;
 
-use xarxa::driver_impls::{TunTapDriver, wait};
-use xarxa::time::Instant;
-use xarxa::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv6Addr, ListenSocketAddr};
-use xarxa::{Stack, StaticPool};
+use hazard3_net::driver_impls::{TunTapDriver, wait};
+use hazard3_net::time::Instant;
+use hazard3_net::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv6Addr, ListenSocketAddr};
+use hazard3_net::{Stack, StaticPool};
 
 const PORT: u16 = 8123;
 const GROUP: Ipv6Addr = Ipv6Addr::new(0xff02, 0, 0, 0, 0, 0, 0, 0x1234);

@@ -2,27 +2,27 @@
 #![no_std]
 #![no_main]
 
-use embassy_executor::Spawner;
-use embassy_rp::bind_interrupts;
-use embassy_rp::dma;
-use embassy_rp::gpio::{Level, Output};
-use embassy_rp::i2c::{
+use hazard3_executor::Spawner;
+use hazard3_rp::bind_interrupts;
+use hazard3_rp::dma;
+use hazard3_rp::gpio::{Level, Output};
+use hazard3_rp::i2c::{
     Config as I2cConfig,
     I2c,
     InterruptHandler as I2cInterruptHandler,
 };
-use embassy_rp::mode::Async;
-use embassy_rp::peripherals::{DMA_CH0, DMA_CH1, I2C0, PIO0};
-use embassy_rp::pio::{
+use hazard3_rp::mode::Async;
+use hazard3_rp::peripherals::{DMA_CH0, DMA_CH1, I2C0, PIO0};
+use hazard3_rp::pio::{
     InterruptHandler as PioInterruptHandler,
     Pio,
 };
-use embassy_rp::time::Hertz;
+use hazard3_rp::time::Hertz;
 
-use embassy_time::{Duration, Ticker};
+use hazard3_time::{Duration, Ticker};
 use embassy_futures::select::{select, Either};
 
-use cyw43_pio::{PioSpi, DEFAULT_CLOCK_DIVIDER};
+use hazard3_cyw43_pio::{PioSpi, DEFAULT_CLOCK_DIVIDER};
 use cyw43_setup::{CLM, FW, NVRAM};
 
 use embassy_ssd1306::Ssd1306;
@@ -67,15 +67,15 @@ bind_interrupts!(struct Irqs {
 // CYW43 RUNNER
 // ============================================================
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async fn cyw43_task(
-    runner: cyw43::Runner<
+    runner: hazard3_cyw43::Runner<
         'static,
-        cyw43::SpiBus<
+        hazard3_cyw43::SpiBus<
             Output<'static>,
             PioSpi<'static, PIO0, 0>,
         >,
-        cyw43::Cyw43439,
+        hazard3_cyw43::Cyw43439,
     >,
 ) -> ! {
     runner.run().await
@@ -506,7 +506,7 @@ async fn update_oled(
 // MAIN
 // ============================================================
 
-#[embassy_executor::main]
+#[hazard3_executor::main]
 async fn main(spawner: Spawner) {
 
     defmt::info!("================================");
@@ -517,7 +517,7 @@ async fn main(spawner: Spawner) {
     // RP2350
     // --------------------------------------------------------
 
-    let p = embassy_rp::init(Default::default());
+    let p = hazard3_rp::init(Default::default());
 
     // --------------------------------------------------------
     // CYW43439
@@ -540,11 +540,11 @@ async fn main(spawner: Spawner) {
         dma::Channel::new(p.DMA_CH1, Irqs),
     );
 
-    static STATE: StaticCell<cyw43::State> = StaticCell::new();
+    static STATE: StaticCell<hazard3_cyw43::State> = StaticCell::new();
 
-    let state = STATE.init(cyw43::State::new());
+    let state = STATE.init(hazard3_cyw43::State::new());
 
-    let (_net_device, mut control, runner) = cyw43::new(
+    let (_net_device, mut control, runner) = hazard3_cyw43::new(
         state,
         pwr,
         spi,
@@ -558,7 +558,7 @@ async fn main(spawner: Spawner) {
             .expect("CYW43 task spawn failed"),
     );
 
-    control.init(CLM, cyw43::Config::default()).await;
+    control.init(CLM, hazard3_cyw43::Config::default()).await;
 
     defmt::info!("CYW43439 READY");
 

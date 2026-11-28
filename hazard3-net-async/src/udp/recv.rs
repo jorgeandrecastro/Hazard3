@@ -3,7 +3,7 @@
 use core::future::{Future, poll_fn};
 use core::task::{Context, Poll};
 
-use xarxa::udp;
+use hazard3_net::udp;
 
 use super::{RecvError, RecvPacket, UdpMetadata, UdpSocket};
 use crate::{NoWake, TryError, Wake};

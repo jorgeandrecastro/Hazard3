@@ -1,6 +1,6 @@
 //! Error types of the UDP socket.
 
-use xarxa::udp;
+use hazard3_net::udp;
 
 #[cfg(feature = "icmp-errors")]
 use crate::wire::SocketAddr;

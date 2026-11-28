@@ -1,5 +1,5 @@
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::pubsub::{PubSubChannel, SendDynPublisher};
+use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
+use hazard3_sync::pubsub::{PubSubChannel, SendDynPublisher};
 
 // NoopRawMutex is not Sync, so converting a Publisher backed by it into a
 // SendDynPublisher must fail to compile.

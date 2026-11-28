@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-usb-driver"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Driver trait for `embassy-usb`, an async USB device stack for embedded devices."
@@ -21,7 +21,6 @@ target = "thumbv7em-none-eabi"
 features = ["defmt"]
 
 [lib]
-name = "embassy_usb_driver"
 
 [dependencies]
 # TODO: remove before releasing embassy-usb-driver v0.3

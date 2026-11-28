@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[opaque(size = 8, align = 4)]
         #[drop_symbol = "_ui_type_equals_drop"]

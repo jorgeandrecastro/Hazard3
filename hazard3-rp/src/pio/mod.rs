@@ -6,8 +6,8 @@ use core::pin::Pin as FuturePin;
 use core::sync::atomic::{AtomicU8, AtomicU32, Ordering};
 use core::task::{Context, Poll};
 
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
 use pio::{Program, SideSet, Wrap};
 
 use crate::dma::{self, Transfer, Word};
@@ -1484,7 +1484,7 @@ impl<'d, PIO: Instance> Pio<'d, PIO> {
 
     /// Get the PIO register block.
     #[cfg(feature = "unstable-pac")]
-    pub fn regs(&self) -> &rp_pac::pio::Pio {
+    pub fn regs(&self) -> &hazard3_rp_pac::pio::Pio {
         PIO::PIO
     }
 }

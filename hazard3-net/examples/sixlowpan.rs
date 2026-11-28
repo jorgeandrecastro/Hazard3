@@ -48,10 +48,10 @@
 
 use std::os::unix::io::AsRawFd;
 
-use xarxa::driver_impls::{RawSocketDriver, wait};
-use xarxa::time::Instant;
-use xarxa::wire::{HardwareAddress, Ieee802154Address, Ieee802154Pan, ListenSocketAddr};
-use xarxa::{Stack, StaticPool};
+use hazard3_net::driver_impls::{RawSocketDriver, wait};
+use hazard3_net::time::Instant;
+use hazard3_net::wire::{HardwareAddress, Ieee802154Address, Ieee802154Pan, ListenSocketAddr};
+use hazard3_net::{Stack, StaticPool};
 
 const UDP_PORT: u16 = 6969;
 const TCP_PORT: u16 = 50000;

@@ -1,6 +1,6 @@
 //! Pulse Width Modulation (PWM)
 
-use embassy_hal_internal::{Peri, PeripheralType};
+use hazard3_hal_internal::{Peri, PeripheralType};
 pub use embedded_hal_1::pwm::SetDutyCycle;
 use embedded_hal_1::pwm::{Error, ErrorKind, ErrorType};
 use pac::pwm::regs::{ChDiv, Intr};

@@ -29,14 +29,14 @@
 
 use std::os::unix::io::AsRawFd;
 
-use xarxa::driver_impls::{TunTapDriver, wait};
-use xarxa::raw::RawMode;
-use xarxa::time::{Duration, Instant};
-use xarxa::wire::{
+use hazard3_net::driver_impls::{TunTapDriver, wait};
+use hazard3_net::raw::RawMode;
+use hazard3_net::time::{Duration, Instant};
+use hazard3_net::wire::{
     EthernetAddress, HardwareAddress, IPV4_HEADER_LEN, IPV6_HEADER_LEN, Icmpv4Message, Icmpv4Packet, Icmpv6Message,
     Icmpv6Packet, IpAddr, IpCidr, IpProtocol, Ipv4Addr, Ipv4Packet, Ipv6Addr, Ipv6Packet,
 };
-use xarxa::{Stack, StaticPool};
+use hazard3_net::{Stack, StaticPool};
 
 /// ICMP echo header (type, code, checksum, ident, seq).
 const ICMP_HEADER_LEN: usize = 8;
@@ -151,7 +151,7 @@ fn main() {
 
 /// Build and send one echo request.
 fn send_request(
-    socket: &mut xarxa::raw::RawSocket<'_, '_>,
+    socket: &mut hazard3_net::raw::RawSocket<'_, '_>,
     target: IpAddr,
     ident: u16,
     seq: u16,

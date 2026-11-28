@@ -146,7 +146,7 @@ impl<'a> DhcpOption<'a> {
     /// # Usage
     ///
     /// ```no_run
-    /// # use xarxa::wire::DhcpOption;
+    /// # use hazard3_net::wire::DhcpOption;
     /// let opt = DhcpOption::hostname(b"my_device");
     /// ```
     pub fn hostname(hostname: &'a [u8]) -> Self {

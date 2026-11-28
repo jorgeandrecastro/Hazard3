@@ -6,8 +6,8 @@ use core::marker::PhantomData;
 use core::pin::Pin as FuturePin;
 use core::task::{Context, Poll};
 
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
 
 use crate::interrupt::typelevel::{Binding, Handler, Interrupt};
 use crate::mode::{Async, Blocking, Mode};

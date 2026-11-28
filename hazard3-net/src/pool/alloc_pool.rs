@@ -34,7 +34,7 @@ use crate::driver::{PacketBuf, PacketMeta, RawPacketBuf};
 /// It must be `'static`. It can go in a `static`:
 ///
 /// ```
-/// use xarxa::{AllocPool, Stack};
+/// use hazard3_net::{AllocPool, Stack};
 ///
 /// static POOL: AllocPool<1514> = AllocPool::new(64);
 ///

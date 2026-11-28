@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     #[symbol_prefix = 42]
     pub trait FooDriver {
         fn foo() -> u32;

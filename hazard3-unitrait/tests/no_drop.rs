@@ -1,7 +1,7 @@
 //! An opaque type without a `Drop` bound has no drop glue, and the implementation's
 //! associated type is required to have none either.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait handing out move-only handles that need no cleanup.
     pub trait RegistryDriver {
         /// An opaque handle. It has no `Drop` bound, so dropping one does nothing and the

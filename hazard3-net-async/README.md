@@ -2,7 +2,7 @@
 
 > **Published replacement:** `hazard3-net-async` replaces the formerly published `embassy-net-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-net-async.svg)](https://crates.io/crates/hazard3-net-async)
 [![docs.rs](https://docs.rs/hazard3-net-async/badge.svg)](https://docs.rs/hazard3-net-async)
@@ -11,15 +11,26 @@
 > **Fork of Embassy for RISC-V.** `hazard3-net-async` is an independent copy of [`embassy-net`](https://github.com/embassy-rs/embassy/tree/main/embassy-net)
 > taken from the Embassy `main` branch and maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/Hazard3>.
-> The library name is still `embassy_net`; use it with `package = "hazard3-net-async"` in your `Cargo.toml`.
+> Add `hazard3-net-async` directly in Cargo.toml and import it as `hazard3_net_async`.
 
 `hazard3-net-async` is a no-std, no-alloc async network stack designed for embedded systems.
 
-It uses the [`hazard3-net`](../hazard3-net/) network stack (0.2), adds convenient async wrappers,
+It uses the [`hazard3-net`](../hazard3-net/) network stack (0.3), adds convenient async wrappers,
 and implements the main loop. `hazard3-net` and [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/)
 are copies of upstream Xarxa pinned to revision `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`,
 prepared under new package names so that the crates.io release of `hazard3-net-async` has no
-Git dependencies. The Rust library names remain `xarxa` and `xarxa_driver`.
+Git dependencies. The Rust library names are `hazard3_net` and `hazard3_net_driver`.
+
+## Migration to 0.6.0
+
+The Rust library remains `hazard3_net_async`; the dependency keys and dependency versions used by this crate have changed. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-net-async = "0.6"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## Table of contents
 
@@ -38,11 +49,11 @@ Git dependencies. The Rust library names remain `xarxa` and `xarxa_driver`.
 
 ## Getting started
 
-The Rust library is named `embassy_net`, the package is named `hazard3-net-async`:
+The Rust library is named `hazard3_net_async`, the package is named `hazard3-net-async`:
 
 ```toml
 [dependencies]
-embassy-net = { package = "hazard3-net-async", version = "0.5", features = [
+hazard3-net-async = { version = "0.6", features = [
     "tcp",
     "udp",
     "dns",
@@ -59,7 +70,7 @@ You also need:
 
 - a network **driver** for your hardware, see [Hardware support](#hardware-support);
 - a `hazard3-time` driver, see [Interoperability](#interoperability);
-- Rust **1.95** or newer, which is the minimum version of `hazard3-net` 0.2.
+- Rust **1.95** or newer, which is the minimum version of `hazard3-net`.
 
 ## The Hazard3 packages
 
@@ -69,7 +80,7 @@ duplicate or incompatible copies in your build.
 | Package | Role |
 | --- | --- |
 | `hazard3-net-async` | This crate: async sockets and the main loop. |
-| [`hazard3-net`](../hazard3-net/) | The network stack (`xarxa`). |
+| [`hazard3-net`](../hazard3-net/) | The network stack (`hazard3_net`). |
 | [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/) | The `Driver` trait that network chip drivers implement. |
 | [`hazard3-cyw43`](https://crates.io/crates/hazard3-cyw43) | WiFi driver for CYW43xx chips, used in the Raspberry Pi Pico W. |
 
@@ -247,7 +258,7 @@ RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --features "dns,embedded-nal,ipv4
 To add `embassy-net` support for new hardware (i.e. a new Ethernet or WiFi chip, or
 an Ethernet/WiFi MCU peripheral), you have to implement the
 [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/) `Driver` trait (library name
-`xarxa_driver`). Enable its `async` feature and implement `Driver::register_waker`: this crate
+`hazard3_net_driver`). Enable its `async` feature and implement `Driver::register_waker`: this crate
 needs it to sleep until the driver has something new.
 
 Drivers should depend only on `hazard3-net-driver`, never on the main `hazard3-net-async` crate.

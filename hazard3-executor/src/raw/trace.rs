@@ -81,7 +81,7 @@
 use crate::ExecutorId;
 use crate::raw::TaskRef;
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// Executor trace hooks.
     ///
     /// Implement this trait and register the implementation with the

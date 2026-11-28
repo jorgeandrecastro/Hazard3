@@ -6,12 +6,12 @@ use std::future::{Future, poll_fn};
 use std::sync::{Arc, Mutex};
 use std::task::Poll;
 
-use embassy_executor::raw::Executor;
-use embassy_executor::{Spawner, task};
+use hazard3_executor::raw::Executor;
+use hazard3_executor::{Spawner, task};
 
 struct TestPender;
 
-impl embassy_executor::pender::Pender for TestPender {
+impl hazard3_executor::pender::Pender for TestPender {
     fn pend(context: *mut ()) {
         unsafe {
             let trace = &*(context as *const Trace);
@@ -20,7 +20,7 @@ impl embassy_executor::pender::Pender for TestPender {
     }
 }
 
-embassy_executor::pender_impl!(TestPender);
+hazard3_executor::pender_impl!(TestPender);
 
 #[derive(Clone)]
 struct Trace {
@@ -82,6 +82,50 @@ fn executor_task() {
             "poll task1", // poll only once.
         ]
     )
+}
+
+#[test]
+fn task_accepts_hazard3_path_override() {
+    use hazard3_executor as executor_alias;
+
+    #[task(hazard3_executor = executor_alias)]
+    async fn renamed_task(trace: Trace) {
+        trace.push("renamed task")
+    }
+
+    let (executor, trace) = setup();
+    executor.spawner().spawn(renamed_task(trace.clone()).unwrap());
+    unsafe { executor.poll() };
+    assert_eq!(trace.get(), &["pend", "renamed task"]);
+}
+
+#[test]
+fn integrated_timer_queue_wakes_executor_task() {
+    #[task]
+    async fn timed_task(queue: Arc<Mutex<hazard3_time_queue_utils::Queue>>, trace: Trace) {
+        let mut scheduled = false;
+        poll_fn(|cx| {
+            if scheduled {
+                Poll::Ready(())
+            } else {
+                scheduled = true;
+                queue.lock().unwrap().schedule_wake(42, cx.waker());
+                Poll::Pending
+            }
+        })
+        .await;
+        trace.push("timer elapsed");
+    }
+
+    let (executor, trace) = setup();
+    let queue = Arc::new(Mutex::new(hazard3_time_queue_utils::Queue::new()));
+    executor.spawner().spawn(timed_task(queue.clone(), trace.clone()).unwrap());
+
+    unsafe { executor.poll() };
+    assert_eq!(queue.lock().unwrap().next_expiration(41), 42);
+    assert_eq!(queue.lock().unwrap().next_expiration(42), u64::MAX);
+    unsafe { executor.poll() };
+    assert_eq!(trace.get(), &["pend", "pend", "timer elapsed"]);
 }
 
 #[test]
@@ -178,7 +222,7 @@ fn executor_task_self_wake_twice() {
 
 #[test]
 fn waking_after_completion_does_not_poll() {
-    use embassy_sync::waitqueue::AtomicWaker;
+    use hazard3_sync::waitqueue::AtomicWaker;
 
     #[task]
     async fn task1(trace: Trace, waker: &'static AtomicWaker) {
@@ -224,7 +268,7 @@ fn waking_after_completion_does_not_poll() {
 
 #[test]
 fn waking_with_old_waker_after_respawn() {
-    use embassy_sync::waitqueue::AtomicWaker;
+    use hazard3_sync::waitqueue::AtomicWaker;
 
     async fn yield_now(trace: Trace) {
         let mut yielded = false;
@@ -324,7 +368,7 @@ fn executor_task_cfg_args() {
 
 #[test]
 fn recursive_task() {
-    #[embassy_executor::task(pool_size = 2)]
+    #[hazard3_executor::task(pool_size = 2)]
     async fn task1() {
         let spawner = unsafe { Spawner::for_current_executor().await };
         spawner.spawn(task1().unwrap());
@@ -347,13 +391,13 @@ fn task_name_arg() {
 fn task_metadata() {
     #[task]
     async fn task1(expected_name: Option<&'static str>) {
-        use embassy_executor::MetadataRef;
+        use hazard3_executor::MetadataRef;
         assert_eq!(MetadataRef::for_current_task().await.name(), expected_name);
     }
 
     #[task(name = "custom")]
     async fn task2(expected_name: Option<&'static str>) {
-        use embassy_executor::MetadataRef;
+        use hazard3_executor::MetadataRef;
         assert_eq!(MetadataRef::for_current_task().await.name(), expected_name);
     }
 

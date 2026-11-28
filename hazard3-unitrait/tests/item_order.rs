@@ -1,7 +1,7 @@
 //! Trait items may appear in any order, like in a real Rust trait: methods may
 //! reference opaque associated types declared later.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A counter whose opaque type is declared after the methods that use it.
     pub trait CounterDriver {
         /// Returns a fresh counter.

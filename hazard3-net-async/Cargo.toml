@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-net-async"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Async TCP/IP network stack for embedded systems"
@@ -45,124 +45,120 @@ features = ["defmt", "tcp", "tcp-listener", "udp", "raw-ethernet", "raw-ip", "if
 
 [features]
 ## Enable APIs that use the heap.
-alloc = ["xarxa/alloc"]
+alloc = ["hazard3-net/alloc"]
 
 #! ### Protocol support
 ## Support interfaces that send and receive Ethernet frames, with the link-layer
 ## machinery that goes with them (ARP, NDISC, the neighbor cache).
-medium-ethernet = ["xarxa/medium-ethernet"]
+medium-ethernet = ["hazard3-net/medium-ethernet"]
 ## Support interfaces that send and receive bare IP packets, without a link-layer
 ## header.
-medium-ip = ["xarxa/medium-ip"]
+medium-ip = ["hazard3-net/medium-ip"]
 ## Support IEEE 802.15.4 interfaces carrying 6LoWPAN (RFC 4944, RFC 6282). Needs `ipv6`.
-medium-ieee802154 = ["ipv6", "xarxa/medium-ieee802154"]
+medium-ieee802154 = ["ipv6", "hazard3-net/medium-ieee802154"]
 ## Fragment outgoing 6LoWPAN packets larger than one 802.15.4 frame. Needs `medium-ieee802154`.
-sixlowpan-fragmentation = ["medium-ieee802154", "xarxa/sixlowpan-fragmentation"]
+sixlowpan-fragmentation = ["medium-ieee802154", "hazard3-net/sixlowpan-fragmentation"]
 ## Reassemble incoming 6LoWPAN fragments. Needs `medium-ieee802154`.
-sixlowpan-reassembly = ["medium-ieee802154", "xarxa/sixlowpan-reassembly"]
+sixlowpan-reassembly = ["medium-ieee802154", "hazard3-net/sixlowpan-reassembly"]
 ## Support IPv4 (and, with `medium-ethernet`, ARP).
-ipv4 = ["xarxa/ipv4"]
+ipv4 = ["hazard3-net/ipv4"]
 ## Fragment outgoing IPv4 packets larger than the interface MTU. Needs `ipv4`.
-ipv4-fragmentation = ["ipv4", "xarxa/ipv4-fragmentation"]
+ipv4-fragmentation = ["ipv4", "hazard3-net/ipv4-fragmentation"]
 ## Reassemble incoming IPv4 fragments. Needs `ipv4`.
-ipv4-reassembly = ["ipv4", "xarxa/ipv4-reassembly"]
+ipv4-reassembly = ["ipv4", "hazard3-net/ipv4-reassembly"]
 ## Support IPv6 (and, with `medium-ethernet`, NDISC).
-ipv6 = ["xarxa/ipv6"]
+ipv6 = ["hazard3-net/ipv6"]
 # Raw socket machinery shared by both modes. Private, do not enable directly.
 _raw = []
 ## Ethernet-mode raw sockets: send and receive whole Ethernet frames. Needs `medium-ethernet`.
-raw-ethernet = ["_raw", "medium-ethernet", "xarxa/raw-ethernet"]
+raw-ethernet = ["_raw", "medium-ethernet", "hazard3-net/raw-ethernet"]
 ## IP-mode raw sockets: send and receive whole IP packets.
-raw-ip = ["_raw", "xarxa/raw-ip"]
+raw-ip = ["_raw", "hazard3-net/raw-ip"]
 ## UDP sockets.
-udp = ["xarxa/udp"]
+udp = ["hazard3-net/udp"]
 ## TCP sockets.
-tcp = ["xarxa/tcp"]
+tcp = ["hazard3-net/tcp"]
 ## TCP listeners, for accepting incoming connections.
-tcp-listener = ["tcp", "xarxa/tcp-listener"]
+tcp-listener = ["tcp", "hazard3-net/tcp-listener"]
 ## DHCPv4 client, built into the interface. Needs `ipv4` and `medium-ethernet`.
-dhcpv4 = ["ipv4", "medium-ethernet", "xarxa/dhcpv4"]
+dhcpv4 = ["ipv4", "medium-ethernet", "hazard3-net/dhcpv4"]
 ## Allow reading received DHCP options.
-dhcpv4-options = ["dhcpv4", "xarxa/dhcpv4-options"]
+dhcpv4-options = ["dhcpv4", "hazard3-net/dhcpv4-options"]
 ## DHCPv4 server, built into the interface. Needs `ipv4` and `medium-ethernet`.
-dhcpv4-server = ["ipv4", "medium-ethernet", "xarxa/dhcpv4-server"]
+dhcpv4-server = ["ipv4", "medium-ethernet", "hazard3-net/dhcpv4-server"]
 ## Give the stack a hostname, with `Stack::set_hostname`. If set, it is sent
 ## to the DHCP server in outgoing DHCP messages.
-hostname = ["xarxa/hostname"]
+hostname = ["hazard3-net/hostname"]
 ## IPv6 stateless address autoconfiguration (SLAAC). Needs `ipv6`, and
 ## `medium-ethernet` or `medium-ieee802154`.
-slaac = ["ipv6", "xarxa/slaac"]
+slaac = ["ipv6", "hazard3-net/slaac"]
 ## DNS client.
-dns = ["udp", "xarxa/dns"]
+dns = ["udp", "hazard3-net/dns"]
 ## Implement the `embedded-nal-async` traits, with `tcp::client::TcpClient` and `dns::DnsClient`.
 embedded-nal = ["dep:embedded-nal-async"]
 ## Resolve `.local` names with multicast DNS in the DNS client.
-mdns = ["dns", "xarxa/mdns"]
+mdns = ["dns", "hazard3-net/mdns"]
 ## Join IP multicast groups, with IGMP (IPv4) and MLD (IPv6) membership reports.
-multicast = ["xarxa/multicast"]
+multicast = ["hazard3-net/multicast"]
 ## Send and receive the TCP timestamp option (RFC 7323).
-tcp-timestamps = ["tcp", "xarxa/tcp-timestamps"]
+tcp-timestamps = ["tcp", "hazard3-net/tcp-timestamps"]
 ## Send selective acknowledgement ranges (RFC 2018).
-tcp-sack = ["tcp", "xarxa/tcp-sack"]
+tcp-sack = ["tcp", "hazard3-net/tcp-sack"]
 ## Automatically reply to pings (ICMP echo requests).
-icmp-ping-reply = ["xarxa/icmp-ping-reply"]
+icmp-ping-reply = ["hazard3-net/icmp-ping-reply"]
 ## Bind sockets to an interface with `bind_to_iface`. A bound socket only
 ## receives packets that arrive on that interface, and only sends out of it.
-iface-bind = ["xarxa/iface-bind"]
+iface-bind = ["hazard3-net/iface-bind"]
 ## Deliver incoming ICMP error messages (destination unreachable, packet too big, ...) to
 ## the sockets that provoked them.
-icmp-errors = ["xarxa/icmp-errors"]
+icmp-errors = ["hazard3-net/icmp-errors"]
 
 #! ### TCP congestion control
 #! Enable one of these features to enable congestion control. No feature enabled means
 #! no congestion control. You may enable at most one.
 ## Use the Reno congestion control algorithm on TCP sockets.
-tcp-reno = ["tcp", "xarxa/tcp-reno"]
+tcp-reno = ["tcp", "hazard3-net/tcp-reno"]
 ## Use the CUBIC congestion control algorithm on TCP sockets. Warning: it uses `f64` arithmetic which can be slow and pull in soft-float code depending on the target.
-tcp-cubic = ["tcp", "xarxa/tcp-cubic"]
+tcp-cubic = ["tcp", "hazard3-net/tcp-cubic"]
 
 #! ### Packet metadata
 ## Enable the `PacketMeta::id` field: an opaque number that travels with a packet
 ## through the whole stack.
-packetmeta-id = ["xarxa/packetmeta-id"]
+packetmeta-id = ["hazard3-net/packetmeta-id"]
 ## Enable the `PacketMeta::timestamp` and `PacketMeta::request_timestamp` fields, and
 ## `Driver::poll_tx_timestamp`.
-packetmeta-timestamp = ["packetmeta-id", "xarxa/packetmeta-timestamp"]
+packetmeta-timestamp = ["packetmeta-id", "hazard3-net/packetmeta-timestamp"]
 
 #! ### Serialization
 ## Support (de)serializing some types using `serde`.
-serde = ["xarxa/serde"]
+serde = ["hazard3-net/serde"]
 
 #! ### Logging
 ## Log with the `log` crate.
-log = ["dep:log", "xarxa/log"]
+log = ["dep:log", "hazard3-net/log"]
 ## Log with the `defmt` crate.
-defmt = ["dep:defmt", "xarxa/defmt", "embassy-time/defmt", "heapless/defmt", "defmt?/ip_in_core"]
+defmt = ["dep:defmt", "hazard3-net/defmt", "hazard3-time/defmt", "heapless/defmt", "defmt?/ip_in_core"]
 ## Log every packet received and sent, decoded.
 ## Needs `log` or `defmt` to print anything.
-packet-log = ["xarxa/packet-log"]
+packet-log = ["hazard3-net/packet-log"]
 
 [dependencies]
 
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-xarxa = {
-    package = "hazard3-net",
-    version = "0.2.0",
+hazard3-net = { version = "0.3.0",
     path = "../hazard3-net",
     default-features = false,
     features = ["async"]
 }
-xarxa-driver = {
-    package = "hazard3-net-driver",
-    version = "0.1.1",
+hazard3-net-driver = { version = "0.2.0",
     path = "../hazard3-net/hazard3-net-driver",
     default-features = false,
     features = ["async"]
 }
-embassy-time = { package = "hazard3-time", version = "0.1.3", path = "../hazard3-time" }
-embassy-sync = { package = "hazard3-sync", version = "0.1.1", path = "../hazard3-sync" }
+hazard3-time = { version = "0.2.0", path = "../hazard3-time" }
+hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
 embedded-io-async = { version = "0.7.0" }
 
 heapless = { version = "0.9", default-features = false }

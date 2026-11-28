@@ -2,17 +2,17 @@
 
 > **Published replacement:** `hazard3-executor` replaces the formerly published `embassy-executor-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-executor.svg)](https://crates.io/crates/hazard3-executor)
 [![docs.rs](https://docs.rs/hazard3-executor/badge.svg)](https://docs.rs/hazard3-executor)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
-> **Fork of Embassy for RISC-V.** `hazard3-executor` is an independent, **unmodified copy** of [`embassy-executor`](https://github.com/embassy-rs/embassy/tree/main/embassy-executor)
+> **Fork of Embassy for RISC-V.** `hazard3-executor` is an independent fork of [`embassy-executor`](https://github.com/embassy-rs/embassy/tree/main/embassy-executor)
 > taken from the Embassy `main` branch, maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at
 > <https://github.com/jorgeandrecastro/Hazard3>. It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp)
 > needs the unreleased changes of `main`, and crates.io does not accept git dependencies.
-> The library name is still `embassy_executor`; use it with `package = "hazard3-executor"` in your `Cargo.toml`.
+> Add `hazard3-executor` directly in Cargo.toml and import it as `hazard3_executor`.
 > **Use the `hazard3-*` versions of the forked crates together** (`hazard3-time`, `hazard3-executor`, `hazard3-sync`, ...) to avoid duplicate/incompatible copies in your build.
 
 An async/await executor designed for embedded usage.
@@ -26,6 +26,18 @@ An async/await executor designed for embedded usage.
 - Fair: a task can't monopolize CPU time even if it's constantly being woken. All other tasks get a chance to run before a given task gets polled for the second time.
 - Creating multiple executor instances is supported, to run tasks with multiple priority levels. This allows higher-priority tasks to preempt lower-priority tasks.
 
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_executor` instead of `embassy_executor`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-executor = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+The `embassy-time-driver` feature is now named `hazard3-time-driver`.
+
 ## Platforms
 
 The executor requires a "platform" to be defined to work. A platform defines the following things:
@@ -33,7 +45,7 @@ The executor requires a "platform" to be defined to work. A platform defines the
 - The main loop, which typically consists of an infinite loop of polling the executor then sleeping the current thread/core in a platform-specific way.
 - A "pender" callback, which must cause the executor's thread/core to exit sleep so the executor gets polled again. This is called when a task running in the executor is woken.
 
-The `embassy-executor` crate ships with support for some commonly used platforms, see the crate's feature documentation.
+The `hazard3-executor` crate ships with support for some commonly used platforms, see the crate's feature documentation.
 
 Chip-specific executor platform implementations are maintained in their respective HALs:
 

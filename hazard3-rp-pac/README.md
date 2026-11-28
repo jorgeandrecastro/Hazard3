@@ -2,7 +2,7 @@
 
 > **Published replacement:** `hazard3-rp-pac` replaces the formerly published `rp-pac-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-rp-pac.svg)](https://crates.io/crates/hazard3-rp-pac)
 [![docs.rs](https://docs.rs/hazard3-rp-pac/badge.svg)](https://docs.rs/hazard3-rp-pac)
@@ -20,6 +20,17 @@ The register definitions are automatically generated from the SVD files provided
 The generated definitions are adapted to make the crate more suitable for writing Hardware Abstraction Layers (HALs), including converting identical register and field groups into arrays and merging identical registers and enumerations.
 
 This crate is intended to be used by the [`hazard3-rp`](https://crates.io/crates/hazard3-rp) Rust Hardware Abstraction Layer (HAL).
+
+## Migration to 0.3.0
+
+The Rust library is now `hazard3_rp_pac` instead of `rp_pac`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-rp-pac = "0.3"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## Supported chips
 
@@ -51,13 +62,13 @@ The interrupt enumeration retains the hardware interrupt numbers defined by the 
 This crate has no default chip feature. You must explicitly enable the `rp235x` feature.
 
 ```toml
-rp-pac = { package = "hazard3-rp-pac", version = "0.2", features = ["rp235x"] }
+hazard3-rp-pac = { version = "0.3", features = ["rp235x"] }
 ```
 
-The library name remains `rp_pac`, preserving compatibility with existing code using:
+Import the library as `hazard3_rp_pac`:
 
 ```rust
-use rp_pac::Interrupt;
+use hazard3_rp_pac::Interrupt;
 ```
 
 ### Building
@@ -123,7 +134,7 @@ This release removes the remaining ARM-specific interrupt vector infrastructure 
 
 The following checks were performed:
 
-- Confirmed that no remaining `__INTERRUPTS`, `rp_pac::Vector` or `_vectors` references exist in the relevant PAC and Embassy source trees.
+- Confirmed that no remaining `__INTERRUPTS`, `hazard3_rp_pac::Vector` or `_vectors` references exist in the relevant PAC and Embassy source trees.
 - Successfully compiled `rp-pac-riscv` for `riscv32imac-unknown-none-elf` with the `rp235x` feature enabled.
 - Successfully compiled `embassy-rp-riscv` for the RISC-V target.
 

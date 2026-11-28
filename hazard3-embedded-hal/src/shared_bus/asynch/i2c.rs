@@ -3,9 +3,9 @@
 //! # Example (nrf52)
 //!
 //! ```rust,ignore
-//! use embassy_embedded_hal::shared_bus::asynch::i2c::I2cDevice;
-//! use embassy_sync::mutex::Mutex;
-//! use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+//! use hazard3_embedded_hal::shared_bus::asynch::i2c::I2cDevice;
+//! use hazard3_sync::mutex::Mutex;
+//! use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
 //!
 //! static I2C_BUS: StaticCell<Mutex<NoopRawMutex, Twim<TWISPI0>>> = StaticCell::new();
 //! let config = twim::Config::default();
@@ -22,8 +22,8 @@
 //! let mpu = Mpu6050::new(i2c_dev2);
 //! ```
 
-use embassy_sync::blocking_mutex::raw::RawMutex;
-use embassy_sync::mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::mutex::Mutex;
 use embedded_hal_async::i2c;
 
 use crate::SetConfig;

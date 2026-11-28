@@ -3,7 +3,7 @@ use core::marker::PhantomData;
 use core::slice;
 use core::sync::atomic::{AtomicU8, Ordering};
 
-use embassy_hal_internal::atomic_ring_buffer::RingBuffer;
+use hazard3_hal_internal::atomic_ring_buffer::RingBuffer;
 
 use super::*;
 use crate::gpio::Flex;

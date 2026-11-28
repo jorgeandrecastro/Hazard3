@@ -1,6 +1,6 @@
 //! [ws2812](https://www.sparkfun.com/categories/tags/ws2812)
 
-use embassy_time::{Duration, Timer};
+use hazard3_time::{Duration, Timer};
 use smart_leds_trait::{RGB8, RGBW, SmartLedsWriteAsync};
 
 use crate::clocks::clk_sys_freq;

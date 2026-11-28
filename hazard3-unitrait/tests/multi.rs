@@ -3,7 +3,7 @@
 
 use std::sync::atomic::{AtomicU32, Ordering};
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A toy byte-shifting codec.
     pub trait CodecDriver {
         /// Opaque encoder state.

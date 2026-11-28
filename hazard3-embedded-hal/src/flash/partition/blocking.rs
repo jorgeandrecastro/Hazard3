@@ -1,7 +1,7 @@
 use core::cell::RefCell;
 
-use embassy_sync::blocking_mutex::Mutex;
-use embassy_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::blocking_mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
 use embedded_storage::nor_flash::{ErrorType, MultiwriteNorFlash, NorFlash, ReadNorFlash};
 
 use super::Error;
@@ -113,7 +113,7 @@ impl<M: RawMutex, T: MultiwriteNorFlash> MultiwriteNorFlash for BlockingPartitio
 
 #[cfg(test)]
 mod tests {
-    use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+    use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
 
     use super::*;
     use crate::flash::mem_flash::MemFlash;

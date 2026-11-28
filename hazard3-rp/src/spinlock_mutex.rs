@@ -3,7 +3,7 @@
 use core::marker::PhantomData;
 use core::sync::atomic::Ordering;
 
-use embassy_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
 
 use crate::spinlock::{Spinlock, SpinlockValid};
 
@@ -87,7 +87,7 @@ where
 
 pub mod blocking_mutex {
     //! Mutex implementation utilizing an hardware spinlock
-    use embassy_sync::blocking_mutex::Mutex;
+    use hazard3_sync::blocking_mutex::Mutex;
 
     use crate::spinlock_mutex::SpinlockRawMutex;
     /// A mutex that allows borrowing data across executors and interrupts by utilizing an hardware spinlock.

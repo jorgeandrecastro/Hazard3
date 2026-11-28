@@ -19,9 +19,9 @@
 //! [`Iface::dhcpv4_server_leases`]: super::Iface::dhcpv4_server_leases
 //! [`Iface::remove_dhcpv4_server_lease`]: super::Iface::remove_dhcpv4_server_lease
 
-use embassy_time::{Duration, Instant};
+use hazard3_time::{Duration, Instant};
 use heapless::Vec;
-pub use xarxa::iface::dhcpv4_server::*;
+pub use hazard3_net::iface::dhcpv4_server::*;
 
 use crate::config::DHCP_MAX_DNS_SERVER_COUNT;
 use crate::time::{duration_to_xarxa, instant_from_xarxa};
@@ -64,8 +64,8 @@ impl DhcpServerConfig {
         }
     }
 
-    pub(crate) fn to_xarxa(&self) -> xarxa::iface::dhcpv4_server::DhcpServerConfig {
-        let mut config = xarxa::iface::dhcpv4_server::DhcpServerConfig::new(self.pool_start, self.pool_end);
+    pub(crate) fn to_xarxa(&self) -> hazard3_net::iface::dhcpv4_server::DhcpServerConfig {
+        let mut config = hazard3_net::iface::dhcpv4_server::DhcpServerConfig::new(self.pool_start, self.pool_end);
         config.lease_duration = duration_to_xarxa(self.lease_duration);
         config.gateway = self.gateway;
         config.dns_servers = self.dns_servers.clone();
@@ -113,10 +113,10 @@ pub enum DhcpServerLeaseState {
 /// [`Iface::dhcpv4_server_leases`]: super::Iface::dhcpv4_server_leases
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct DhcpServerLease(xarxa::iface::dhcpv4_server::DhcpServerLease);
+pub struct DhcpServerLease(hazard3_net::iface::dhcpv4_server::DhcpServerLease);
 
 impl DhcpServerLease {
-    pub(crate) fn from_xarxa(lease: xarxa::iface::dhcpv4_server::DhcpServerLease) -> Self {
+    pub(crate) fn from_xarxa(lease: hazard3_net::iface::dhcpv4_server::DhcpServerLease) -> Self {
         Self(lease)
     }
 
@@ -139,21 +139,21 @@ impl DhcpServerLease {
     /// The state of the lease, with when it ends if it holds its address.
     pub fn state(&self) -> DhcpServerLeaseState {
         match self.0.state() {
-            xarxa::iface::dhcpv4_server::DhcpServerLeaseState::Offered { expires_at } => {
+            hazard3_net::iface::dhcpv4_server::DhcpServerLeaseState::Offered { expires_at } => {
                 DhcpServerLeaseState::Offered {
                     expires_at: instant_from_xarxa(expires_at),
                 }
             }
-            xarxa::iface::dhcpv4_server::DhcpServerLeaseState::Bound { expires_at } => DhcpServerLeaseState::Bound {
+            hazard3_net::iface::dhcpv4_server::DhcpServerLeaseState::Bound { expires_at } => DhcpServerLeaseState::Bound {
                 expires_at: instant_from_xarxa(expires_at),
             },
-            xarxa::iface::dhcpv4_server::DhcpServerLeaseState::Declined { expires_at } => {
+            hazard3_net::iface::dhcpv4_server::DhcpServerLeaseState::Declined { expires_at } => {
                 DhcpServerLeaseState::Declined {
                     expires_at: instant_from_xarxa(expires_at),
                 }
             }
-            xarxa::iface::dhcpv4_server::DhcpServerLeaseState::Released => DhcpServerLeaseState::Released,
-            xarxa::iface::dhcpv4_server::DhcpServerLeaseState::Expired => DhcpServerLeaseState::Expired,
+            hazard3_net::iface::dhcpv4_server::DhcpServerLeaseState::Released => DhcpServerLeaseState::Released,
+            hazard3_net::iface::dhcpv4_server::DhcpServerLeaseState::Expired => DhcpServerLeaseState::Expired,
         }
     }
 }

@@ -4,12 +4,12 @@ use core::marker::PhantomData;
 use core::sync::atomic::{AtomicU16, AtomicUsize, Ordering};
 use core::task::Poll;
 
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_usb_driver::host::{
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_usb_driver::host::{
     DeviceEvent, HostError, PipeError, SplitInfo, SplitSpeed, TimeoutConfig, UsbHostAllocator, UsbHostController,
     UsbPipe, pipe,
 };
-use embassy_usb_driver::{EndpointInfo, EndpointType, Speed};
+use hazard3_usb_driver::{EndpointInfo, EndpointType, Speed};
 
 /// Reduce a [`SplitInfo`] to the legacy "emit PRE packet" bit used by this
 /// full-speed only controller. USB 1.1 §11.8.6: PRE is required when the
@@ -17,7 +17,7 @@ use embassy_usb_driver::{EndpointInfo, EndpointType, Speed};
 fn split_to_pre(split: Option<SplitInfo>) -> bool {
     matches!(split, Some(s) if s.device_speed() == SplitSpeed::Low)
 }
-use rp_pac::usb_dpram::vals::EpControlEndpointType;
+use hazard3_rp_pac::usb_dpram::vals::EpControlEndpointType;
 
 use super::{BUS_WAKER, DPRAM_DATA_OFFSET, EP_COUNT, EP_IN_WAKERS, EP_MEMORY, EndpointBuffer, Instance};
 use crate::interrupt::typelevel::{Binding, Interrupt};
@@ -590,9 +590,9 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
     }
 }
 
-type BufferControlReg = rp_pac::common::Reg<rp_pac::usb_dpram::regs::EpBufferControl, rp_pac::common::RW>;
-type EpControlReg = rp_pac::common::Reg<rp_pac::usb_dpram::regs::EpControl, rp_pac::common::RW>;
-type AddrControlReg = rp_pac::common::Reg<rp_pac::usb::regs::AddrEndpX, rp_pac::common::RW>;
+type BufferControlReg = hazard3_rp_pac::common::Reg<hazard3_rp_pac::usb_dpram::regs::EpBufferControl, hazard3_rp_pac::common::RW>;
+type EpControlReg = hazard3_rp_pac::common::Reg<hazard3_rp_pac::usb_dpram::regs::EpControl, hazard3_rp_pac::common::RW>;
+type AddrControlReg = hazard3_rp_pac::common::Reg<hazard3_rp_pac::usb::regs::AddrEndpX, hazard3_rp_pac::common::RW>;
 
 /// Stop the in-flight EPX transaction at its next safe boundary so a queued pipe can take
 /// the endpoint. Armed only while contended, or an idle bulk IN would trip it on every NAK.
@@ -819,7 +819,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
 
     /// Give the buffer to the USB controller only after the rest of its
     /// control fields have crossed into the USB clock domain.
-    fn write_buffer_control(&self, f: impl FnOnce(&mut rp_pac::usb_dpram::regs::EpBufferControl)) {
+    fn write_buffer_control(&self, f: impl FnOnce(&mut hazard3_rp_pac::usb_dpram::regs::EpBufferControl)) {
         let reg = self.buffer_control();
         let mut value = Default::default();
         f(&mut value);
@@ -1320,7 +1320,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
     async fn run_transaction(&mut self, mut arm: impl FnMut(&mut Self)) -> Result<(), PipeError> {
         let deadline = self
             .control_timeout_us
-            .map(|us| embassy_time::Instant::now() + embassy_time::Duration::from_micros(us));
+            .map(|us| hazard3_time::Instant::now() + hazard3_time::Duration::from_micros(us));
 
         let mut no_response = 0;
         loop {
@@ -1331,7 +1331,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
             arm(self);
             guard.arm();
             let result = if let Some(deadline) = deadline {
-                match embassy_time::with_deadline(deadline, self.wait_transaction()).await {
+                match hazard3_time::with_deadline(deadline, self.wait_transaction()).await {
                     Ok(result) => result,
                     Err(_) => Ok(self.stop_timed_out_transaction()),
                 }
@@ -1735,7 +1735,7 @@ impl<'d, T: SealedHostInstance> UsbHostController<'d> for Driver<'d, T> {
         let is_connected = |status: u8| matches!(status, 0b01 | 0b10);
 
         let mut debounce_elapsed = 0;
-        let mut last_bounce = embassy_time::Instant::now();
+        let mut last_bounce = hazard3_time::Instant::now();
         let ev = loop {
             let was = self.connected;
 
@@ -1786,10 +1786,10 @@ impl<'d, T: SealedHostInstance> UsbHostController<'d> for Driver<'d, T> {
                 // A glitch latched in HOST_CONN_DIS restarts the wait, up to DEVICE_DEBOUNCE_TIMEOUT in total.
                 if debounce_elapsed < DEVICE_DEBOUNCE_TIMEOUT {
                     debounce_elapsed += DEVICE_DEBOUNCE_STABLE;
-                    embassy_time::Timer::after_millis(DEVICE_DEBOUNCE_STABLE).await;
+                    hazard3_time::Timer::after_millis(DEVICE_DEBOUNCE_STABLE).await;
 
                     if T::regs().sie_status().read().speed() != speed || T::regs().intr().read().host_conn_dis() {
-                        last_bounce = embassy_time::Instant::now();
+                        last_bounce = hazard3_time::Instant::now();
                         continue;
                     }
                 }
@@ -1818,13 +1818,13 @@ impl<'d, T: SealedHostInstance> UsbHostController<'d> for Driver<'d, T> {
             w.set_reset_bus(true);
         });
 
-        embassy_time::Timer::after_millis(ROOT_RESET_MS).await;
+        hazard3_time::Timer::after_millis(ROOT_RESET_MS).await;
 
         T::regs().sie_ctrl().modify(|w| {
             w.set_reset_bus(false);
         });
 
-        embassy_time::Timer::after_millis(RESET_RECOVERY_MS).await;
+        hazard3_time::Timer::after_millis(RESET_RECOVERY_MS).await;
     }
 }
 

@@ -2,16 +2,16 @@
 
 > **Published replacement:** `hazard3-unitrait` replaces the formerly published `unitrait-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 [![Crates.io](https://img.shields.io/crates/v/hazard3-unitrait.svg)](https://crates.io/crates/hazard3-unitrait)
 [![docs.rs](https://docs.rs/hazard3-unitrait/badge.svg)](https://docs.rs/hazard3-unitrait)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 
-> **Fork for RISC-V.** `hazard3-unitrait` is an independent, **unmodified copy** of `unitrait` (unreleased 2.0.0 revision `bb96601` of [embassy-rs/unitrait](https://github.com/embassy-rs/unitrait)),
+> **Fork for RISC-V.** `hazard3-unitrait` is an independent fork of `unitrait` (unreleased 2.0.0 revision `bb96601` of [embassy-rs/unitrait](https://github.com/embassy-rs/unitrait)),
 > maintained by [Jorge Andre Castro](https://github.com/jorgeandrecastro) at <https://github.com/jorgeandrecastro/Hazard3>.
 > It was originally republished under another name because [`hazard3-rp`](https://crates.io/crates/hazard3-rp) needs these unreleased changes and crates.io does not accept git dependencies.
-> The library name is still `unitrait`; use it with `package = "hazard3-unitrait"` in your `Cargo.toml`.
+> Add `hazard3-unitrait` directly in Cargo.toml and import it as `hazard3_unitrait`.
 > Use the related Hazard3 crates together to avoid duplicate/incompatible copies in your build.
 
 Traits with a single global implementation, resolved at link time.
@@ -30,12 +30,23 @@ that also implements the trait itself.
 The use case is allowing pluggalbe "drivers" for foundational, process-wide facilities where generics would be too viral and `dyn` too costly. For example, it's used for the `embassy-time` driver and
 the `embassy-executor` pender and trace hooks.
 
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_unitrait` instead of `unitrait`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-unitrait = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+
 ## Example
 
 Define a unitrait in the crate that _calls_ the functionality:
 
 ```rust
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A driver for the frobnicator.
     pub trait Driver {
         /// Returns the current frobnication level.
@@ -83,7 +94,7 @@ crate's name and version. Instead of writing each one out, a
 `#[symbol_prefix = "..."]` attribute on the trait derives them all:
 
 ```rust,ignore
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     #[symbol_prefix = "_frob_v1"]
     pub trait Driver {
         /// Uses `_frob_v1_level`.
@@ -112,7 +123,7 @@ implementation-defined values and pass them back in, despite not knowing the
 implementation's types:
 
 ```rust,ignore
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait HashDriver {
         /// Opaque storage for the implementation's hash state.
         #[opaque(size = 128, align = 16)]

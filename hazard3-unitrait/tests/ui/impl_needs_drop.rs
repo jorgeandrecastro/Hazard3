@@ -1,4 +1,4 @@
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         // No `Drop` bound, so the implementation's associated type must not need drop.
         #[opaque(size = 8, align = 4)]

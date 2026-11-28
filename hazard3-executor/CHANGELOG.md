@@ -6,12 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-## Unreleased
+## Unreleased (0.2.0)
+
+### Breaking changes
+
+- **Breaking:** rename the Rust library `embassy_executor` to `hazard3_executor`; update imports and macro paths.
+- Use matching new Hazard3 dependency versions where applicable.
+- Rename the `embassy-time-driver` feature to `hazard3-time-driver`.
+
+### Other changes
 
 - Repository renamed to [`jorgeandrecastro/Hazard3`](https://github.com/jorgeandrecastro/Hazard3).
 - Former `*-riscv` releases remain preserved on crates.io but are yanked and are not recommended for new dependency resolution.
 
-- Rename package `embassy-executor-riscv` to `hazard3-executor` while retaining the Rust library name.
+- Rename package `embassy-executor-riscv` to `hazard3-executor`.
 
 ## 0.1.1 - 2026-11-18
 

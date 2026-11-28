@@ -1,9 +1,9 @@
 //! Socket lifecycle and configuration: creation, binding, addresses, state, options.
 
-use xarxa::driver::PacketBuf;
-use xarxa::error::InvalidHopLimit;
-use xarxa::udp;
-use xarxa::wire::ListenSocketAddr;
+use hazard3_net::driver::PacketBuf;
+use hazard3_net::error::InvalidHopLimit;
+use hazard3_net::udp;
+use hazard3_net::wire::ListenSocketAddr;
 
 use super::{BindError, UdpSocket};
 #[cfg(feature = "iface-bind")]

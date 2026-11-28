@@ -4,7 +4,7 @@
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait handing out cloneable opaque buffers.
     pub trait BuffersDriver {
         /// A growable buffer. Cloning one clones the implementation's value.

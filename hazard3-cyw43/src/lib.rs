@@ -28,7 +28,7 @@ use core::result;
 use core::sync::atomic::AtomicBool;
 
 pub use aligned::{A4, Aligned};
-use embassy_net_driver_channel as ch;
+use hazard3_net_driver_channel as ch;
 use embedded_hal_1::digital::OutputPin;
 use events::Events;
 use ioctl::IoctlState;
@@ -50,7 +50,7 @@ const MTU: usize = 1514;
 /// Packet pool buffer size for a full received frame: 22 header bytes + 1514, word-rounded.
 ///
 /// ```ignore
-/// static POOL: StaticPool<{ cyw43::RX_BUF_SIZE }, 16, { cyw43::RX_BUF_ALIGN }> = StaticPool::new();
+/// static POOL: StaticPool<{ hazard3_cyw43::RX_BUF_SIZE }, 16, { hazard3_cyw43::RX_BUF_ALIGN }> = StaticPool::new();
 /// ```
 pub const RX_BUF_SIZE: usize =
     (structs::SdpcmHeader::SIZE + RX_SDPCM_PADDING + structs::BdcHeader::SIZE + RX_BDC_DATA_OFFSET + MTU)
@@ -717,7 +717,7 @@ where
 macro_rules! aligned_bytes {
     ($path:expr) => {{
         {
-            static BYTES: &::cyw43::Aligned<cyw43::A4, [u8]> = &::cyw43::Aligned(*include_bytes!($path));
+            static BYTES: &::hazard3_cyw43::Aligned<hazard3_cyw43::A4, [u8]> = &::hazard3_cyw43::Aligned(*include_bytes!($path));
 
             BYTES
         }

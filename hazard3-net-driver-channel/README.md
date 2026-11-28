@@ -2,13 +2,13 @@
 
 > **Published replacement:** `hazard3-net-driver-channel` replaces the formerly published `embassy-net-driver-channel-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 This fork uses `hazard3-sync` and `hazard3-net-driver` to integrate
 drivers such as [`hazard3-cyw43`](../hazard3-cyw43/) with
 [`hazard3-net-async`](../hazard3-net-async/). The package name is
-`hazard3-net-driver-channel`, while the Rust library name remains
-`embassy_net_driver_channel`. The license remains MIT OR Apache-2.0.
+`hazard3-net-driver-channel`, and the Rust library name is
+`hazard3_net_driver_channel`. The license remains MIT OR Apache-2.0.
 
 This crate is derived from [Embassy's `embassy-net-driver-channel`](https://github.com/embassy-rs/embassy/tree/main/embassy-net-driver-channel).
 All credit for the original work goes to Embassy and its contributors. This
@@ -18,13 +18,24 @@ This crate provides a higher-level toolkit for implementing network drivers
 used by `hazard3-net-async`. It sits on top of the forked
 [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/) `Driver` trait.
 
-The `xarxa_driver::Driver` trait is polling-based. To implement it directly,
+The `hazard3_net_driver::Driver` trait is polling-based. To implement it directly,
 you must write the packet receive/transmit state machines by hand and hook up
 the `Waker`s provided by the network stack to the right interrupt handlers.
 
-With `embassy_net_driver_channel` you get a channel-like interface instead.
+With `hazard3_net_driver_channel` you get a channel-like interface instead.
 The intended usage is to spawn a driver task in the background, passing
 packets between the hardware and the channels shared with `hazard3-net-async`.
+
+## Migration to 0.2.0
+
+The Rust library is now `hazard3_net_driver_channel` instead of `embassy_net_driver_channel`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-net-driver-channel = "0.2"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## A note about deadlocks
 
@@ -107,18 +118,18 @@ of this RISC-V fork.
 ## Dependency selection
 
 Use the Hazard3 packages together. In `Cargo.toml`, select this crate and the
-forked network stack with package aliases:
+forked network stack directly:
 
 ```toml
 [dependencies]
-embassy-net = { package = "hazard3-net-async", version = "0.3" }
-embassy-net-driver-channel = { package = "hazard3-net-driver-channel", version = "0.1" }
-embassy-sync = { package = "hazard3-sync", version = "0.1" }
-xarxa-driver = { package = "hazard3-net-driver", version = "0.1" }
+hazard3-net-async = { version = "0.6" }
+hazard3-net-driver-channel = { version = "0.2" }
+hazard3-sync = { version = "0.2" }
+hazard3-net-driver = { version = "0.2" }
 ```
 
-The Rust crate names remain `embassy_net`, `embassy_net_driver_channel`,
-`embassy_sync`, and `xarxa_driver`. Do not mix these packages with incompatible
+The Rust crate names are `hazard3_net_async`, `hazard3_net_driver_channel`,
+`hazard3_sync`, and `hazard3_net_driver`. Do not mix these packages with incompatible
 copies of upstream `embassy-net`, `embassy-sync`, or `xarxa-driver`.
 
 ## Interoperability

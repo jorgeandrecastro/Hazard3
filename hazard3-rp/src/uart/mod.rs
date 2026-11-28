@@ -5,9 +5,9 @@ use core::sync::atomic::{AtomicU16, Ordering};
 use core::task::Poll;
 
 use embassy_futures::select::{Either, select};
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_time::{Delay, Timer};
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_time::{Delay, Timer};
 use pac::uart::regs::Uartris;
 
 use crate::clocks::clk_peri_freq;

@@ -6,9 +6,9 @@ use core::marker::PhantomData;
 use core::mem::DropGuard;
 use core::task::Poll;
 
-use embassy_hal_internal::{Peri, PeripheralType};
-use embassy_sync::waitqueue::AtomicWaker;
-use embassy_time::{Duration, Instant, Timer};
+use hazard3_hal_internal::{Peri, PeripheralType};
+use hazard3_sync::waitqueue::AtomicWaker;
+use hazard3_time::{Duration, Instant, Timer};
 pub use embedded_hal_1::i2c::Operation;
 use pac::i2c;
 
@@ -230,7 +230,7 @@ impl<'d> I2c<'d, Blocking> {
 }
 
 async fn with_timeout(timeout: Duration, f: impl future::Future<Output = Result<(), Error>>) -> Result<(), Error> {
-    embassy_time::with_timeout(timeout, f)
+    hazard3_time::with_timeout(timeout, f)
         .await
         .unwrap_or(Err(Error::Timeout))
 }
@@ -1121,7 +1121,7 @@ where
     }
 }
 
-impl<'d, M: Mode> embassy_embedded_hal::SetConfig for I2c<'d, M> {
+impl<'d, M: Mode> hazard3_embedded_hal::SetConfig for I2c<'d, M> {
     type Config = Config;
     type ConfigError = ConfigError;
 

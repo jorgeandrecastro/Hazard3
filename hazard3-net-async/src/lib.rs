@@ -36,16 +36,16 @@ use core::mem::MaybeUninit;
 use core::pin::pin;
 use core::task::{Context, Poll};
 
-use embassy_sync::waitqueue::WakerRegistration;
-use embassy_time::{Instant, Timer};
+use hazard3_sync::waitqueue::WakerRegistration;
+use hazard3_time::{Instant, Timer};
 #[cfg(feature = "alloc")]
-pub use xarxa::AllocPool;
-use xarxa::driver::{Driver, LinkState};
+pub use hazard3_net::AllocPool;
+use hazard3_net::driver::{Driver, LinkState};
 #[cfg(feature = "hostname")]
-use xarxa::error::HostnameTooLong;
-use xarxa::iface::IfaceHandle;
-pub use xarxa::{Align, Pool, StaticPool, ValidAlign, config, error, wire};
-pub use xarxa_driver as driver;
+use hazard3_net::error::HostnameTooLong;
+use hazard3_net::iface::IfaceHandle;
+pub use hazard3_net::{Align, Pool, StaticPool, ValidAlign, config, error, wire};
+pub use hazard3_net_driver as driver;
 
 use crate::iface::{AddIfaceError, Iface};
 #[cfg(any(feature = "medium-ethernet", feature = "medium-ieee802154"))]
@@ -118,13 +118,13 @@ pub(crate) fn wake_if_ok<T, E>(r: Result<T, E>) -> (Result<T, E>, WakeRunner) {
 }
 
 pub(crate) struct Inner<'d> {
-    pub(crate) stack: xarxa::Stack<'d>,
+    pub(crate) stack: hazard3_net::Stack<'d>,
     /// Waker used for triggering polls.
     pub(crate) waker: WakerRegistration,
     /// Sum of every interface's configuration generation at the last poll.
     pub(crate) config_generation: u32,
     #[cfg(feature = "dns")]
-    pub(crate) dns: xarxa::dns::DnsClient,
+    pub(crate) dns: hazard3_net::dns::DnsClient,
     #[cfg(feature = "dns")]
     pub(crate) dns_waker: WakerRegistration,
     /// DNS servers set by hand, used on top of the ones DHCPv4 learns.
@@ -155,13 +155,13 @@ impl<'d> Stack<'d> {
     /// [`add_iface_borrowed`](Self::add_iface_borrowed).
     pub fn new(storage: &'d mut StackStorage<'d>, pool: &'static impl Pool, random_seed: u64) -> (Self, Runner<'d>) {
         #[allow(unused_mut)]
-        let mut stack = xarxa::Stack::new(pool, random_seed);
+        let mut stack = hazard3_net::Stack::new(pool, random_seed);
 
         #[cfg(feature = "dns")]
         // The stack is brand new, so its UDP socket table can only be full if it
         // has no slots at all.
         let dns = unwrap!(
-            xarxa::dns::DnsClient::new(&mut stack, &[]).ok(),
+            hazard3_net::dns::DnsClient::new(&mut stack, &[]).ok(),
             "the DNS client needs a UDP socket, raise the `udp-socket-count-N` feature of xarxa"
         );
 
@@ -341,7 +341,7 @@ impl<'d> Stack<'d> {
     /// This is how long the fragments of an incoming IPv4 or 6LoWPAN packet are
     /// kept while waiting for the rest of it. The default is 60 seconds.
     #[cfg(any(feature = "ipv4-reassembly", feature = "sixlowpan-reassembly"))]
-    pub fn reassembly_timeout(&self) -> embassy_time::Duration {
+    pub fn reassembly_timeout(&self) -> hazard3_time::Duration {
         self.with(|i| (time::duration_from_xarxa(i.stack.reassembly_timeout()), NoWake))
     }
 
@@ -350,7 +350,7 @@ impl<'d> Stack<'d> {
     /// Fragments of an incoming IPv4 or 6LoWPAN packet that is not complete by
     /// then are dropped, and the packet buffer they were kept in is freed.
     #[cfg(any(feature = "ipv4-reassembly", feature = "sixlowpan-reassembly"))]
-    pub fn set_reassembly_timeout(&self, timeout: embassy_time::Duration) {
+    pub fn set_reassembly_timeout(&self, timeout: hazard3_time::Duration) {
         self.with(|i| (i.stack.set_reassembly_timeout(time::duration_to_xarxa(timeout)), NoWake))
     }
 
@@ -391,7 +391,7 @@ impl<'d> Stack<'d> {
         &self,
         name: &str,
         qtype: dns::DnsQueryType,
-    ) -> Result<heapless::Vec<crate::wire::IpAddr, { xarxa::config::DNS_MAX_RESULT_COUNT }>, dns::Error> {
+    ) -> Result<heapless::Vec<crate::wire::IpAddr, { hazard3_net::config::DNS_MAX_RESULT_COUNT }>, dns::Error> {
         use crate::wire::IpAddr;
 
         // For A and AAAA queries we try detect whether `name` is just an IP address
@@ -418,7 +418,7 @@ impl<'d> Stack<'d> {
                 } = i;
                 match dns.start_query(stack, name, qtype) {
                     Ok(handle) => (Poll::Ready(Ok::<_, dns::Error>(handle)), Wake),
-                    Err(xarxa::dns::StartQueryError::NoFreeSlot) => {
+                    Err(hazard3_net::dns::StartQueryError::NoFreeSlot) => {
                         dns_waker.register(cx.waker());
                         (Poll::Pending, NoWake)
                     }
@@ -446,7 +446,7 @@ impl<'d> Stack<'d> {
                             i.dns_waker.wake();
                             Poll::Ready(Ok(addrs))
                         }
-                        Err(xarxa::dns::GetQueryResultError::Pending) => {
+                        Err(hazard3_net::dns::GetQueryResultError::Pending) => {
                             i.dns.register_query_waker(query, cx.waker());
                             Poll::Pending
                         }
@@ -475,7 +475,7 @@ impl<'d> Stack<'d> {
                 if iface
                     .ip_addrs()
                     .iter()
-                    .any(|a| matches!(a.cidr, xarxa::wire::IpCidr::V6(_)) && !is_link_local(a))
+                    .any(|a| matches!(a.cidr, hazard3_net::wire::IpCidr::V6(_)) && !is_link_local(a))
                 {
                     return (true, NoWake);
                 }
@@ -525,7 +525,7 @@ impl Inner<'_> {
     /// over DHCPv4.
     #[cfg(feature = "dns")]
     pub(crate) fn update_dns_servers(&mut self) {
-        let mut servers: heapless::Vec<crate::wire::IpAddr, { xarxa::config::DNS_MAX_SERVER_COUNT }> =
+        let mut servers: heapless::Vec<crate::wire::IpAddr, { hazard3_net::config::DNS_MAX_SERVER_COUNT }> =
             heapless::Vec::new();
         let mut truncated = false;
 
@@ -613,7 +613,7 @@ impl Inner<'_> {
 pub(crate) fn wait_iface<'a>(
     stack: Stack<'a>,
     handle: IfaceHandle,
-    mut predicate: impl FnMut(&mut xarxa::iface::Iface<'_, 'a>) -> bool + 'a,
+    mut predicate: impl FnMut(&mut hazard3_net::iface::Iface<'_, 'a>) -> bool + 'a,
 ) -> impl Future<Output = ()> + 'a {
     poll_fn(move |cx| {
         stack.with(|i| {
@@ -633,10 +633,10 @@ pub(crate) fn wait_iface<'a>(
 
 /// Whether an address is one the stack derived by itself, rather than one that
 /// counts as the interface being configured.
-pub(crate) fn is_link_local(addr: &xarxa::iface::IfaceAddr) -> bool {
+pub(crate) fn is_link_local(addr: &hazard3_net::iface::IfaceAddr) -> bool {
     #[cfg(all(any(feature = "medium-ethernet", feature = "medium-ieee802154"), feature = "ipv6"))]
     {
-        addr.origin == xarxa::iface::AddrOrigin::LinkLocal
+        addr.origin == hazard3_net::iface::AddrOrigin::LinkLocal
     }
     #[cfg(not(all(any(feature = "medium-ethernet", feature = "medium-ieee802154"), feature = "ipv6")))]
     {
@@ -647,23 +647,23 @@ pub(crate) fn is_link_local(addr: &xarxa::iface::IfaceAddr) -> bool {
 
 /// Whether an interface counts as configured: it has an address that something
 /// other than IPv6 link-local autoconfiguration put there.
-pub(crate) fn is_config_up(iface: &xarxa::iface::Iface<'_, '_>) -> bool {
+pub(crate) fn is_config_up(iface: &hazard3_net::iface::Iface<'_, '_>) -> bool {
     iface.ip_addrs().iter().any(|a| !is_link_local(a))
 }
 
 #[cfg(feature = "ipv4")]
 /// Check if any IPv4 address is configured.
-pub(crate) fn is_config_v4_up(iface: &xarxa::iface::Iface<'_, '_>) -> bool {
+pub(crate) fn is_config_v4_up(iface: &hazard3_net::iface::Iface<'_, '_>) -> bool {
     iface.ip_addrs().iter().any(|a| a.cidr.is_ipv4())
 }
 
 #[cfg(feature = "ipv6")]
 /// Check if any non link-local IPv6 address is configured.
-pub(crate) fn is_config_v6_up(iface: &xarxa::iface::Iface<'_, '_>) -> bool {
+pub(crate) fn is_config_v6_up(iface: &hazard3_net::iface::Iface<'_, '_>) -> bool {
     iface.ip_addrs().iter().any(|a| a.cidr.is_ipv6() && !is_link_local(a))
 }
 
 /// Whether an interface's link is up.
-pub(crate) fn is_link_up(iface: &mut xarxa::iface::Iface<'_, '_>) -> bool {
+pub(crate) fn is_link_up(iface: &mut hazard3_net::iface::Iface<'_, '_>) -> bool {
     iface.link_state() == LinkState::Up
 }

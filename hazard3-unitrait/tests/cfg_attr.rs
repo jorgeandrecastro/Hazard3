@@ -1,6 +1,6 @@
 //! `#[opaque]` under `cfg_attr`: the first attribute whose predicate holds wins.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait whose opaque layouts depend on `cfg`s.
     #[symbol_prefix = "_unitrait_test_cfg_attr"]
     pub trait LayoutsDriver {

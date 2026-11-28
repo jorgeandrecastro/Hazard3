@@ -2,7 +2,7 @@ use core::cell::{Cell, Ref, RefCell};
 use core::future::{Future, poll_fn};
 use core::task::{Poll, Waker};
 
-use embassy_sync::waitqueue::WakerRegistration;
+use hazard3_sync::waitqueue::WakerRegistration;
 
 use crate::consts::Ioctl;
 use crate::fmt::Bytes;

@@ -1,7 +1,7 @@
 use core::mem;
 
 use aligned::{A4, Aligned};
-use embassy_time::{Delay, Duration};
+use hazard3_time::{Delay, Duration};
 use sdio::sdio::{CCCR_INT_ENABLE, CCCR_IO_ENABLE, CCCR_IO_READY};
 
 use crate::WithContext;

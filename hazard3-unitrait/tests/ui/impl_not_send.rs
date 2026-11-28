@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     pub trait FooDriver {
         #[opaque(size = 16, align = 8)]
         #[drop_symbol = "_ui_impl_not_send_drop"]

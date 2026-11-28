@@ -2,11 +2,22 @@
 
 > **Published replacement:** `hazard3-cyw43-pio` replaces the formerly published `cyw43-pio-riscv`.
 > See the project repository for the publication status of the Hazard3 packages.
-> Rust library names and upstream license and attribution notices are retained.
+> Upstream license and attribution notices are retained.
 
 RISC-V fork of Embassy's PIO driver for the CYW43 half-duplex SPI bus on the
 RP2350, including the Pico 2 W. It uses `hazard3-rp` and `hazard3-cyw43`;
 it does not support RP2040 or Arm.
+
+## Migration to 0.3.0
+
+The Rust library is now `hazard3_cyw43_pio` instead of `cyw43_pio`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-cyw43-pio = "0.3"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## ESP-NOW RISC-V transport
 
@@ -28,14 +39,14 @@ response transmission, sequence-number matching, timeout handling and RTT
 measurement. It is an experimental hardware feature, not a standard
 ESP-NOW API from upstream Embassy.
 
-The package name changes, but the Rust library name and API remain `cyw43_pio`.
+The Rust library name is `hazard3_cyw43_pio`.
 Use the matching forked packages together:
 
 ```toml
 [dependencies]
-cyw43 = { package = "hazard3-cyw43", version = "0.2.2" }
-cyw43-pio = { package = "hazard3-cyw43-pio", version = "0.2.2" }
-embassy-rp = { package = "hazard3-rp", version = "0.2", features = ["rp235xa"] }
+hazard3-cyw43 = { version = "0.3" }
+hazard3-cyw43-pio = { version = "0.3" }
+hazard3-rp = { version = "0.3", features = ["rp235xa"] }
 ```
 
 Select `rp235xb` instead for an RP2350B. The current `PioSpi::new` takes
@@ -55,10 +66,10 @@ Check the integration with the HAL, CYW43 driver and RISC-V networking stack:
 
 ```sh
 # RP2350A
-cargo check --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xa
+cargo check --test compatibility --target riscv32imac-unknown-none-elf --features hazard3-rp/rp235xa
 
 # RP2350B with defmt
-cargo check --test compatibility --target riscv32imac-unknown-none-elf --features embassy-rp/rp235xb,defmt
+cargo check --test compatibility --target riscv32imac-unknown-none-elf --features hazard3-rp/rp235xb,defmt
 ```
 
 Generate the documentation:
@@ -66,7 +77,7 @@ Generate the documentation:
 ```sh
 cargo doc \
     --target riscv32imac-unknown-none-elf \
-    --features embassy-rp/rp235xa \
+    --features hazard3-rp/rp235xa \
     --no-deps \
     --document-private-items
 ```
@@ -76,10 +87,10 @@ Package and publish with the RP2350A target configuration:
 ```sh
 cargo package \
     --target riscv32imac-unknown-none-elf \
-    --features embassy-rp/rp235xa
+    --features hazard3-rp/rp235xa
 cargo publish \
     --target riscv32imac-unknown-none-elf \
-    --features embassy-rp/rp235xa
+    --features hazard3-rp/rp235xa
 ```
 
 ## Credits

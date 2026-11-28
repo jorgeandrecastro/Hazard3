@@ -3,8 +3,8 @@
 use core::future::poll_fn;
 use core::task::{Context, Poll};
 
-use xarxa::driver::PacketBuf;
-use xarxa::udp;
+use hazard3_net::driver::PacketBuf;
+use hazard3_net::udp;
 
 use super::{SendError, UdpMetadata, UdpSocket};
 use crate::{NoWake, TryError, Wake, wake_if_ok};

@@ -13,16 +13,16 @@
 use core::future::{Future, poll_fn};
 use core::task::{Context, Poll};
 
-use xarxa::driver::PacketBuf;
-pub use xarxa::driver::PacketMeta;
+use hazard3_net::driver::PacketBuf;
+pub use hazard3_net::driver::PacketMeta;
 #[cfg(feature = "iface-bind")]
-pub use xarxa::iface::IfaceHandle;
-pub use xarxa::raw::RawMode;
-use xarxa::raw::{self, RawHandle};
+pub use hazard3_net::iface::IfaceHandle;
+pub use hazard3_net::raw::RawMode;
+use hazard3_net::raw::{self, RawHandle};
 #[cfg(feature = "raw-ethernet")]
-pub use xarxa::wire::EthernetProtocol;
+pub use hazard3_net::wire::EthernetProtocol;
 #[cfg(feature = "raw-ip")]
-pub use xarxa::wire::{IpProtocol, IpVersion};
+pub use hazard3_net::wire::{IpProtocol, IpVersion};
 
 use crate::error::Full;
 use crate::{NoWake, Stack, TryError, Wake, WakeRunner, wake_if, wake_if_ok};

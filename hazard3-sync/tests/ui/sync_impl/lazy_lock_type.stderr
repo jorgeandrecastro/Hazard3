@@ -5,5 +5,5 @@ error[E0277]: `*mut u8` cannot be shared between threads safely
   |                ^^^^^^^^^^^^^^^^^ `*mut u8` cannot be shared between threads safely
   |
   = help: the trait `Sync` is not implemented for `*mut u8`
-  = note: required for `embassy_sync::lazy_lock::LazyLock<*mut u8>` to implement `Sync`
+  = note: required for `hazard3_sync::lazy_lock::LazyLock<*mut u8>` to implement `Sync`
   = note: shared static variables must have a type that implements `Sync`

@@ -9,9 +9,9 @@
 
 use core::mem;
 
-use rp_pac::IO_QSPI;
-use rp_pac::io::regs::{GpioCtrl, GpioStatus};
-use rp_pac::io::vals::Oeover;
+use hazard3_rp_pac::IO_QSPI;
+use hazard3_rp_pac::io::regs::{GpioCtrl, GpioStatus};
+use hazard3_rp_pac::io::vals::Oeover;
 
 use crate::Peri;
 use crate::flash::in_ram;

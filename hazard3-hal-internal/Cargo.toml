@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-hal-internal"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Internal implementation details for Embassy HALs. DO NOT USE DIRECTLY."
@@ -15,7 +15,6 @@ categories = [
 ]
 
 [lib]
-name = "embassy_hal_internal"
 
 [features]
 defmt = ["dep:defmt"]

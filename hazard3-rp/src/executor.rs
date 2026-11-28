@@ -8,16 +8,16 @@
 //! When using this executors, they must be explicitly passed to the `main`
 //! macro using
 //!
-//! `#[embassy_executor::main(executor = "embassy_rp::executor::Executor", entry = "riscv_rt::entry")]`
+//! `#[hazard3_executor::main(executor = "hazard3_rp::executor::Executor", entry = "riscv_rt::entry")]`
 
 #[cfg(any(feature = "executor-thread", feature = "executor-interrupt"))]
 struct RpPender;
 
 #[cfg(any(feature = "executor-thread", feature = "executor-interrupt"))]
-embassy_executor::pender_impl!(RpPender);
+hazard3_executor::pender_impl!(RpPender);
 
 #[cfg(any(feature = "executor-thread", feature = "executor-interrupt"))]
-impl embassy_executor::pender::Pender for RpPender {
+impl hazard3_executor::pender::Pender for RpPender {
     fn pend(context: *mut ()) {
         unsafe {
             // Safety: `context` is either `usize::MAX` created by `Executor::run`, or a valid interrupt
@@ -58,7 +58,7 @@ mod thread {
 
     use core::marker::PhantomData;
 
-    use embassy_executor::{Spawner, raw};
+    use hazard3_executor::{Spawner, raw};
 
     /// Thread mode executor, using the Hazard3 block/unblock instructions.
     ///
@@ -108,7 +108,7 @@ mod thread {
             loop {
                 unsafe {
                     self.inner.poll();
-                    embassy_executor::trace_idle();
+                    hazard3_executor::trace_idle();
                     crate::cpu::wfe();
                 };
             }
@@ -124,7 +124,7 @@ mod interrupt {
     use core::mem::MaybeUninit;
 
     use critical_section::Mutex;
-    use embassy_executor::raw;
+    use hazard3_executor::raw;
 
     use crate::interrupt::InterruptExt;
     use crate::multicore::current_core;
@@ -149,7 +149,7 @@ mod interrupt {
     /// If this is not the case, you may use an interrupt from any unused peripheral.
     ///
     /// It is somewhat more complex to use, it's recommended to use the thread-mode
-    /// [`Executor`](embassy_executor::Executor) instead, if it works for your use case.
+    /// [`Executor`](hazard3_executor::Executor) instead, if it works for your use case.
     pub struct InterruptExecutor {
         started: Mutex<Cell<bool>>,
         executor: UnsafeCell<MaybeUninit<raw::Executor>>,
@@ -185,11 +185,11 @@ mod interrupt {
         /// The executor keeps running in the background through the interrupt.
         ///
         /// This returns a [`SendSpawner`] you can use to spawn tasks on it. A [`SendSpawner`]
-        /// is returned instead of a [`Spawner`](embassy_executor::Spawner) because the executor effectively runs in a
+        /// is returned instead of a [`Spawner`](hazard3_executor::Spawner) because the executor effectively runs in a
         /// different "thread" (the interrupt), so spawning tasks on it is effectively
         /// sending them.
         ///
-        /// To obtain a [`Spawner`](embassy_executor::Spawner) for this executor, use [`Spawner::for_current_executor()`](embassy_executor::Spawner::for_current_executor()) from
+        /// To obtain a [`Spawner`](hazard3_executor::Spawner) for this executor, use [`Spawner::for_current_executor()`](hazard3_executor::Spawner::for_current_executor()) from
         /// a task running in it.
         ///
         /// # Interrupt requirements
@@ -201,8 +201,8 @@ mod interrupt {
         /// You must set the interrupt priority before calling this method. You MUST NOT
         /// do it after.
         ///
-        /// [`SendSpawner`]: embassy_executor::SendSpawner
-        pub fn start(&'static self, irq: impl InterruptExt) -> embassy_executor::SendSpawner {
+        /// [`SendSpawner`]: hazard3_executor::SendSpawner
+        pub fn start(&'static self, irq: impl InterruptExt) -> hazard3_executor::SendSpawner {
             if critical_section::with(|cs| self.started.borrow(cs).replace(true)) {
                 panic!("InterruptExecutor::start() called multiple times on the same executor.");
             }
@@ -223,12 +223,12 @@ mod interrupt {
 
         /// Get a SendSpawner for this executor
         ///
-        /// This returns a [`SendSpawner`](embassy_executor::SendSpawner) you can use to spawn tasks on this
+        /// This returns a [`SendSpawner`](hazard3_executor::SendSpawner) you can use to spawn tasks on this
         /// executor.
         ///
         /// This MUST only be called on an executor that has already been started.
         /// The function will panic otherwise.
-        pub fn spawner(&'static self) -> embassy_executor::SendSpawner {
+        pub fn spawner(&'static self) -> hazard3_executor::SendSpawner {
             if !critical_section::with(|cs| self.started.borrow(cs).get()) {
                 panic!("InterruptExecutor::spawner() called on uninitialized executor.");
             }

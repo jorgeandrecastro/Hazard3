@@ -1,4 +1,4 @@
-//! `#[embassy_executor::main]` keeps the executor on the stack of the generated `main` and hands
+//! `#[hazard3_executor::main]` keeps the executor on the stack of the generated `main` and hands
 //! out `&'static` references to it. A panic that unwinds out of `main` would pop that frame while
 //! the references are still reachable, e.g. from the panic payload, so the process has to abort
 //! instead.
@@ -10,20 +10,20 @@
 
 use std::process::Command;
 
-use embassy_executor::Spawner;
-use embassy_executor::raw::Executor;
+use hazard3_executor::Spawner;
+use hazard3_executor::raw::Executor;
 
 const CHILD_ENV: &str = "EMBASSY_EXECUTOR_MAIN_UNWIND_CHILD";
 const DROP_MARKER: &str = "main_unwind: panic payload dropped";
-const ABORT_MESSAGE: &str = "embassy_executor::main must not unwind";
+const ABORT_MESSAGE: &str = "hazard3_executor::main must not unwind";
 
 struct NoopPender;
 
-impl embassy_executor::pender::Pender for NoopPender {
+impl hazard3_executor::pender::Pender for NoopPender {
     fn pend(_context: *mut ()) {}
 }
 
-embassy_executor::pender_impl!(NoopPender);
+hazard3_executor::pender_impl!(NoopPender);
 
 struct TestExecutor {
     inner: Executor,
@@ -53,7 +53,7 @@ impl Drop for Payload {
     }
 }
 
-#[embassy_executor::main(executor = "TestExecutor")]
+#[hazard3_executor::main(executor = "TestExecutor")]
 async fn main(_spawner: Spawner) {
     if std::env::var_os(CHILD_ENV).is_some() {
         std::panic::panic_any(Payload);

@@ -5,9 +5,9 @@ use core::task::Poll;
 
 use aligned::{A4, Aligned};
 use embassy_futures::select::{Either, Either4, select, select4};
-use embassy_net_driver_channel as ch;
-use embassy_net_driver_channel::driver::LinkState;
-use embassy_time::Duration;
+use hazard3_net_driver_channel as ch;
+use hazard3_net_driver_channel::driver::LinkState;
+use hazard3_time::Duration;
 use sdio::sdio::{CCCR_INT_ENABLE, CCCR_IO_ENABLE, CCCR_IO_READY};
 
 use crate::chip::{
@@ -1082,12 +1082,12 @@ impl<'a, BUS: Bus, CHIP: Chip> Runner<'a, BUS, CHIP> {
                 Some(packet) if packet.capacity() >= len.next_multiple_of(4) => unsafe {
                     assert!(
                         (packet.as_ptr() as usize).is_multiple_of(RX_BUF_ALIGN),
-                        "cyw43: pool buffers must be aligned to cyw43::RX_BUF_ALIGN ({})",
+                        "cyw43: pool buffers must be aligned to hazard3_cyw43::RX_BUF_ALIGN ({})",
                         RX_BUF_ALIGN
                     );
                     assert!(
                         packet.capacity() >= RX_BUF_SIZE,
-                        "cyw43: pool buffers must hold cyw43::RX_BUF_SIZE ({}) bytes, got {}",
+                        "cyw43: pool buffers must hold hazard3_cyw43::RX_BUF_SIZE ({}) bytes, got {}",
                         RX_BUF_SIZE,
                         packet.capacity()
                     );

@@ -3,8 +3,8 @@
 //! # Example (nrf52)
 //!
 //! ```rust,ignore
-//! use embassy_embedded_hal::shared_bus::blocking::spi::SpiDevice;
-//! use embassy_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
+//! use hazard3_embedded_hal::shared_bus::blocking::spi::SpiDevice;
+//! use hazard3_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
 //!
 //! static SPI_BUS: StaticCell<NoopMutex<RefCell<Spim<SPI3>>>> = StaticCell::new();
 //! let spi = Spim::new_txonly(p.SPI3, Irqs, p.P0_15, p.P0_18, Config::default());
@@ -19,8 +19,8 @@
 
 use core::cell::RefCell;
 
-use embassy_sync::blocking_mutex::Mutex;
-use embassy_sync::blocking_mutex::raw::RawMutex;
+use hazard3_sync::blocking_mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal_1::digital::OutputPin;
 use embedded_hal_1::spi::{self, Operation, SpiBus};
 
@@ -73,7 +73,7 @@ where
                 Operation::DelayNs(_) => unreachable!(),
                 #[cfg(feature = "time")]
                 Operation::DelayNs(ns) => {
-                    embassy_time::block_for(embassy_time::Duration::from_nanos(*ns as _));
+                    hazard3_time::block_for(hazard3_time::Duration::from_nanos(*ns as _));
                     Ok(())
                 }
             });
@@ -149,7 +149,7 @@ where
                 Operation::DelayNs(_) => unreachable!(),
                 #[cfg(feature = "time")]
                 Operation::DelayNs(ns) => {
-                    embassy_time::block_for(embassy_time::Duration::from_nanos(*ns as _));
+                    hazard3_time::block_for(hazard3_time::Duration::from_nanos(*ns as _));
                     Ok(())
                 }
             });

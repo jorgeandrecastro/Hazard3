@@ -27,7 +27,7 @@ use crate::driver::{PacketBuf, PacketMeta, RawPacketBuf};
 /// Put it in a `static`:
 ///
 /// ```
-/// use xarxa::{Stack, StaticPool};
+/// use hazard3_net::{Stack, StaticPool};
 ///
 /// static POOL: StaticPool<1514, 16> = StaticPool::new();
 ///

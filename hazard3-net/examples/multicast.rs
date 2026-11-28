@@ -18,10 +18,10 @@
 
 use std::os::unix::io::AsRawFd;
 
-use xarxa::driver_impls::{TunTapDriver, wait};
-use xarxa::time::Instant;
-use xarxa::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr, Ipv6Addr, ListenSocketAddr};
-use xarxa::{Stack, StaticPool};
+use hazard3_net::driver_impls::{TunTapDriver, wait};
+use hazard3_net::time::Instant;
+use hazard3_net::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr, Ipv6Addr, ListenSocketAddr};
+use hazard3_net::{Stack, StaticPool};
 
 const MDNS_PORT: u16 = 5353;
 const MDNS_GROUP: Ipv4Addr = Ipv4Addr::new(224, 0, 0, 251);

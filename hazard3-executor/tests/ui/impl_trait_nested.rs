@@ -2,7 +2,7 @@
 
 struct Foo<T>(T);
 
-#[embassy_executor::task]
+#[hazard3_executor::task]
 async fn foo(_x: Foo<impl Sized + 'static>) {}
 
 fn main() {}

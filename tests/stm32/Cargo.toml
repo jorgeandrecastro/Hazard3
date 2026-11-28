@@ -132,7 +132,7 @@ embassy-crypto-test = { version = "0.1.0", path = "../../embassy-crypto-test", f
 embassy-stm32-wpan = { version = "0.1.0", path = "../../embassy-stm32-wpan", optional = true, features = ["defmt"] }
 embassy-net = { version = "0.9.1", path = "../../hazard3-net-async", features = ["defmt",  "tcp", "udp", "dhcpv4", "medium-ethernet"] }
 perf-client = { path = "../perf-client" }
-xarxa = { package = "hazard3-net", version = "0.1.0", path = "../../hazard3-net", default-features = false }
+xarxa = { package = "hazard3-net", version = "0.3.0", path = "../../hazard3-net", default-features = false }
 
 defmt = "1.1.1"
 defmt-rtt = "1.3.0"

@@ -1,4 +1,4 @@
-use embassy_sync::lazy_lock::LazyLock;
+use hazard3_sync::lazy_lock::LazyLock;
 
 fn main() {
     let x = 128u8;

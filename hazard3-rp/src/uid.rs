@@ -6,7 +6,7 @@
 //!
 //! Infallible, so if the ID cannot be read, return a fixed value (`0xEE`), also as per `pico-sdk`.
 
-use embassy_sync::lazy_lock::LazyLock;
+use hazard3_sync::lazy_lock::LazyLock;
 
 const UNAVAILABLE: u8 = 0xEE;
 

@@ -16,7 +16,7 @@ note: required because `x_ptr` is used within this closure
    |
  6 |     let closure_capturing_non_sync_variable = || unsafe { core::ptr::read(x_ptr) };
    |                                                                           ^^^^^
-   = note: required for `embassy_sync::lazy_lock::LazyLock<u8, {closure@$DIR/tests/ui/sync_impl/lazy_lock_function.rs:6:47: 6:49}>` to implement `Sync`
+   = note: required for `hazard3_sync::lazy_lock::LazyLock<u8, {closure@$DIR/tests/ui/sync_impl/lazy_lock_function.rs:6:47: 6:49}>` to implement `Sync`
 note: required by a bound in `check_sync`
   --> tests/ui/sync_impl/lazy_lock_function.rs:11:18
    |

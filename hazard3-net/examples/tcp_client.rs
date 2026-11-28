@@ -25,10 +25,10 @@
 use std::io::Write as _;
 use std::os::unix::io::AsRawFd;
 
-use xarxa::driver_impls::{TunTapDriver, wait};
-use xarxa::time::Instant;
-use xarxa::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr, SocketAddr};
-use xarxa::{Stack, StaticPool};
+use hazard3_net::driver_impls::{TunTapDriver, wait};
+use hazard3_net::time::Instant;
+use hazard3_net::wire::{EthernetAddress, HardwareAddress, IpAddr, IpCidr, Ipv4Addr, SocketAddr};
+use hazard3_net::{Stack, StaticPool};
 
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();

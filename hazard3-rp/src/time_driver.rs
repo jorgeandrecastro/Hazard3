@@ -2,10 +2,10 @@
 use core::cell::{Cell, RefCell};
 
 use critical_section::CriticalSection;
-use embassy_sync::blocking_mutex::Mutex;
-use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
-use embassy_time_driver::Driver;
-use embassy_time_queue_utils::Queue;
+use hazard3_sync::blocking_mutex::Mutex;
+use hazard3_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use hazard3_time_driver::Driver;
+use hazard3_time_queue_utils::Queue;
 #[cfg(feature = "_rp235x")]
 use pac::TIMER0 as TIMER;
 
@@ -22,7 +22,7 @@ struct TimerDriver {
     queue: Mutex<CriticalSectionRawMutex, RefCell<Queue>>,
 }
 
-embassy_time_driver::time_driver_impl!(static DRIVER: TimerDriver = TimerDriver{
+hazard3_time_driver::time_driver_impl!(static DRIVER: TimerDriver = TimerDriver{
     alarms:  Mutex::const_new(CriticalSectionRawMutex::new(), AlarmState {
         timestamp: Cell::new(0),
     }),

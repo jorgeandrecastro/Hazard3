@@ -7,7 +7,7 @@
 
 #![cfg(feature = "_rp235x")]
 
-use embassy_hal_internal::{Peri, PeripheralType};
+use hazard3_hal_internal::{Peri, PeripheralType};
 
 use crate::gpio::{Flex, Pin as GpioPin};
 use crate::{pac, peripherals};

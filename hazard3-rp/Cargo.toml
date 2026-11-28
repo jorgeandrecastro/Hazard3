@@ -1,7 +1,7 @@
 
 [package]
 name = "hazard3-rp"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Embassy Hardware Abstraction Layer (HAL) for RP235x Hazard3 RISC-V cores"
@@ -36,28 +36,27 @@ no-default-features = true
 features = ["riscv", "rt", "rp235xa", "defmt", "unstable-pac", "time-driver"]
 
 [lib]
-name = "embassy_rp"
 
 [features]
 # Use the Hazard3 interrupt implementation by default.
 default = ["rt", "riscv"]
 
 # Interrupt dispatch.
-rt = ["rp-pac/rt"]
+rt = ["hazard3-rp-pac/rt"]
 
 # RISC-V interrupt implementation.
-riscv = ["embassy-hal-internal/riscv"]
+riscv = ["hazard3-hal-internal/riscv"]
 
 # Logging and formatting.
 defmt = [
     "dep:defmt",
-    "embassy-usb-driver/defmt",
-    "embassy-hal-internal/defmt",
-    "embassy-time/defmt",
+    "hazard3-usb-driver/defmt",
+    "hazard3-hal-internal/defmt",
+    "hazard3-time/defmt",
 ]
 
-pac-defmt = ["rp-pac/defmt"]
-pac-debug = ["rp-pac/debug"]
+pac-defmt = ["hazard3-rp-pac/defmt"]
+pac-debug = ["hazard3-rp-pac/debug"]
 log = ["dep:log"]
 
 # Critical section implementation.
@@ -68,14 +67,14 @@ unstable-pac = []
 
 # Embassy time driver.
 time-driver = [
-    "dep:embassy-time-driver",
-    "embassy-time-driver?/tick-hz-1_000_000",
-    "dep:embassy-time-queue-utils",
+    "dep:hazard3-time-driver",
+    "hazard3-time-driver?/tick-hz-1_000_000",
+    "dep:hazard3-time-queue-utils",
 ]
 
 # Embassy executor.
-executor-thread = ["dep:embassy-executor"]
-executor-interrupt = ["dep:embassy-executor"]
+executor-thread = ["dep:hazard3-executor"]
+executor-interrupt = ["dep:hazard3-executor"]
 
 # ROM and compiler optimizations.
 rom-func-cache = []
@@ -90,7 +89,7 @@ imagedef-nonsecure-exe = []
 imagedef-none = []
 
 # Chip selection.
-_rp235x = ["rp-pac/rp235x"]
+_rp235x = ["hazard3-rp-pac/rp235x"]
 rp235xa = ["_rp235x"]
 rp235xb = ["_rp235x"]
 
@@ -105,20 +104,18 @@ binary-info = [
 ]
 
 [dependencies]
-embassy-sync = { package = "hazard3-sync", version = "0.1.1", path = "../hazard3-sync" }
+hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
 
-embassy-time-driver = {
-    package = "hazard3-time-driver", version = "0.1.2",
+hazard3-time-driver = { version = "0.2.0",
     path = "../hazard3-time-driver",
     optional = true,
 }
 
-embassy-time-queue-utils = { package = "hazard3-time-queue-utils", version = "0.1.1", path = "../hazard3-time-queue-utils",
+hazard3-time-queue-utils = { version = "0.2.0", path = "../hazard3-time-queue-utils",
     optional = true,
 }
 
-embassy-time = {
-    package = "hazard3-time", version = "0.1.3",
+hazard3-time = { version = "0.2.0",
     path = "../hazard3-time",
 }
 
@@ -127,24 +124,19 @@ embassy-futures = {
     path = "../embassy-futures",
 }
 
-embassy-hal-internal = {
-    package = "hazard3-hal-internal",
-    version = "0.1.1",
+hazard3-hal-internal = { version = "0.2.0",
     path = "../hazard3-hal-internal",
 }
 
-embassy-embedded-hal = {
-    package = "hazard3-embedded-hal", version = "0.1.1",
+hazard3-embedded-hal = { version = "0.2.0",
     path = "../hazard3-embedded-hal",
 }
 
-embassy-usb-driver = {
-    package = "hazard3-usb-driver", version = "0.1.1",
+hazard3-usb-driver = { version = "0.2.0",
     path = "../hazard3-usb-driver",
 }
 
-embassy-executor = {
-    package = "hazard3-executor", version = "0.1.2",
+hazard3-executor = { version = "0.2.0",
     path = "../hazard3-executor",
     optional = true,
 }
@@ -166,9 +158,7 @@ embedded-io-async = "0.7.0"
 embedded-storage = "0.3"
 embedded-storage-async = "0.4.1"
 
-rp-pac = {
-    package = "hazard3-rp-pac",
-    version = "0.2.1",
+hazard3-rp-pac = { version = "0.3.0",
     path = "../hazard3-rp-pac",
 }
 
@@ -201,9 +191,7 @@ rp-binary-info = {
 smart-leds-trait = "0.3.2"
 
 [dev-dependencies]
-embassy-executor = {
-    package = "hazard3-executor",
-    path = "../hazard3-executor",
+hazard3-executor = { path = "../hazard3-executor",
     features = ["platform-std", "executor-thread"],
 }
 

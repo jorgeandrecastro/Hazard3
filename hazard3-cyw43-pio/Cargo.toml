@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-cyw43-pio"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2024"
 description = "RP2350 RISC-V PIO SPI implementation for cyw43"
 keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
@@ -12,16 +12,15 @@ readme = "README.md"
 exclude = ["target/", "Cargo.lock"]
 
 [lib]
-name = "cyw43_pio"
 
 [dependencies]
-cyw43 = { package = "hazard3-cyw43", version = "0.2.2", path = "../hazard3-cyw43" }
-embassy-rp = { package = "hazard3-rp", version = "0.2.1", path = "../hazard3-rp" }
+hazard3-cyw43 = { version = "0.3.0", path = "../hazard3-cyw43" }
+hazard3-rp = { version = "0.3.0", path = "../hazard3-rp" }
 embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
 defmt = { version = "1.0.1", optional = true }
 
 [dev-dependencies]
-embassy-net = { package = "hazard3-net-async", version = "0.3.1", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
+hazard3-net-async = { version = "0.6.0", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
 
 [[test]]
 name = "compatibility"
@@ -32,17 +31,17 @@ defmt = ["dep:defmt"]
 
 [package.metadata.embassy]
 build = [
-    {target = "riscv32imac-unknown-none-elf", features = ["embassy-rp/rp235xa"]},
-    {target = "riscv32imac-unknown-none-elf", features = ["embassy-rp/rp235xb", "defmt"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["hazard3-rp/rp235xa"]},
+    {target = "riscv32imac-unknown-none-elf", features = ["hazard3-rp/rp235xb", "defmt"]},
 ]
 
 [package.metadata.embassy_docs]
 src_base = "https://github.com/jorgeandrecastro/Hazard3/blob/main/hazard3-cyw43-pio/src/"
 src_base_git = "https://github.com/jorgeandrecastro/Hazard3/blob/$COMMIT/hazard3-cyw43-pio/src/"
 target = "riscv32imac-unknown-none-elf"
-features = ["embassy-rp/rp235xa"]
+features = ["hazard3-rp/rp235xa"]
 
 [package.metadata.docs.rs]
 default-target = "riscv32imac-unknown-none-elf"
 targets = ["riscv32imac-unknown-none-elf"]
-features = ["embassy-rp/rp235xa"]
+features = ["hazard3-rp/rp235xa"]

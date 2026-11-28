@@ -12,11 +12,22 @@ zero-copy sockets and first-class support for RISC-V.
 > [`Hazard3`](https://github.com/jorgeandrecastro/Hazard3) ecosystem. It replaces the formerly
 > published `xarxa-riscv` package.
 >
-> The package name is `hazard3-net`. The Rust crate name remains `xarxa`, so you import it as
-> `xarxa` and rename the package in `Cargo.toml` (see [Getting started](#getting-started)).
+> The package name is `hazard3-net` and the Rust crate name is `hazard3_net`
+> (see [Getting started](#getting-started)).
 
 `hazard3-net` supports `no_std` environments and does not need a heap. A heap-backed pool is
 available behind the `alloc` feature.
+
+## Migration to 0.3.0
+
+The Rust library is now `hazard3_net` instead of `xarxa`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
+
+```toml
+[dependencies]
+hazard3-net = "0.3"
+```
+
+Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
 
 ## Table of contents
 
@@ -47,11 +58,11 @@ This fork keeps these principles and stays compatible with the Embassy RISC-V ec
 
 ## Getting started
 
-The Rust crate is named `xarxa`, the package is named `hazard3-net`:
+The Rust crate is named `hazard3_net`, and the package is named `hazard3-net`:
 
 ```toml
 [dependencies]
-xarxa = { package = "hazard3-net", version = "0.2", default-features = false, features = [
+hazard3-net = { version = "0.3", default-features = false, features = [
     "medium-ethernet",
     "ipv4",
     "udp",
@@ -64,7 +75,7 @@ xarxa = { package = "hazard3-net", version = "0.2", default-features = false, fe
 Create a stack on top of a packet pool:
 
 ```rust
-use xarxa::{AllocPool, Stack};
+use hazard3_net::{AllocPool, Stack};
 
 // Up to 64 buffers of 1514 bytes, taken from the heap (needs the `alloc` feature).
 static POOL: AllocPool<1514> = AllocPool::new(64);

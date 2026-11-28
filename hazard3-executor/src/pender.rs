@@ -1,6 +1,6 @@
 //! The pender: the callback executors use to notify they have work to do.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// The pender: the callback executors use to notify they have work to do.
     ///
     /// There is one global pender for the whole program, registered with the

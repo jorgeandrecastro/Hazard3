@@ -12,15 +12,23 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_send`
   --> tests/ui/opaque_not_auto.rs:28:19
    |
 28 | fn assert_send<T: Send>() {}
    |                   ^^^^ required by this bound in `assert_send`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: `*mut ()` cannot be shared between threads safely
   --> tests/ui/opaque_not_auto.rs:38:19
@@ -36,15 +44,23 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_sync`
   --> tests/ui/opaque_not_auto.rs:29:19
    |
 29 | fn assert_sync<T: Sync>() {}
    |                   ^^^^ required by this bound in `assert_sync`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: `UnsafeCell<()>` cannot be shared between threads safely
   --> tests/ui/opaque_not_auto.rs:38:19
@@ -60,15 +76,23 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_sync`
   --> tests/ui/opaque_not_auto.rs:29:19
    |
 29 | fn assert_sync<T: Sync>() {}
    |                   ^^^^ required by this bound in `assert_sync`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: `PhantomPinned` cannot be unpinned
   --> tests/ui/opaque_not_auto.rs:39:20
@@ -85,15 +109,23 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_unpin`
   --> tests/ui/opaque_not_auto.rs:30:20
    |
 30 | fn assert_unpin<T: Unpin>() {}
    |                    ^^^^^ required by this bound in `assert_unpin`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the type `&'static mut ()` may not be safely transferred across an unwind boundary
   --> tests/ui/opaque_not_auto.rs:40:26
@@ -110,15 +142,23 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_unwind_safe`
   --> tests/ui/opaque_not_auto.rs:31:26
    |
 31 | fn assert_unwind_safe<T: std::panic::UnwindSafe>() {}
    |                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `assert_unwind_safe`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the type `UnsafeCell<()>` may contain interior mutability and a reference may not be safely transferable across a catch_unwind boundary
   --> tests/ui/opaque_not_auto.rs:41:30
@@ -134,12 +174,20 @@ note: required because it appears within the type `PhantomData<(*mut (), Phantom
    | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `FooContext`
-  --> tests/ui/opaque_not_auto.rs:5:18
+  --> tests/ui/opaque_not_auto.rs:1:1
    |
- 5 |         pub type Context: Drop;
-   |                  ^^^^^^^
+ 1 | / hazard3_unitrait::unitrait! {
+ 2 | |     pub trait FooDriver {
+ 3 | |         #[opaque(size = 8, align = 4)]
+ 4 | |         #[drop_symbol = "_ui_opaque_not_auto_drop"]
+ 5 | |         pub type Context: Drop;
+...  |
+13 | |     macro foo_impl(path = $crate);
+14 | | }
+   | |_^ required by this field
 note: required by a bound in `assert_ref_unwind_safe`
   --> tests/ui/opaque_not_auto.rs:32:30
    |
 32 | fn assert_ref_unwind_safe<T: std::panic::RefUnwindSafe>() {}
    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `assert_ref_unwind_safe`
+   = note: this error originates in the macro `hazard3_unitrait::unitrait` (in Nightly builds, run with -Z macro-backtrace for more info)

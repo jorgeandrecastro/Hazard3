@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-executor"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "async/await executor designed for embedded usage"
@@ -26,13 +26,13 @@ build = [
     {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-thread"]},
     {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt"]},
     {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread"]},
-    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "embassy-time-driver"]},
-    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "embassy-time-driver", "scheduler-priority"]},
-    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "embassy-time-driver", "scheduler-priority", "scheduler-deadline"]},
-    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "embassy-time-driver", "scheduler-deadline"]},
+    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "hazard3-time-driver"]},
+    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "hazard3-time-driver", "scheduler-priority"]},
+    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "hazard3-time-driver", "scheduler-priority", "scheduler-deadline"]},
+    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "hazard3-time-driver", "scheduler-deadline"]},
     {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "scheduler-priority", "scheduler-deadline"]},
     {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "scheduler-deadline"]},
-    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "embassy-time-driver", "scheduler-priority", "scheduler-deadline", "trace"]},
+    {target = "thumbv7em-none-eabi", features = ["platform-cortex-m", "executor-interrupt", "executor-thread", "hazard3-time-driver", "scheduler-priority", "scheduler-deadline", "trace"]},
     {target = "thumbv7em-none-eabi", features = ["platform-spin"]},
     {target = "thumbv7em-none-eabi", features = ["platform-spin", "scheduler-deadline"]},
     {target = "armv7a-none-eabi", features = ["platform-aarch32", "executor-thread"]},
@@ -100,19 +100,18 @@ flavors = [
 [package.metadata.docs.rs]
 default-target = "thumbv7em-none-eabi"
 targets = ["thumbv7em-none-eabi"]
-features = ["defmt", "platform-cortex-m", "executor-thread", "executor-interrupt", "scheduler-deadline", "scheduler-priority", "embassy-time-driver", "trace"]
+features = ["defmt", "platform-cortex-m", "executor-thread", "executor-interrupt", "scheduler-deadline", "scheduler-priority", "hazard3-time-driver", "trace"]
 
 [lib]
-name = "embassy_executor"
 
 [dependencies]
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-embassy-executor-macros = { package = "hazard3-executor-macros", version = "0.1.1", path = "../hazard3-executor-macros" }
-embassy-time-driver = { package = "hazard3-time-driver", version = "0.1.2", path = "../hazard3-time-driver", optional = true }
-embassy-executor-timer-queue = { package = "hazard3-executor-timer-queue", version = "0.1.1", path = "../hazard3-executor-timer-queue" }
-unitrait = { package = "hazard3-unitrait", version = "0.1.1", path = "../hazard3-unitrait" }
+hazard3-executor-macros = { version = "0.2.0", path = "../hazard3-executor-macros" }
+hazard3-time-driver = { version = "0.2.0", path = "../hazard3-time-driver", optional = true }
+hazard3-executor-timer-queue = { version = "0.2.0", path = "../hazard3-executor-timer-queue" }
+hazard3-unitrait = { version = "0.2.0", path = "../hazard3-unitrait" }
 critical-section = "1.1"
 
 document-features = "0.2.7"
@@ -141,13 +140,14 @@ harness = false
 [dev-dependencies]
 critical-section = { version = "1.1", features = ["std"] }
 trybuild = "1.0"
-embassy-sync = { package = "hazard3-sync", path = "../hazard3-sync" }
+hazard3-sync = { path = "../hazard3-sync" }
+hazard3-time-queue-utils = { path = "../hazard3-time-queue-utils" }
 rustversion = "1.0.21"
 
 [features]
 
 ## Enable nightly-only features
-nightly = ["embassy-executor-macros/nightly"]
+nightly = ["hazard3-executor-macros/nightly"]
 
 ## Enable defmt logging
 defmt = ["dep:defmt"]
@@ -203,7 +203,7 @@ portable-atomic = ["dep:portable-atomic"]
 #! ### Metadata
 
 ## Enable the `name` field in task metadata.
-metadata-name = ["embassy-executor-macros/metadata-name"]
+metadata-name = ["hazard3-executor-macros/metadata-name"]
 
 #! ### Executor
 
@@ -221,9 +221,9 @@ scheduler-deadline = []
 ## Enable "Highest Priority First" Scheduler. Adds some overhead.
 scheduler-priority = []
 
-## Enable the embassy_time_driver dependency.
+## Enable the hazard3-time-driver dependency.
 ## This can unlock extra APIs, for example for the `scheduler-deadline`
-embassy-time-driver = ["dep:embassy-time-driver"]
+hazard3-time-driver = ["dep:hazard3-time-driver"]
 
 [build-dependencies]
 arm-targets = { version = "0.4", optional = true }

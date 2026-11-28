@@ -1,7 +1,7 @@
 error[E0080]: evaluation panicked: unitrait: the implementation's associated type needs drop, but the opaque associated type has no `Drop` bound
   --> tests/ui/impl_needs_drop.rs:1:1
    |
- 1 | / unitrait::unitrait! {
+ 1 | / hazard3_unitrait::unitrait! {
  2 | |     pub trait FooDriver {
  3 | |         // No `Drop` bound, so the implementation's associated type must not need drop.
  4 | |         #[opaque(size = 8, align = 4)]
@@ -18,7 +18,7 @@ error[E0080]: evaluation panicked: unitrait: the implementation's associated typ
 note: erroneous constant encountered
   --> tests/ui/impl_needs_drop.rs:1:1
    |
- 1 | / unitrait::unitrait! {
+ 1 | / hazard3_unitrait::unitrait! {
  2 | |     pub trait FooDriver {
  3 | |         // No `Drop` bound, so the implementation's associated type must not need drop.
  4 | |         #[opaque(size = 8, align = 4)]
@@ -29,5 +29,3 @@ note: erroneous constant encountered
 ...
 32 |   foo_impl!(MyImpl);
    |   ----------------- in this macro invocation
-   |
-   = note: this note originates in the macro `foo_impl` (in Nightly builds, run with -Z macro-backtrace for more info)

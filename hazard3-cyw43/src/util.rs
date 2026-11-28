@@ -3,7 +3,7 @@
 use core::{mem, ops, ptr, slice};
 
 use aligned::{A4, Aligned, Alignment};
-use embassy_time::{Duration, Ticker};
+use hazard3_time::{Duration, Ticker};
 
 use crate::WithContext;
 

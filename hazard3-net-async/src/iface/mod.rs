@@ -12,20 +12,20 @@ pub mod dhcpv4;
 #[cfg(feature = "dhcpv4-server")]
 pub mod dhcpv4_server;
 
-use embassy_time::Instant;
+use hazard3_time::Instant;
 use heapless::Vec;
-use xarxa::config::IFACE_ADDR_COUNT;
-use xarxa::driver::{Capabilities, Driver, LinkState};
+use hazard3_net::config::IFACE_ADDR_COUNT;
+use hazard3_net::driver::{Capabilities, Driver, LinkState};
 #[cfg(feature = "medium-ieee802154")]
-use xarxa::error::Full;
+use hazard3_net::error::Full;
 #[cfg(feature = "multicast")]
-pub use xarxa::iface::MulticastError;
+pub use hazard3_net::iface::MulticastError;
 #[cfg(feature = "slaac")]
-pub use xarxa::iface::slaac;
-pub use xarxa::iface::{AddIfaceError, AddrError, AddrOrigin, IfaceHandle, Medium, MediumMismatch};
-use xarxa::wire::{HardwareAddress, IpAddr, IpCidr};
+pub use hazard3_net::iface::slaac;
+pub use hazard3_net::iface::{AddIfaceError, AddrError, AddrOrigin, IfaceHandle, Medium, MediumMismatch};
+use hazard3_net::wire::{HardwareAddress, IpAddr, IpCidr};
 #[cfg(feature = "medium-ieee802154")]
-use xarxa::wire::{Ieee802154Pan, SixlowpanAddressContext};
+use hazard3_net::wire::{Ieee802154Pan, SixlowpanAddressContext};
 
 use crate::time::instant_from_xarxa;
 use crate::{NoWake, Stack, Wake, WakeRunner, is_config_up, is_link_up, wait_iface, wake_if};
@@ -64,14 +64,14 @@ pub enum Preferred {
 }
 
 impl IfaceAddr {
-    fn from_xarxa(addr: xarxa::iface::IfaceAddr) -> Self {
+    fn from_xarxa(addr: hazard3_net::iface::IfaceAddr) -> Self {
         Self {
             cidr: addr.cidr,
             origin: addr.origin,
             preferred: match addr.preferred {
-                xarxa::iface::Preferred::Always => Preferred::Always,
-                xarxa::iface::Preferred::Until(until) => Preferred::Until(instant_from_xarxa(until)),
-                xarxa::iface::Preferred::Never => Preferred::Never,
+                hazard3_net::iface::Preferred::Always => Preferred::Always,
+                hazard3_net::iface::Preferred::Until(until) => Preferred::Until(instant_from_xarxa(until)),
+                hazard3_net::iface::Preferred::Never => Preferred::Never,
             },
         }
     }
@@ -111,13 +111,13 @@ impl<'d> Iface<'d> {
     }
 
     /// Borrow the interface. Whether the runner is woken afterwards is up to `f`.
-    fn with<R>(&self, f: impl FnOnce(&mut xarxa::iface::Iface<'_, 'd>) -> (R, WakeRunner)) -> R {
+    fn with<R>(&self, f: impl FnOnce(&mut hazard3_net::iface::Iface<'_, 'd>) -> (R, WakeRunner)) -> R {
         self.stack.with(|i| f(&mut i.stack.iface(self.handle)))
     }
 
     /// Borrow the interface to change its configuration, waking the runner if the
     /// configuration changed.
-    fn with_config<R>(&self, f: impl FnOnce(&mut xarxa::iface::Iface<'_, 'd>) -> R) -> R {
+    fn with_config<R>(&self, f: impl FnOnce(&mut hazard3_net::iface::Iface<'_, 'd>) -> R) -> R {
         self.with(|i| {
             let generation = i.config_generation();
             let r = f(i);
@@ -355,7 +355,7 @@ impl<'d> Iface<'d> {
     ///
     /// The client is not told: it keeps using the address until it next renews.
     #[cfg(feature = "dhcpv4-server")]
-    pub fn remove_dhcpv4_server_lease(&self, address: xarxa::wire::Ipv4Addr) -> bool {
+    pub fn remove_dhcpv4_server_lease(&self, address: hazard3_net::wire::Ipv4Addr) -> bool {
         self.with(|i| (i.remove_dhcpv4_server_lease(address), NoWake))
     }
 

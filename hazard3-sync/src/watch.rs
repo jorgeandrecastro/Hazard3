@@ -26,8 +26,8 @@ use crate::waitqueue::MultiWakerRegistration;
 /// ```
 ///
 /// use futures_executor::block_on;
-/// use embassy_sync::watch::Watch;
-/// use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+/// use hazard3_sync::watch::Watch;
+/// use hazard3_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 ///
 /// let f = async {
 ///

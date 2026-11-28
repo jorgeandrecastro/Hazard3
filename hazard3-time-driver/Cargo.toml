@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-time-driver"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 description = "Driver trait for embassy-time"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -376,11 +376,10 @@ tick-hz-5_242_880_000 = []
 #! </details>
 
 [lib]
-name = "embassy_time_driver"
 
 [dependencies]
 document-features = "0.2.7"
 
 [dev-dependencies]
 critical-section = "1"
-embassy-time-queue-utils = { package = "hazard3-time-queue-utils", path = "../hazard3-time-queue-utils" }
+hazard3-time-queue-utils = { path = "../hazard3-time-queue-utils" }

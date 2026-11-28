@@ -11,11 +11,11 @@ mod recv;
 mod send;
 mod socket;
 
-pub use xarxa::driver::PacketMeta;
+pub use hazard3_net::driver::PacketMeta;
 #[cfg(feature = "iface-bind")]
-pub use xarxa::iface::IfaceHandle;
-use xarxa::udp::UdpHandle;
-pub use xarxa::udp::{RecvPacket, UdpMetadata};
+pub use hazard3_net::iface::IfaceHandle;
+use hazard3_net::udp::UdpHandle;
+pub use hazard3_net::udp::{RecvPacket, UdpMetadata};
 
 pub use self::error::{BindError, RecvError, SendError};
 use crate::{Stack, wake_if};

@@ -71,14 +71,14 @@ pub mod pio;
 pub(crate) mod relocate;
 
 // Reexports
-pub use embassy_hal_internal::{Peri, PeripheralType};
+pub use hazard3_hal_internal::{Peri, PeripheralType};
 #[cfg(feature = "unstable-pac")]
-pub use rp_pac as pac;
+pub use hazard3_rp_pac as pac;
 #[cfg(not(feature = "unstable-pac"))]
-pub(crate) use rp_pac as pac;
+pub(crate) use hazard3_rp_pac as pac;
 
 #[cfg(feature = "_rp235x")]
-embassy_hal_internal::interrupt_mod!(
+hazard3_hal_internal::interrupt_mod!(
     TIMER0_IRQ_0,
     TIMER0_IRQ_1,
     TIMER0_IRQ_2,
@@ -136,7 +136,7 @@ embassy_hal_internal::interrupt_mod!(
 /// Example of how to bind one interrupt:
 ///
 /// ```rust,ignore
-/// use embassy_rp::{bind_interrupts, usb, peripherals};
+/// use hazard3_rp::{bind_interrupts, usb, peripherals};
 ///
 /// bind_interrupts!(
 ///     /// Binds the USB Interrupts.
@@ -191,7 +191,7 @@ macro_rules! bind_interrupts {
 }
 
 #[cfg(feature = "_rp235x")]
-embassy_hal_internal::peripherals! {
+hazard3_hal_internal::peripherals! {
     PIN_0,
     PIN_1,
     PIN_2,

@@ -1,6 +1,6 @@
 //! `#[symbol_prefix]` derives every symbol name, with per-item attributes as overrides.
 
-unitrait::unitrait! {
+hazard3_unitrait::unitrait! {
     /// A test trait deriving its symbol names from a prefix.
     #[symbol_prefix = "_unitrait_test_prefixed"]
     pub trait PrefixedDriver {
