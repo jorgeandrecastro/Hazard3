@@ -19,13 +19,13 @@ An [Embassy](https://embassy.dev) project.
 
 NOTE: Do not use this crate directly. The macros are re-exported by `embassy-executor`.
 
-## Migration to 0.2.0
+## Migration to 0.3
 
 The Rust library is now `hazard3_executor_macros` instead of `embassy_executor_macros`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-executor-macros = "0.2"
+hazard3-executor-macros = "0.3"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
