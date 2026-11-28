@@ -18,7 +18,7 @@ An [Embassy](https://embassy.dev) project.
 Internal implementation details for Embassy HALs. DO NOT USE DIRECTLY. Embassy HALs (`embassy-nrf`, `embassy-stm32`, `embassy-rp`) already reexport
 everything you need to use them effectively.
 
-## Migration to 0.2.0
+## Migration to 0.3
 
 The Rust library is now `hazard3_hal_internal` instead of `embassy_hal_internal`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
