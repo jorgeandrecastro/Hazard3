@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-executor"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "async/await executor designed for embedded usage"
@@ -108,10 +108,10 @@ features = ["defmt", "platform-cortex-m", "executor-thread", "executor-interrupt
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-hazard3-executor-macros = { version = "0.2.0", path = "../hazard3-executor-macros" }
-hazard3-time-driver = { version = "0.2.0", path = "../hazard3-time-driver", optional = true }
-hazard3-executor-timer-queue = { version = "0.2.0", path = "../hazard3-executor-timer-queue" }
-hazard3-unitrait = { version = "0.2.0", path = "../hazard3-unitrait" }
+hazard3-executor-macros = { version = "0.3.1", path = "../hazard3-executor-macros" }
+hazard3-time-driver = { version = "0.3.0", path = "../hazard3-time-driver", optional = true }
+hazard3-executor-timer-queue = { version = "0.3.0", path = "../hazard3-executor-timer-queue" }
+hazard3-unitrait = { version = "0.3.0", path = "../hazard3-unitrait" }
 critical-section = "1.1"
 
 document-features = "0.2.7"

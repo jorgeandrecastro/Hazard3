@@ -26,16 +26,16 @@ With `hazard3_net_driver_channel` you get a channel-like interface instead.
 The intended usage is to spawn a driver task in the background, passing
 packets between the hardware and the channels shared with `hazard3-net-async`.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_net_driver_channel` instead of `embassy_net_driver_channel`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-net-driver-channel = "0.2"
+hazard3-net-driver-channel = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## A note about deadlocks
 
@@ -122,10 +122,10 @@ forked network stack directly:
 
 ```toml
 [dependencies]
-hazard3-net-async = { version = "0.6" }
-hazard3-net-driver-channel = { version = "0.2" }
-hazard3-sync = { version = "0.2" }
-hazard3-net-driver = { version = "0.2" }
+hazard3-net-async = { version = "0.7" }
+hazard3-net-driver-channel = { version = "0.3" }
+hazard3-sync = { version = "0.3" }
+hazard3-net-driver = { version = "0.3" }
 ```
 
 The Rust crate names are `hazard3_net_async`, `hazard3_net_driver_channel`,

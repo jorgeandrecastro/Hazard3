@@ -27,7 +27,7 @@ The Rust library is now `hazard3_hal_internal` instead of `embassy_hal_internal`
 hazard3-hal-internal = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## RISC-V support
 

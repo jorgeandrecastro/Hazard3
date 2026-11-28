@@ -26,16 +26,16 @@ An async/await executor designed for embedded usage.
 - Fair: a task can't monopolize CPU time even if it's constantly being woken. All other tasks get a chance to run before a given task gets polled for the second time.
 - Creating multiple executor instances is supported, to run tasks with multiple priority levels. This allows higher-priority tasks to preempt lower-priority tasks.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_executor` instead of `embassy_executor`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-executor = "0.2"
+hazard3-executor = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 The `embassy-time-driver` feature is now named `hazard3-time-driver`.
 
 ## Platforms

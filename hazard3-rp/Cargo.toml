@@ -104,18 +104,18 @@ binary-info = [
 ]
 
 [dependencies]
-hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
+hazard3-sync = { version = "0.3.0", path = "../hazard3-sync" }
 
-hazard3-time-driver = { version = "0.2.0",
+hazard3-time-driver = { version = "0.3.0",
     path = "../hazard3-time-driver",
     optional = true,
 }
 
-hazard3-time-queue-utils = { version = "0.2.0", path = "../hazard3-time-queue-utils",
+hazard3-time-queue-utils = { version = "0.3.0", path = "../hazard3-time-queue-utils",
     optional = true,
 }
 
-hazard3-time = { version = "0.2.0",
+hazard3-time = { version = "0.3.0",
     path = "../hazard3-time",
 }
 
@@ -124,7 +124,7 @@ hazard3-futures = {
     path = "../hazard3-futures",
 }
 
-hazard3-hal-internal = { version = "0.2.0",
+hazard3-hal-internal = { version = "0.3.1",
     path = "../hazard3-hal-internal",
 }
 
@@ -132,11 +132,11 @@ hazard3-embedded-hal = { version = "0.3.0",
     path = "../hazard3-embedded-hal",
 }
 
-hazard3-usb-driver = { version = "0.2.0",
+hazard3-usb-driver = { version = "0.3.0",
     path = "../hazard3-usb-driver",
 }
 
-hazard3-executor = { version = "0.2.0",
+hazard3-executor = { version = "0.3.0",
     path = "../hazard3-executor",
     optional = true,
 }
@@ -158,7 +158,7 @@ embedded-io-async = "0.7.0"
 embedded-storage = "0.3"
 embedded-storage-async = "0.4.1"
 
-hazard3-rp-pac = { version = "0.3.0",
+hazard3-rp-pac = { version = "0.4.0",
     path = "../hazard3-rp-pac",
 }
 

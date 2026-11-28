@@ -19,8 +19,8 @@ imports from `embassy_futures` to `hazard3_futures`:
 hazard3-futures = "0.1"
 ```
 
-Version 0.1.0 is the first planned release of this fork; check crates.io for
-availability. The `defmt` and `log` features remain available.
+Version 0.1.0 is published on crates.io. The `defmt` and `log` features remain
+available.
 
 ## Interoperability
 

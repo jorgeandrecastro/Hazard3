@@ -27,17 +27,17 @@ hazard3-embedded-hal = {
 }
 
 hazard3-executor = {
-    version = "0.2.0",
+    version = "0.3.0",
     features = ["executor-thread", "defmt"]
 }
 
 hazard3-time = {
-    version = "0.2.0",
+    version = "0.3.0",
     features = ["defmt", "defmt-timestamp-uptime"]
 }
 
 hazard3-sync = {
-    version = "0.2.0"
+    version = "0.3.0"
 }
 
 hazard3-futures = "0.1.0"
@@ -85,18 +85,18 @@ embassy-ssd1306 = {
 }
 
 hazard3-cyw43 = {
-    version = "0.4.0",
+    version = "0.5.2",
     path = "../../../../hazard3-cyw43",
     features = ["defmt", "action-frames"]
 }
 cyw43-setup = "1.0.0"
 hazard3-cyw43-pio = {
-    version = "0.4.0",
+    version = "0.5.0",
     path = "../../../../hazard3-cyw43-pio",
 }
 
 hazard3-rp-pac = {
-    version = "0.3.0",
+    version = "0.4.0",
     path = "../../../../hazard3-rp-pac",
     features = ["rp235x"]
 }

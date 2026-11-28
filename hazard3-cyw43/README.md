@@ -21,7 +21,7 @@ The Rust library is now `hazard3_cyw43` instead of `cyw43`. Update imports and m
 hazard3-cyw43 = "0.5"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 This crate now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## ESP-NOW RISC-V validation
@@ -144,11 +144,7 @@ The ESP32-C3 matches each received PONG against its pending PING and measures th
 The benchmark configuration targeted 10,000 exchanges. The recorded measurement below corresponds to the first 1,000 exchanges.
 
 | Metric | Measured result |
-|---|---:|cargo doc \
-    --target riscv32imac-unknown-none-elf \
-    --features hazard3-rp/rp235xa \
-    --no-deps \
-    --document-private-items
+|---|---:|
 | Completed exchanges | 1,000 |
 | TX attempts | 1,000 |
 | TX submissions | 1,000 |
@@ -263,10 +259,13 @@ cargo doc \
 
 ## Publishing
 
-Publish `hazard3-net-driver-channel` first, then package and publish this crate:
+Before publishing this crate, make sure its dependencies are available: `hazard3-time` 0.3,
+`hazard3-sync` 0.3, and `hazard3-net-driver-channel` 0.3. The channel crate requires
+`hazard3-net-driver` 0.3; `hazard3-futures` 0.1 is already published.
 
 ```sh
 cargo package --target riscv32imac-unknown-none-elf
+cargo publish --dry-run --target riscv32imac-unknown-none-elf
 cargo publish --target riscv32imac-unknown-none-elf
 ```
 

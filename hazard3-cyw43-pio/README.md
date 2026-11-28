@@ -17,7 +17,7 @@ The Rust library is now `hazard3_cyw43_pio` instead of `cyw43_pio`. Update impor
 hazard3-cyw43-pio = "0.5"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 The transport now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## ESP-NOW RISC-V transport
@@ -83,10 +83,15 @@ cargo doc \
     --document-private-items
 ```
 
+Before packaging, publish `hazard3-cyw43` 0.5.2, `hazard3-rp` 0.4.0, and
+the compatibility-test dependency `hazard3-net-async` 0.7.0.
 Package and publish with the RP2350A target configuration:
 
 ```sh
 cargo package \
+    --target riscv32imac-unknown-none-elf \
+    --features hazard3-rp/rp235xa
+cargo publish --dry-run \
     --target riscv32imac-unknown-none-elf \
     --features hazard3-rp/rp235xa
 cargo publish \

@@ -35,7 +35,7 @@ The Rust library is now `hazard3_embedded_hal` instead of `embassy_embedded_hal`
 hazard3-embedded-hal = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 The async adapters now use `hazard3-futures` rather than `embassy-futures`.
 
 ## Acknowledgements

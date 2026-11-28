@@ -21,16 +21,16 @@ As a HAL user, you should not need to depend on this crate.
 As a HAL implementer, you need to depend on this crate if you want to implement a time driver,
 but how you should do so is documented in `hazard3-time-driver`.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_time_queue_utils` instead of `embassy_time_queue_utils`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-time-queue-utils = "0.2"
+hazard3-time-queue-utils = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 The Cargo `links` key is now `hazard3-time-queue`, and the build metadata keys
 use `hazard3` instead of `embassy`. The historical ABI symbols remain unchanged.
 

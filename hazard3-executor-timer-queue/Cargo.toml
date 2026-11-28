@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-executor-timer-queue"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Timer queue item and interface between embassy-executor and timer queues"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -23,7 +23,7 @@ links = "embassy-executor-timer-queue"
 [lib]
 
 [dependencies]
-hazard3-unitrait = { version = "0.2.0", path = "../hazard3-unitrait" }
+hazard3-unitrait = { version = "0.3.0", path = "../hazard3-unitrait" }
 
 [features]
 #! ### Timer Queue Item Size

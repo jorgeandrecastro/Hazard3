@@ -37,7 +37,7 @@ The Rust library is now `hazard3_rp` instead of `embassy_rp`. Update imports and
 hazard3-rp = "0.4"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 The HAL now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## RISC-V support (RP2350 Hazard3)
@@ -63,7 +63,7 @@ supports the Arm cores. This fork targets **only** the Hazard3 cores; use upstre
 | `rp235xb` | RP2350B / RP2354B |
 | `riscv` | Hazard3 support (default) |
 | `rt` | Runtime support |
-| `time-driver` | Use the TIMER peripheral as `embassy-time` driver (1 MHz) |
+| `time-driver` | Use the TIMER peripheral as `hazard3-time` driver (1 MHz) |
 | `critical-section-impl` | Provide a `critical-section` implementation |
 | `imagedef-none` | Do not embed an image definition (provided by `rp2350-riscv-linker`) |
 | `defmt` | `defmt` logging support |
@@ -162,9 +162,9 @@ application to avoid duplicate or incompatible copies of the same crate:
 `hazard3-futures`.
 
 ```toml
-hazard3-time = { version = "0.2" }
-hazard3-executor = { version = "0.2", features = ["platform-riscv32", "executor-thread"] }
-hazard3-sync = { version = "0.2" }
+hazard3-time = { version = "0.3" }
+hazard3-executor = { version = "0.3", features = ["platform-riscv32", "executor-thread"] }
+hazard3-sync = { version = "0.3" }
 ```
 
 ### Status and limitations
@@ -183,9 +183,9 @@ hazard3-sync = { version = "0.2" }
 This crate is based on [`embassy-rp`](https://github.com/embassy-rs/embassy/tree/main/embassy-rp) from the Embassy project; all credit
 for the HAL goes to the Embassy team and contributors. Licensed under either of Apache License 2.0 or MIT, at your option, like upstream.
 
-## `embassy-time` time driver
+## `hazard3-time` time driver
 
-If the `time-driver` feature is enabled, the HAL uses the TIMER peripheral as a global time driver for [embassy-time](https://crates.io/crates/embassy-time), with a tick rate of 1MHz.
+If the `time-driver` feature is enabled, the HAL uses the TIMER peripheral as a global time driver for [hazard3-time](https://crates.io/crates/hazard3-time), with a tick rate of 1MHz.
 
 ## Embedded-hal
 
@@ -195,8 +195,8 @@ The `embassy-rp` HAL implements the traits from [embedded-hal](https://crates.io
 
 This crate can run on any executor.
 
-Optionally, some features requiring [`embassy-time`](https://crates.io/crates/embassy-time) can be activated with the `time-driver` feature. If you enable it,
-you must link an `embassy-time` driver in your project.
+Optionally, some features requiring [`hazard3-time`](https://crates.io/crates/hazard3-time) can be activated with the `time-driver` feature. If you enable it,
+you must link a `hazard3-time` driver in your project.
 
 ## Acknowledgements
 

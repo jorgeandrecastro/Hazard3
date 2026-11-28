@@ -16,16 +16,16 @@
 
 Implementation detail of the `unitrait` crate
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_unitrait_macros` instead of `unitrait_macros`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-unitrait-macros = "0.2"
+hazard3-unitrait-macros = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Acknowledgements
 

@@ -27,16 +27,16 @@ Tick counts are 64 bits. The default tick rate of 1Mhz supports
 representing time spans of up to ~584558 years, which is big enough for all practical
 purposes and allows not having to worry about overflows.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_time` instead of `embassy_time`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-time = "0.2"
+hazard3-time = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Global time driver
 

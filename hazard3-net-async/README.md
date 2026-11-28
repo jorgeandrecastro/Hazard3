@@ -15,22 +15,22 @@
 
 `hazard3-net-async` is a no-std, no-alloc async network stack designed for embedded systems.
 
-It uses the [`hazard3-net`](../hazard3-net/) network stack (0.3), adds convenient async wrappers,
+It uses the [`hazard3-net`](../hazard3-net/) network stack (0.4), adds convenient async wrappers,
 and implements the main loop. `hazard3-net` and [`hazard3-net-driver`](../hazard3-net/hazard3-net-driver/)
 are copies of upstream Xarxa pinned to revision `8f6f33b131deb9ff3290e0e01079537e1ed7b2ad`,
 prepared under new package names so that the crates.io release of `hazard3-net-async` has no
 Git dependencies. The Rust library names are `hazard3_net` and `hazard3_net_driver`.
 
-## Migration to 0.6.0
+## Migration to 0.7.0
 
 The Rust library remains `hazard3_net_async`; the dependency keys and dependency versions used by this crate have changed. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-net-async = "0.6"
+hazard3-net-async = "0.7"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Table of contents
 
@@ -53,7 +53,7 @@ The Rust library is named `hazard3_net_async`, the package is named `hazard3-net
 
 ```toml
 [dependencies]
-hazard3-net-async = { version = "0.6", features = [
+hazard3-net-async = { version = "0.7", features = [
     "tcp",
     "udp",
     "dns",

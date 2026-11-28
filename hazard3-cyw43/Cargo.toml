@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-cyw43"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2024"
 description = "Rust driver for the CYW43439 WiFi chip, used in the Raspberry Pi Pico W."
 keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
@@ -26,10 +26,10 @@ firmware-logs = []
 action-frames = []
 
 [dependencies]
-hazard3-time = { version = "0.2.0", path = "../hazard3-time"}
-hazard3-sync = { version = "0.2.0", path = "../hazard3-sync"}
+hazard3-time = { version = "0.3.0", path = "../hazard3-time"}
+hazard3-sync = { version = "0.3.0", path = "../hazard3-sync"}
 hazard3-futures = { version = "0.1.0", path = "../hazard3-futures"}
-hazard3-net-driver-channel = { version = "0.2.0", path = "../hazard3-net-driver-channel" }
+hazard3-net-driver-channel = { version = "0.3.0", path = "../hazard3-net-driver-channel" }
 
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.17", optional = true }
@@ -45,7 +45,7 @@ bt-hci-transport = { version = "0.1.0", optional = true }
 
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 critical-section = { version = "1.1", features = ["std"] }
-hazard3-time = { version = "0.2.0", path = "../hazard3-time", features = ["std", "generic-queue-8"] }
+hazard3-time = { version = "0.3.0", path = "../hazard3-time", features = ["std", "generic-queue-8"] }
 
 [package.metadata.embassy]
 build = [

@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-net-async"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Async TCP/IP network stack for embedded systems"
@@ -147,18 +147,18 @@ packet-log = ["hazard3-net/packet-log"]
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-hazard3-net = { version = "0.3.0",
+hazard3-net = { version = "0.4.0",
     path = "../hazard3-net",
     default-features = false,
     features = ["async"]
 }
-hazard3-net-driver = { version = "0.2.0",
+hazard3-net-driver = { version = "0.3.0",
     path = "../hazard3-net/hazard3-net-driver",
     default-features = false,
     features = ["async"]
 }
-hazard3-time = { version = "0.2.0", path = "../hazard3-time" }
-hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
+hazard3-time = { version = "0.3.0", path = "../hazard3-time" }
+hazard3-sync = { version = "0.3.0", path = "../hazard3-sync" }
 embedded-io-async = { version = "0.7.0" }
 
 heapless = { version = "0.9", default-features = false }

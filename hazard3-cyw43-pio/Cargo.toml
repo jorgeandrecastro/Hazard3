@@ -14,13 +14,13 @@ exclude = ["target/", "Cargo.lock"]
 [lib]
 
 [dependencies]
-hazard3-cyw43 = { version = "0.5.0", path = "../hazard3-cyw43" }
+hazard3-cyw43 = { version = "0.5.2", path = "../hazard3-cyw43" }
 hazard3-rp = { version = "0.4.0", path = "../hazard3-rp" }
 hazard3-futures = { version = "0.1.0", path = "../hazard3-futures" }
 defmt = { version = "1.0.1", optional = true }
 
 [dev-dependencies]
-hazard3-net-async = { version = "0.6.0", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
+hazard3-net-async = { version = "0.7.0", path = "../hazard3-net-async", features = ["medium-ethernet", "ipv4"] }
 
 [[test]]
 name = "compatibility"

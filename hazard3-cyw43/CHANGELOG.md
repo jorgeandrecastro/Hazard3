@@ -4,7 +4,18 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 2026-11-28 (0.5.0)
+## 0.5.2 - 2026-11-28
+
+### Changed
+
+- Update Hazard3 dependencies to the compatible 0.3.x crate releases.
+- Fix the benchmark results table in the README.
+
+## 0.5.1 - 2026-11-28
+
+- Bump the package version following the 0.5.0 publication.
+
+## 0.5.0 - 2026-11-28
 
 ### Breaking changes
 

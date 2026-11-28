@@ -26,16 +26,16 @@ if the driver trait has not had breaking changes.
 
 > **Note (0.1.1):** the `links = "embassy-time"` key was removed from the manifest. Make sure only one copy of this crate (and a single `tick-*` configuration) ends up in your binary.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_time_driver` instead of `embassy_time_driver`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-time-driver = "0.2"
+hazard3-time-driver = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## How it works
 

@@ -5,14 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 2026-11-28 (0.5.0)
+## 0.5.0 - 2026-11-28
 
 ### Breaking changes
 
 - **Breaking:** rename the Rust library `cyw43_pio` to `hazard3_cyw43_pio`; update imports and macro paths.
-- Replace `embassy-futures` with `hazard3-futures` 0.1 and update `hazard3-cyw43` and `hazard3-rp` to 0.4.
+- Replace `embassy-futures` with `hazard3-futures` 0.1; use `hazard3-cyw43` 0.5 and `hazard3-rp` 0.4.
 - Use matching new Hazard3 dependency versions where applicable.
-- hazard3-futures v0.1.0 instead of embassy-futures.
 
 ### Other changes
 

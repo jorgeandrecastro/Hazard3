@@ -18,16 +18,16 @@ zero-copy sockets and first-class support for RISC-V.
 `hazard3-net` supports `no_std` environments and does not need a heap. A heap-backed pool is
 available behind the `alloc` feature.
 
-## Migration to 0.3.0
+## Migration to 0.4.0
 
 The Rust library is now `hazard3_net` instead of `xarxa`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-net = "0.3"
+hazard3-net = "0.4"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Table of contents
 
@@ -62,7 +62,7 @@ The Rust crate is named `hazard3_net`, and the package is named `hazard3-net`:
 
 ```toml
 [dependencies]
-hazard3-net = { version = "0.3", default-features = false, features = [
+hazard3-net = { version = "0.4", default-features = false, features = [
     "medium-ethernet",
     "ipv4",
     "udp",

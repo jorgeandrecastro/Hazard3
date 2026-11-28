@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-net-driver-channel"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "High-level channel-based driver for the `embassy-net` async TCP/IP network stack."
@@ -31,8 +31,8 @@ features = ["defmt"]
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }
 
-hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
-hazard3-net-driver = { version = "0.2.0", path = "../hazard3-net/hazard3-net-driver", features = ["async"] }
+hazard3-sync = { version = "0.3.0", path = "../hazard3-sync" }
+hazard3-net-driver = { version = "0.3.0", path = "../hazard3-net/hazard3-net-driver", features = ["async"] }
 
 [features]
 defmt = ["dep:defmt", "hazard3-net-driver/defmt"]

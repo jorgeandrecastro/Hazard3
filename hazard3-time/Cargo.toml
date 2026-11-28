@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-time"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Instant and Duration for embedded no-std systems, with async timer support"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -452,8 +452,8 @@ tick-hz-5_242_880_000 = ["hazard3-time-driver/tick-hz-5_242_880_000"]
 [lib]
 
 [dependencies]
-hazard3-time-driver = { version = "0.2.0", path = "../hazard3-time-driver" }
-hazard3-time-queue-utils = { version = "0.2.0", path = "../hazard3-time-queue-utils", optional = true}
+hazard3-time-driver = { version = "0.3.0", path = "../hazard3-time-driver" }
+hazard3-time-queue-utils = { version = "0.3.0", path = "../hazard3-time-queue-utils", optional = true}
 
 defmt = { version = "1.0.1", optional = true }
 log = { version = "0.4.14", optional = true }

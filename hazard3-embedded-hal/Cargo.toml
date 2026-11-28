@@ -34,8 +34,8 @@ time = ["dep:hazard3-time"]
 
 [dependencies]
 hazard3-futures = { version = "0.1.0", path = "../hazard3-futures" }
-hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
-hazard3-time = { version = "0.2.0", path = "../hazard3-time", optional = true }
+hazard3-sync = { version = "0.3.0", path = "../hazard3-sync" }
+hazard3-time = { version = "0.3.0", path = "../hazard3-time", optional = true }
 embedded-hal-02 = { package = "embedded-hal", version = "0.2.6", features = [
     "unproven",
 ] }

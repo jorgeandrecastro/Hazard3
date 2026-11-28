@@ -23,16 +23,16 @@ timer queues yourself, without using [`hazard3-time-queue-utils`](https://crates
 
 As a HAL user, you should not need to depend on this crate.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_executor_timer_queue` instead of `embassy_executor_timer_queue`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-executor-timer-queue = "0.2"
+hazard3-executor-timer-queue = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 Rename calls to `TimerQueueItem::from_embassy_waker` to `from_hazard3_waker`.
 
 ## Acknowledgements

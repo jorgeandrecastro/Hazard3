@@ -31,16 +31,16 @@ Synchronization primitives and data structures with async support:
 - [`MultiWakerRegistration`](waitqueue::MultiWakerRegistration) - Utility registering and waking multiple `Waker`'s.
 - [`LazyLock`](lazy_lock::LazyLock) - A value which is initialized on the first access
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_sync` instead of `embassy_sync`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-sync = "0.2"
+hazard3-sync = "0.3"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Interoperability
 

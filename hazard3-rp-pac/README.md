@@ -21,16 +21,16 @@ The generated definitions are adapted to make the crate more suitable for writin
 
 This crate is intended to be used by the [`hazard3-rp`](https://crates.io/crates/hazard3-rp) Rust Hardware Abstraction Layer (HAL).
 
-## Migration to 0.3.0
+## Migration to 0.4.0
 
 The Rust library is now `hazard3_rp_pac` instead of `rp_pac`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-rp-pac = "0.3"
+hazard3-rp-pac = "0.4"
 ```
 
-Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+Use compatible versions of the other Hazard3 crates together; older releases may use different library names.
 
 ## Supported chips
 
@@ -62,7 +62,7 @@ The interrupt enumeration retains the hardware interrupt numbers defined by the 
 This crate has no default chip feature. You must explicitly enable the `rp235x` feature.
 
 ```toml
-hazard3-rp-pac = { version = "0.3", features = ["rp235x"] }
+hazard3-rp-pac = { version = "0.4", features = ["rp235x"] }
 ```
 
 Import the library as `hazard3_rp_pac`:
@@ -91,8 +91,14 @@ cargo doc --features rp235x
 Before publishing:
 
 ```bash
-cargo publish --dry-run
-cargo publish
+cargo publish --dry-run \
+  --target riscv32imac-unknown-none-elf \
+  --no-default-features \
+  --features rp235x
+cargo publish \
+  --target riscv32imac-unknown-none-elf \
+  --no-default-features \
+  --features rp235x
 ```
 
 ### RISC-V target

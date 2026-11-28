@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-unitrait"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Traits with a single global implementation, resolved at link time"
 repository = "https://github.com/jorgeandrecastro/Hazard3"
@@ -17,7 +17,7 @@ categories = [
 [lib]
 
 [dependencies]
-hazard3-unitrait-macros = { version = "0.2.0", path = "../hazard3-unitrait-macros" }
+hazard3-unitrait-macros = { version = "0.3.0", path = "../hazard3-unitrait-macros" }
 
 [dev-dependencies]
 trybuild = "1.0"
