@@ -24,7 +24,7 @@ The Rust library is now `hazard3_hal_internal` instead of `embassy_hal_internal`
 
 ```toml
 [dependencies]
-hazard3-hal-internal = "0.2"
+hazard3-hal-internal = "0.3"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
