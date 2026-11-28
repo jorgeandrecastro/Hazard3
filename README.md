@@ -59,6 +59,7 @@ dependencies. Check crates.io for each package's availability.
 | `hazard3-executor`, `hazard3-executor-macros`, `hazard3-executor-timer-queue` | `hazard3_executor`, `hazard3_executor_macros`, `hazard3_executor_timer_queue` | Executor |
 | `hazard3-time`, `hazard3-time-driver`, `hazard3-time-queue-utils` | `hazard3_time`, `hazard3_time_driver`, `hazard3_time_queue_utils` | Timekeeping |
 | `hazard3-sync` | `hazard3_sync` | Synchronization primitives |
+| [`hazard3-futures`](hazard3-futures/) | `hazard3_futures` | Future combinators and utilities |
 | `hazard3-embedded-hal` | `hazard3_embedded_hal` | `embedded-hal` adapters |
 | `hazard3-usb-driver` | `hazard3_usb_driver` | USB driver traits |
 | `hazard3-hal-internal` | `hazard3_hal_internal` | HAL internals |
@@ -91,6 +92,7 @@ For linking and flashing on the Pico 2 in RISC-V mode, use
 | `embassy-hal-internal-riscv` | `hazard3-hal-internal` |
 | `unitrait-riscv` | `hazard3-unitrait` |
 | `unitrait-macros-riscv` | `hazard3-unitrait-macros` |
+| `embassy-futures` | `hazard3-futures` |
 
 Replace old dependency keys and Rust imports, for example `embassy-time` and
 `embassy_time`, with `hazard3-time` and `hazard3_time`. This is a source-breaking
@@ -107,7 +109,7 @@ the old Rust library names:
 
 ```toml
 [dependencies]
-hazard3-rp = { version = "0.3", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+hazard3-rp = { version = "0.4", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
 hazard3-time = "0.2"
 hazard3-executor = { version = "0.2", features = ["platform-riscv32", "executor-thread"] }
 hazard3-sync = "0.2"

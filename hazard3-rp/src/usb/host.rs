@@ -1371,7 +1371,7 @@ impl<'d, T: SealedHostInstance, E: pipe::Type, D: pipe::Direction> Channel<'d, T
             }
 
             drop(guard);
-            embassy_futures::yield_now().await;
+            hazard3_futures::yield_now().await;
         }
     }
 

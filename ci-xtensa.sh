@@ -15,3 +15,8 @@ for features in "" "generic-queue-8"; do
     cargo check --release --manifest-path hazard3-time-queue-utils/Cargo.toml \
         --target xtensa-esp32s2-none-elf -Z build-std=core,alloc --features "$features"
 done
+
+for features in "" "defmt" "log"; do
+    cargo check --release --manifest-path hazard3-futures/Cargo.toml \
+        --target xtensa-esp32s2-none-elf -Z build-std=core,alloc --features "$features"
+done

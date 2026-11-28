@@ -249,7 +249,7 @@ where
         let (rx, tx) = self.sm.rx_tx();
         let rx_fut = rx.dma_pull(&mut self.dma_rx, slice::from_mut(&mut status), false);
         let tx_fut = tx.dma_push(&mut self.dma_tx, write, false);
-        embassy_futures::join::join(tx_fut, rx_fut).await;
+        hazard3_futures::join::join(tx_fut, rx_fut).await;
         status
     }
 
@@ -277,7 +277,7 @@ where
         let (rx, tx) = self.sm.rx_tx();
         let rx_fut = rx.dma_pull(&mut self.dma_rx, read, false);
         let tx_fut = tx.dma_push(&mut self.dma_tx, slice::from_ref(&cmd), false);
-        embassy_futures::join::join(tx_fut, rx_fut).await;
+        hazard3_futures::join::join(tx_fut, rx_fut).await;
 
         let mut status = 0;
         self.sm

@@ -1,7 +1,7 @@
 use core::slice;
 
 use aligned::{A4, Aligned};
-use embassy_futures::yield_now;
+use hazard3_futures::yield_now;
 use hazard3_time::{Duration, Timer};
 use embedded_hal_1::digital::OutputPin;
 

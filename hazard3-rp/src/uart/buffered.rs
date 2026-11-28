@@ -572,7 +572,7 @@ impl<'d> BufferedUartTx<'d> {
         // The ring buffer is empty, but the hardware FIFO and shift register may not be.
         // There's no interrupt for that, so poll.
         while self.busy() {
-            embassy_futures::yield_now().await;
+            hazard3_futures::yield_now().await;
         }
         Ok(())
     }

@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-embedded-hal"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Collection of utilities to use `embedded-hal` and `embedded-storage` traits with Embassy."
@@ -33,7 +33,7 @@ time = ["dep:hazard3-time"]
 [lib]
 
 [dependencies]
-embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
+hazard3-futures = { version = "0.1.0", path = "../hazard3-futures" }
 hazard3-sync = { version = "0.2.0", path = "../hazard3-sync" }
 hazard3-time = { version = "0.2.0", path = "../hazard3-time", optional = true }
 embedded-hal-02 = { package = "embedded-hal", version = "0.2.6", features = [

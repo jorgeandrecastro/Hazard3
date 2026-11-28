@@ -20,7 +20,7 @@ use hazard3_rp::pio::{
 use hazard3_rp::time::Hertz;
 
 use hazard3_time::{Duration, Ticker};
-use embassy_futures::select::{select, Either};
+use hazard3_futures::select::{select, Either};
 
 use hazard3_cyw43_pio::{PioSpi, DEFAULT_CLOCK_DIVIDER};
 use cyw43_setup::{CLM, FW, NVRAM};

@@ -23,7 +23,7 @@ defmt-rtt = "1.0.0"
 # ============================================================
 
 hazard3-embedded-hal = {
-    version = "0.2.0"
+    version = "0.3.0"
 }
 
 hazard3-executor = {
@@ -40,10 +40,10 @@ hazard3-sync = {
     version = "0.2.0"
 }
 
-embassy-futures = "0.1.2"
+hazard3-futures = "0.1.0"
 
 hazard3-rp = {
-    version = "0.3.0",
+    version = "0.4.0",
     default-features = false,
     features = [
         "rp235xa",
@@ -85,13 +85,13 @@ embassy-ssd1306 = {
 }
 
 hazard3-cyw43 = {
-    version = "0.3.0",
+    version = "0.4.0",
     path = "../../../../hazard3-cyw43",
     features = ["defmt", "action-frames"]
 }
 cyw43-setup = "1.0.0"
 hazard3-cyw43-pio = {
-    version = "0.3.0",
+    version = "0.4.0",
     path = "../../../../hazard3-cyw43-pio",
 }
 
@@ -108,7 +108,7 @@ hazard3-embedded-hal = { path = "../../../../hazard3-embedded-hal" }
 hazard3-executor = { path = "../../../../hazard3-executor" }
 hazard3-executor-macros = { path = "../../../../hazard3-executor-macros" }
 hazard3-executor-timer-queue = { path = "../../../../hazard3-executor-timer-queue" }
-embassy-futures = { path = "../../../../embassy-futures" }
+hazard3-futures = { path = "../../../../hazard3-futures" }
 hazard3-hal-internal = { path = "../../../../hazard3-hal-internal" }
 hazard3-rp = { path = "../../../../hazard3-rp" }
 hazard3-sync = { path = "../../../../hazard3-sync" }

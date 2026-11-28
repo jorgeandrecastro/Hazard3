@@ -1,6 +1,6 @@
 [package]
 name = "hazard3-cyw43-pio"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 description = "RP2350 RISC-V PIO SPI implementation for cyw43"
 keywords = ["embedded", "cyw43", "embassy-net", "embedded-hal-async", "wifi"]
@@ -14,9 +14,9 @@ exclude = ["target/", "Cargo.lock"]
 [lib]
 
 [dependencies]
-hazard3-cyw43 = { version = "0.3.0", path = "../hazard3-cyw43" }
-hazard3-rp = { version = "0.3.0", path = "../hazard3-rp" }
-embassy-futures = { version = "0.1.2", path = "../embassy-futures" }
+hazard3-cyw43 = { version = "0.4.0", path = "../hazard3-cyw43" }
+hazard3-rp = { version = "0.4.0", path = "../hazard3-rp" }
+hazard3-futures = { version = "0.1.0", path = "../hazard3-futures" }
 defmt = { version = "1.0.1", optional = true }
 
 [dev-dependencies]

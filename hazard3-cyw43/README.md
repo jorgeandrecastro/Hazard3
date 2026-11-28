@@ -12,16 +12,17 @@ This fork targets RISC-V and uses forked time, synchronization, and network chan
 
 Licensed under MIT OR Apache-2.0.
 
-## Migration to 0.3.0
+## Migration to 0.4.0
 
 The Rust library is now `hazard3_cyw43` instead of `cyw43`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-cyw43 = "0.3"
+hazard3-cyw43 = "0.4"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+This crate now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## ESP-NOW RISC-V validation
 

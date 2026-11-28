@@ -4,7 +4,7 @@ use core::sync::atomic::Ordering::Relaxed;
 use core::task::Poll;
 
 use aligned::{A4, Aligned};
-use embassy_futures::select::{Either, Either4, select, select4};
+use hazard3_futures::select::{Either, Either4, select, select4};
 use hazard3_net_driver_channel as ch;
 use hazard3_net_driver_channel::driver::LinkState;
 use hazard3_time::Duration;

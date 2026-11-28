@@ -1,7 +1,7 @@
 
 [package]
 name = "hazard3-rp"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Embassy Hardware Abstraction Layer (HAL) for RP235x Hazard3 RISC-V cores"
@@ -119,16 +119,16 @@ hazard3-time = { version = "0.2.0",
     path = "../hazard3-time",
 }
 
-embassy-futures = {
-    version = "0.1.2",
-    path = "../embassy-futures",
+hazard3-futures = {
+    version = "0.1.0",
+    path = "../hazard3-futures",
 }
 
 hazard3-hal-internal = { version = "0.2.0",
     path = "../hazard3-hal-internal",
 }
 
-hazard3-embedded-hal = { version = "0.2.0",
+hazard3-embedded-hal = { version = "0.3.0",
     path = "../hazard3-embedded-hal",
 }
 

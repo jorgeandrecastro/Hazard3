@@ -8,16 +8,17 @@ RISC-V fork of Embassy's PIO driver for the CYW43 half-duplex SPI bus on the
 RP2350, including the Pico 2 W. It uses `hazard3-rp` and `hazard3-cyw43`;
 it does not support RP2040 or Arm.
 
-## Migration to 0.3.0
+## Migration to 0.4.0
 
 The Rust library is now `hazard3_cyw43_pio` instead of `cyw43_pio`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-cyw43-pio = "0.3"
+hazard3-cyw43-pio = "0.4"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+The transport now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## ESP-NOW RISC-V transport
 
@@ -44,9 +45,9 @@ Use the matching forked packages together:
 
 ```toml
 [dependencies]
-hazard3-cyw43 = { version = "0.3" }
-hazard3-cyw43-pio = { version = "0.3" }
-hazard3-rp = { version = "0.3", features = ["rp235xa"] }
+hazard3-cyw43 = { version = "0.4" }
+hazard3-cyw43-pio = { version = "0.4" }
+hazard3-rp = { version = "0.4", features = ["rp235xa"] }
 ```
 
 Select `rp235xb` instead for an RP2350B. The current `PioSpi::new` takes

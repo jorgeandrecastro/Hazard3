@@ -32,6 +32,11 @@ for features in "" "generic-queue-8"; do
         --target thumbv6m-none-eabi --features "$features"
 done
 
+for features in "" "defmt" "log"; do
+    cargo check --release --manifest-path hazard3-futures/Cargo.toml \
+        --target thumbv6m-none-eabi --features "$features"
+done
+
 # The pinned devtool's build metadata cannot disable default features. Check
 # MCXN without its default time driver across the distinct N23/N24/N5/N9 paths.
 for chip in mcxn235 mcxn247 mcxn556 mcxn947; do

@@ -132,13 +132,13 @@ impl<'d, PIO: Instance, const SM: usize> PioUartTx<'d, PIO, SM> {
     pub async fn flush(&mut self) {
         // There's no PIO interrupt for "TX FIFO empty" or "stalled", so poll.
         while !self.sm_tx.tx().empty() {
-            embassy_futures::yield_now().await;
+            hazard3_futures::yield_now().await;
         }
         // The FIFO is empty but the SM may still be shifting out the last byte. It stalls
         // on `pull` once the stop bit is done, so clear the stall flag and wait for it to be set again.
         let _ = self.sm_tx.tx().stalled();
         while !self.sm_tx.tx().stalled() {
-            embassy_futures::yield_now().await;
+            hazard3_futures::yield_now().await;
         }
     }
 

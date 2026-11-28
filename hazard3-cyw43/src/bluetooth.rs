@@ -6,7 +6,7 @@ use core::task::{Context, Poll};
 
 use aligned::{A4, Aligned};
 use bt_hci_transport::{PacketToController, ReadHciError};
-use embassy_futures::yield_now;
+use hazard3_futures::yield_now;
 use hazard3_sync::blocking_mutex::raw::NoopRawMutex;
 use hazard3_sync::zerocopy_channel;
 use hazard3_time::{Duration, Timer};

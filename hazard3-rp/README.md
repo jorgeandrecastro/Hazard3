@@ -28,16 +28,17 @@ complete operations in low power mode and handling interrupts, so that applicati
 * [Examples](https://github.com/jorgeandrecastro/Hazard3/tree/main/examples/rp/src/bin)
 * [Changelog](./CHANGELOG.md)
 
-## Migration to 0.3.0
+## Migration to 0.4.0
 
 The Rust library is now `hazard3_rp` instead of `embassy_rp`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-rp = "0.3"
+hazard3-rp = "0.4"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+The HAL now uses `hazard3-futures` rather than `embassy-futures`.
 
 ## RISC-V support (RP2350 Hazard3)
 
@@ -76,7 +77,7 @@ Select the chip:
 
 ```toml
 [dependencies]
-hazard3-rp = { version = "0.3", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
+hazard3-rp = { version = "0.4", features = ["rp235xa", "time-driver", "critical-section-impl", "imagedef-none"] }
 rp2350-riscv-linker = "0.2"
 ```
 
@@ -157,7 +158,8 @@ are maintained under the `hazard3-` prefix. Their library names use underscores
 application to avoid duplicate or incompatible copies of the same crate:
 
 `hazard3-sync`, `hazard3-time`, `hazard3-time-driver`, `hazard3-executor`, `hazard3-executor-macros`,
-`hazard3-embedded-hal`, `hazard3-usb-driver`, `hazard3-hal-internal`, `hazard3-rp-pac`.
+`hazard3-embedded-hal`, `hazard3-usb-driver`, `hazard3-hal-internal`, `hazard3-rp-pac`,
+`hazard3-futures`.
 
 ```toml
 hazard3-time = { version = "0.2" }

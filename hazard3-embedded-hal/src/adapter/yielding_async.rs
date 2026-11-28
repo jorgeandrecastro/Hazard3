@@ -1,4 +1,4 @@
-use embassy_futures::yield_now;
+use hazard3_futures::yield_now;
 
 use crate::SetConfig;
 

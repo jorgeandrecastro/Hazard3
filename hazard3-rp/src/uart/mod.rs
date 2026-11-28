@@ -4,7 +4,7 @@ use core::marker::PhantomData;
 use core::sync::atomic::{AtomicU16, Ordering};
 use core::task::Poll;
 
-use embassy_futures::select::{Either, select};
+use hazard3_futures::select::{Either, select};
 use hazard3_hal_internal::{Peri, PeripheralType};
 use hazard3_sync::waitqueue::AtomicWaker;
 use hazard3_time::{Delay, Timer};

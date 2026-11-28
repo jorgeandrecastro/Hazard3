@@ -2,7 +2,7 @@
 
 use core::marker::PhantomData;
 
-use embassy_futures::join::join;
+use hazard3_futures::join::join;
 use hazard3_hal_internal::Peri;
 use embedded_hal_02::spi::{Phase, Polarity};
 

@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## Unreleased (0.3.0)
+## Unreleased (0.4.0)
 
 ### Breaking changes
 
 - **Breaking:** rename the Rust library `embassy_rp` to `hazard3_rp`; update imports and macro paths.
+- Replace `embassy-futures` with `hazard3-futures` 0.1 and update `hazard3-embedded-hal` to 0.3.
 - Use matching new Hazard3 dependency versions where applicable.
 
 ### Other changes

@@ -26,16 +26,17 @@ Collection of utilities to use `embedded-hal` and `embedded-storage` traits with
     - Concatenate flash memories together.
     - Simulated in-memory flash.
 
-## Migration to 0.2.0
+## Migration to 0.3.0
 
 The Rust library is now `hazard3_embedded_hal` instead of `embassy_embedded_hal`. Update imports and macro paths; this is a source-breaking change. Add the package directly without a `package` alias:
 
 ```toml
 [dependencies]
-hazard3-embedded-hal = "0.2"
+hazard3-embedded-hal = "0.3"
 ```
 
 Use compatible new versions of the other Hazard3 crates together. These versions are pending publication; older published versions may use different library names.
+The async adapters now use `hazard3-futures` rather than `embassy-futures`.
 
 ## Acknowledgements
 
