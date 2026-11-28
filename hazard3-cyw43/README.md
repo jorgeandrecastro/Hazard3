@@ -144,7 +144,11 @@ The ESP32-C3 matches each received PONG against its pending PING and measures th
 The benchmark configuration targeted 10,000 exchanges. The recorded measurement below corresponds to the first 1,000 exchanges.
 
 | Metric | Measured result |
-|---|---:|
+|---|---:|cargo doc \
+    --target riscv32imac-unknown-none-elf \
+    --features hazard3-rp/rp235xa \
+    --no-deps \
+    --document-private-items
 | Completed exchanges | 1,000 |
 | TX attempts | 1,000 |
 | TX submissions | 1,000 |
